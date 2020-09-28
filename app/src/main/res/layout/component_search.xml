@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#191b2b">
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".25"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:onClick="goToCpuSearch" >
+
+                <ImageView
+                    android:id="@+id/choosePartCPU"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/cpu" />
+
+                <TextView
+                    android:id="@+id/choose_part_cpu_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/cpuLabel" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartCPUCooler"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/fan" />
+
+                <TextView
+                    android:id="@+id/choose_part_cooler_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/cpuCoolerLabel" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".25"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartMotherboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/motherboard" />
+
+                <TextView
+                    android:id="@+id/choose_part_motherboard_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/motherboardLabel" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartMemory"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/memory" />
+
+                <TextView
+                    android:id="@+id/choose_part_memory_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/memoryLabel" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".25"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartStorage"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/storage" />
+
+                <TextView
+                    android:id="@+id/choose_part_storage_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/storageLabel" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartGPU"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/gpu" />
+
+                <TextView
+                    android:id="@+id/choose_part_gpu_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/gpuCoolerLabel" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".25"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartPSU"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/psu" />
+
+                <TextView
+                    android:id="@+id/choose_part_psu_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/choose_part_psu_label" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".50"
+                android:layout_margin="6dp"
+                android:background="#B340445c"
+                android:orientation="vertical"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true">
+
+                <ImageView
+                    android:id="@+id/choosePartCase"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".7"
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/computer_case" />
+
+                <TextView
+                    android:id="@+id/choose_part_case_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight=".30"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:importantForAutofill="no"
+                    android:textSize="24sp"
+                    android:text="@string/choose_part_case_label" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

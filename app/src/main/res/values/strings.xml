@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">PPP</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="main_title">PC Builder</string>
+    <string name="build_system">Build System</string>
+    <string name="saved_builds">Saved Builds</string>
+    <string name="components">Search Components</string>
+    <string name="build_guide">Build Guide</string>
+    <string name="select_product">Choose Part</string>
+    <string name="back_button_description">BackButton</string>
+    <string name="cpuLabel">CPU</string>
+    <string name="cpuCoolerLabel">CPU Cooler</string>
+    <string name="motherboardLabel">Motherboard</string>
+    <string name="memoryLabel">Memory</string>
+    <string name="storageLabel">Storage</string>
+    <string name="gpuCoolerLabel">GPU</string>
+    <string name="choose_part_psu_label">PSU</string>
+    <string name="choose_part_case_label">Case</string>
+    <string name="setting">Settings</string>
+    <string name="country">Country</string>
+    <string name="tax_rate">Tax Percentage</string>
+    <string name="tax_percentage">Input your rate (%)</string>
+    <string name="currency">Currency</string>
+    <string name="usd">American Dollar (USD)</string>
+    <string name="eur">Euro (Eur)</string>
+    <string name="jpy">Japanese Yen (JPY)</string>
+    <string name="gbp">British Pound (GBP)</string>
+    <string name="aud">Australian Dollar (AUD)</string>
+    <string name="cad">Canadian Dollar (CAD)</string>
+    <string name="chf">Swiss Franc (CHF)</string>
+    <string name="currency_disclaimer">Currencies are used for currency exchange. All prices are USA based</string>
+    <string name="currency_warning">Warning!</string>
+    <string name="update_settings">Update Settings</string>
+    <string name="filters">Filters</string>
+    <string name="sort">Sort</string>
+    <string name="loading_data">Loading Data...</string>
+
+
+</resources>
