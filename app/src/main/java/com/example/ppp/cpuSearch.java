@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -98,8 +100,8 @@ public class cpuSearch extends AppCompatActivity {
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.cpu_filter_window, null);
 
-        // Set the Branch Choices
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
+        // Set the Branch Choices
         LinearLayout brandChoice = mainLayout.findViewById(R.id.brand_selection);
         final LinearLayout brandOptions = mainLayout.findViewById(R.id.brand_options);
         brandOptions.setVisibility(View.GONE);
@@ -110,6 +112,74 @@ public class cpuSearch extends AppCompatActivity {
                     brandOptions.setVisibility(View.GONE);
                 }else{
                     brandOptions.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // Set price choices
+        final RangeSeekBar<Integer> priceBar = popupView.findViewById(R.id.price_seek_bar);
+        priceBar.setRangeValues(0, getHighestPriceProdcuct() + 10);
+        LinearLayout priceChoice = popupView.findViewById(R.id.price_selection);
+        priceBar.setVisibility(View.GONE);
+        priceChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (priceBar.isShown()){
+                    priceBar.setVisibility(View.GONE);
+                }else{
+                    priceBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // Set Core Choices
+        final RangeSeekBar<Integer> coresBar = popupView.findViewById(R.id.cores_seek_bar);
+        coresBar.setRangeValues(0, 64);
+        LinearLayout coresChoice = popupView.findViewById(R.id.cores_selection);
+        coresBar.setVisibility(View.GONE);
+        coresChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (coresBar.isShown()){
+                    coresBar.setVisibility(View.GONE);
+                }else{
+                    coresBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        // Set Clock Speed Choice
+        final LinearLayout clockChoice = popupView.findViewById(R.id.clock_selection);
+        final LinearLayout clockOptionSection= popupView.findViewById(R.id.clock_option_section);
+        final RangeSeekBar<Double> baseClockBar = popupView.findViewById(R.id.base_clock_seek_bar);
+        final RangeSeekBar<Double> boostClockBar = popupView.findViewById(R.id.boost_clock_seek_bar);
+        baseClockBar.setRangeValues(0.0, 6.0);
+        boostClockBar.setRangeValues(0.0, 6.0);
+        clockOptionSection.setVisibility(View.GONE);
+        clockChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (clockOptionSection.isShown()){
+                    clockOptionSection.setVisibility(View.GONE);
+                }else{
+                    clockOptionSection.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // Set Core Choices
+        final RangeSeekBar<Integer> tdpBar = popupView.findViewById(R.id.tdp_seek_bar);
+        tdpBar.setRangeValues(0, 500);
+        LinearLayout tdpChoice = popupView.findViewById(R.id.tdp_selection);
+        tdpBar.setVisibility(View.GONE);
+        tdpChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tdpBar.isShown()){
+                    tdpBar.setVisibility(View.GONE);
+                }else{
+                    tdpBar.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -160,6 +230,16 @@ public class cpuSearch extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    public int getHighestPriceProdcuct(){
+        double maxPrice = 0.0;
+        for (CpuSearch prod: searchData){
+            double bestPrice = prod.getBestPrice();
+            if (bestPrice > maxPrice)
+                maxPrice = bestPrice;
+        }
+        return (int) Math.floor(maxPrice);
     }
 
     public void RetrieveCpuData(){

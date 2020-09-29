@@ -49,6 +49,8 @@
     <string name="amd">AMD</string>
     <string name="intel">Intel</string>
     <string name="brand_selection"><u>Brand</u></string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
 
 
 </resources>
