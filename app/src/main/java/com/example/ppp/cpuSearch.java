@@ -2,13 +2,11 @@ package com.example.ppp;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,26 +16,32 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Gallery;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
+import org.w3c.dom.Text;
+
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import pcpp_data.products.PriceObj;
 import pcpp_data.queries.CpuSearch;
 import pcpp_data.queries.GetSearchLists;
+import pcpp_data.queries.SingleCpuQuery;
 import preferences.Preferences;
 
 public class cpuSearch extends AppCompatActivity {
@@ -205,6 +209,79 @@ public class cpuSearch extends AppCompatActivity {
         });
     }
 
+    public void productPopup(View view, int productID, String productName){
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.cpu_detail_window, null);
+
+        // Set product Name
+        TextView name = popupView.findViewById(R.id.product_name);
+        name.setText(productName);
+
+        // Initiate Spec object
+        SingleCpuQuery query = new SingleCpuQuery(productID);
+
+        //Image Gallery
+        LinearLayout gallery = popupView.findViewById(R.id.image_gallery);
+        new DownloadImageGallery(query, gallery).execute();
+
+        //Spec Values
+        final LinearLayout specButton = popupView.findViewById(R.id.specs);
+        final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
+        new DownloadSpecs(query, specGallery).execute();
+
+        specGallery.setVisibility(View.GONE);
+        specButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (specGallery.isShown()){
+                    specGallery.setVisibility(View.GONE);
+                }else{
+                    specGallery.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // Buy links
+        final LinearLayout buyButton = popupView.findViewById(R.id.buy);
+        final LinearLayout buyGallery = popupView.findViewById(R.id.buy_options);
+        new DownloadSellers(query, buyGallery).execute();
+
+        buyGallery.setVisibility(View.GONE);
+        buyButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if (buyGallery.isShown()){
+                    buyGallery.setVisibility(View.GONE);
+                }else{
+                    buyGallery.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+        int height = LinearLayout.LayoutParams.MATCH_PARENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+    }
+
+
     public void onButtonShowPopupWindowClick(View view) {
 
         // inflate the layout of the popup window
@@ -260,8 +337,9 @@ public class cpuSearch extends AppCompatActivity {
 
     }
 
-    public void addProduct(CpuSearch data){
-
+    public void addProduct(final CpuSearch data){
+        // Product id
+        final int productID = data.getProductID();
 
         // Parent vertical layout
         LinearLayout parentLayout = (LinearLayout) findViewById(R.id.searchID);
@@ -272,7 +350,7 @@ public class cpuSearch extends AppCompatActivity {
                 false);
 
         // Labels
-        TextView productName = productLayout.findViewById(R.id.product_name_label);
+        final TextView productName = productLayout.findViewById(R.id.product_name_label);
         productName.setPaintFlags(productName.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
         productName.setText(data.getProductName());
         RatingBar ratingBar = productLayout.findViewById(R.id.rating_bar);
@@ -310,7 +388,7 @@ public class cpuSearch extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                onButtonShowPopupWindowClick(v);
+                productPopup(v, productID, data.getProductName());
             }
         });
 
@@ -330,7 +408,145 @@ public class cpuSearch extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
-    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
+    public static int getDrawableIdentifier(Context context, String name) {
+        return context.getResources().getIdentifier(name, "drawable", context.getPackageName());
+    }
+
+    private class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>>{
+        SingleCpuQuery query;
+        LinearLayout gallery;
+
+        public DownloadSellers(SingleCpuQuery query, LinearLayout gallery){
+            this.query = query;
+            this.gallery = gallery;
+        }
+
+        @Override
+        protected ArrayList<PriceObj> doInBackground(String... strings) {
+            ArrayList<PriceObj> sellers = query.getPrice();
+            return sellers;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<PriceObj> sellers){
+            for (PriceObj price: sellers){
+                if (price != null){
+                    View layout = LayoutInflater.from(cpuSearch.this).inflate(R.layout.buy_option_template,
+                            gallery,
+                            false);
+                    TextView available_value = layout.findViewById(R.id.available_value);
+                    TextView shipping_value = layout.findViewById(R.id.shipping_value);
+                    TextView price_value = layout.findViewById(R.id.price_value);
+                    String sellingPrice = String.format("%s %.2f" , prefs.getCurrencySymbol(),
+                            price.getBasePrice());
+                    double shipPrice = price.getShipping();
+                    String shippingPrice = (shipPrice < 0) ?
+                            "Amazon Prime" : String.format("%s %.2f",
+                            prefs.getCurrencySymbol(),
+                            shipPrice);
+                    String avail = (price.isAvail()) ? "Yes" : "No";
+                    String merchant = price.getMerchant();
+                    final String purchaseLink = price.getPurchaseLink();
+
+                    // changing values
+                    price_value.setText(sellingPrice);
+                    available_value.setText(avail);
+                    shipping_value.setText(shippingPrice);
+
+                    // clickable value for url
+                    LinearLayout buyBtn =  layout.findViewById(R.id.seller_button);
+                    buyBtn.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            Uri uriUrl = Uri.parse(purchaseLink);
+                            Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                            startActivity(launchBrowser);
+                        }
+                    });
+                    ImageButton btn =  layout.findViewById(R.id.realbutton);
+                    String merch = merchant.toLowerCase().replace(" ", "") + "_logo";
+                    int resource = getDrawableIdentifier(cpuSearch.this, merch);
+                    btn.setImageResource(resource);
+                    btn.setOnClickListener(new View.OnClickListener(){
+                        @Override
+                        public void onClick(View v) {
+                            Uri uriUrl = Uri.parse(purchaseLink);
+                            Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
+                            startActivity(launchBrowser);
+                        }
+                    });
+
+                    gallery.addView(layout);
+                }
+            }
+        }
+    }
+
+    private static class DownloadSpecs extends AsyncTask<String, Void, HashMap<String, String>>{
+        SingleCpuQuery query;
+        LinearLayout gallery;
+        ArrayList<String> order;
+
+        public DownloadSpecs(SingleCpuQuery query, LinearLayout gallery){
+            this.query = query;
+            this.gallery = gallery;
+        }
+
+        @Override
+        protected HashMap<String, String> doInBackground(String... strings) {
+            HashMap<String, String> specs = query.getSpecs();
+            ArrayList<String> order = query.getSpecOrder();
+            this.order = order;
+            return specs;
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, String> specs){
+            for (String key: order){
+                String value = specs.get(key);
+                if (value != null){
+                    View layout = LayoutInflater.from(cpuSearch.this).inflate(R.layout.spec_template,
+                            gallery,
+                            false);
+                    TextView spec_key = layout.findViewById(R.id.spec_key);
+                    TextView spec_value = layout.findViewById(R.id.spec_value);
+                    spec_key.setText(key);
+                    spec_value.setText(value.replace(";", "\n"));
+                    gallery.addView(layout);
+                }
+            }
+        }
+    }
+
+    private class DownloadImageGallery extends AsyncTask<String, Void, ArrayList<String>>{
+        SingleCpuQuery query;
+        LinearLayout gallery;
+
+        public DownloadImageGallery(SingleCpuQuery query, LinearLayout gallery){
+            this.query = query;
+            this.gallery = gallery;
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... strings) {
+            ArrayList<String> images = query.getImageGallery();
+            return images;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> images){
+            for (String url: images){
+                View layout = LayoutInflater.from(cpuSearch.this).inflate(R.layout.image_gallery_template,
+                        gallery,
+                        false);
+                ImageView img = layout.findViewById(R.id.image);
+                new DownLoadImageTask(img).execute(url);
+                gallery.addView(layout);
+            }
+        }
+    }
+
+    private static class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
         ImageView imageView;
         ImageButton btn;
 

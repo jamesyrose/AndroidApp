@@ -51,6 +51,11 @@
     <string name="brand_selection"><u>Brand</u></string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    <string name="buy_label">Buy</string>
+    <string name="spec_label">Specifications</string>
+    <string name="seller"><u>Seller</u></string>
+    <string name="available"><u>Available</u></string>
+    <string name="shipping"><u>Shipping</u></string>
 
 
 </resources>
