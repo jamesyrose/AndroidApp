@@ -28,19 +28,24 @@
     <string name="tax_rate">Tax Percentage</string>
     <string name="tax_percentage">Input your rate (%)</string>
     <string name="currency">Currency</string>
-    <string name="usd">American Dollar (USD)</string>
-    <string name="eur">Euro (Eur)</string>
-    <string name="jpy">Japanese Yen (JPY)</string>
-    <string name="gbp">British Pound (GBP)</string>
-    <string name="aud">Australian Dollar (AUD)</string>
-    <string name="cad">Canadian Dollar (CAD)</string>
-    <string name="chf">Swiss Franc (CHF)</string>
+    <string name="usd">American Dollar $(USD)</string>
+    <string name="eur">Euro \u20AC(EUR)</string>
+    <string name="jpy">Japanese Yen \u00A5(JPY)</string>
+    <string name="gbp">British Pound \u00A3 (GBP)</string>
+    <string name="aud">Australian Dollar $(AUD)</string>
+    <string name="cad">Canadian Dollar $(CAD)</string>
+    <string name="chf">Swiss Franc \u20A3(CHF)</string>
     <string name="currency_disclaimer">Currencies are used for currency exchange. All prices are USA based</string>
     <string name="currency_warning">Warning!</string>
     <string name="update_settings">Update Settings</string>
     <string name="filters">Filters</string>
     <string name="sort">Sort</string>
     <string name="loading_data">Loading Data...</string>
+    <string name="socket_label"><u>Socket</u></string>
+    <string name="tdp_label"><u>TDP</u></string>
+    <string name="clock_label"><u>Clock Speed</u></string>
+    <string name="core_label"><u>Cores</u></string>
+    <string name="price"><u>PRICE</u></string>
 
 
 </resources>

@@ -4,7 +4,9 @@ package pcpp_data.queries;
 import android.os.AsyncTask;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.simple.JSONArray;
@@ -15,17 +17,16 @@ import pcpp_data.conn.Conn;
 
 public class GetSearchLists{
     private Conn conn;
-    private ArrayList<MainSearch> searchOptions;
 
     public GetSearchLists() {
         this.conn = new Conn();
     }
 
 
-    public void getCPUsearchList() {
+    public ArrayList<CpuSearch> getCPUsearchList() {
         String url = "https://pcpp.verlet.io/CpuSelectSearch.php";
+        ArrayList<CpuSearch> searchOptions = new ArrayList<CpuSearch>();
         try {
-            searchOptions = new ArrayList<>();
             JSONArray data = conn.getData(url);
             for (Object buff: data) {
                 JSONObject row = (JSONObject) buff;
@@ -36,11 +37,6 @@ public class GetSearchLists{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    public ArrayList<MainSearch> getSearchOptions(){
         return searchOptions;
     }
-
-
 }

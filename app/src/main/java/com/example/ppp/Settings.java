@@ -1,34 +1,28 @@
 package com.example.ppp;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.text.Editable;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import preferences.Preferences;
 
 public class Settings extends AppCompatActivity {
     RadioGroup radioGroup;
     RadioButton selectedRadioButton;
     EditText taxRate;
-    SharedPreferences settings;
-    SharedPreferences.Editor editor;
+    Preferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +30,7 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.settings);
         radioGroup = findViewById(R.id.currencyRadioGroup);
         taxRate = findViewById(R.id.settingTaxInput);
-        settings = getSharedPreferences("UserInfo", 0);
-        editor = settings.edit();
+        pref = new Preferences(Settings.this);
         setRadioGroup();
         setTextRate();
 
@@ -46,12 +39,12 @@ public class Settings extends AppCompatActivity {
 
     public void setTextRate(){
         EditText textBox = findViewById(R.id.settingTaxInput);
-        String taxRate = settings.getString("TaxRate", "");
+        String taxRate = pref.getTaxRateString();
         textBox.setText(taxRate);
     }
 
     public void setRadioGroup(){
-        String selected = settings.getString("Currency", "");
+        String selected = pref.getCurrency();
         int count = radioGroup.getChildCount();
         for (int i=0; i<count; i++){
             View o = radioGroup.getChildAt(i);
@@ -99,12 +92,9 @@ public class Settings extends AppCompatActivity {
         selectedRadioButton = findViewById(selectedId);
         Editable taxPercentage = taxRate.getText();
 
-        double value = checkTaxRate(String.valueOf(taxPercentage));
-        if (value >= 0){
-            editor.putString("TaxRate", String.valueOf(taxPercentage)).commit();
-        }
-        editor.putString("Currency", String.valueOf(selectedRadioButton.getText()));
-        editor.commit();
+        pref.updateCurrency(String.valueOf(selectedRadioButton.getText()));
+        pref.updateTaxRate(String.valueOf(taxPercentage));
+
 
         returnPage();
 

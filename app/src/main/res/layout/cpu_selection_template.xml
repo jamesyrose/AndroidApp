@@ -16,6 +16,7 @@
         android:layout_weight=".3"
         android:gravity="center_vertical|center_horizontal"
         android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/back_button"/>
 
@@ -29,11 +30,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".31"
+            android:layout_weight=".2"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/productName"
+                android:id="@+id/product_name_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -46,29 +47,52 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".23"
+            android:layout_weight=".2"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView2"
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView" />
+                android:layout_gravity="center"
+                android:isIndicator="true"
+                android:backgroundTint="@color/colorAccent"
+                android:progressTint="@color/colorAccent"
+                android:secondaryProgressTint="@color/colorAccent"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="0.1"/>
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/rating_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingLeft="10dp"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:textColor="#CCFFFFFF"
+                android:text="(0)" />
+
+            <TextView
+                android:id="@+id/price_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_marginRight="15dp"
+                android:paddingLeft="5dp"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:text="$0.00"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight=".46"
+            android:layout_weight=".6"
+            android:layout_marginTop="5dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -77,63 +101,117 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_weight=".75"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight=".25"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView8"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/socket_label"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="TextView" />
+                            android:layout_weight=".5"
+                            android:textColor="#CCFFFFFF"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:text="@string/socket_label" />
 
                         <TextView
-                            android:id="@+id/textView7"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tdp_label"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="TextView" />
+                            android:layout_weight=".5"
+                            android:textColor="#CCFFFFFF"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:text="@string/tdp_label" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight=".25"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/textView4"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/socket_value"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="TextView" />
+                            android:layout_weight=".5"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:text="socket" />
 
                         <TextView
-                            android:id="@+id/textView5"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tdp_value"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="TextView" />
+                            android:layout_weight=".5"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:text="tdp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight=".25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                        android:id="@+id/cores_label"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".5"
+                            android:textColor="#CCFFFFFF"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                        android:text="@string/core_label" />
+
+                        <TextView
+                            android:id="@+id/clock_label"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".5"
+                            android:textColor="#CCFFFFFF"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:text="@string/clock_label" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight=".25"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/core_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".5"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:text="cores" />
+
+                        <TextView
+                            android:id="@+id/clock_value"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".5"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:text="clock" />
 
                     </LinearLayout>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView9"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="TextView" />
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

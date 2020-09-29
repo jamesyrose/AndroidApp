@@ -23,6 +23,7 @@ public class CpuSearch extends MainSearch{
         this.cores = (String) row.get("Core Count");
         this.baseClock = (String) row.get("Core Clock");
         this.BoostClock = (String) row.get("Boost Clock");
+        this.BoostClock = (this.BoostClock == null) ? this.baseClock : this.BoostClock; // If no Boost
         this.tdp = (String) row.get("TDP");
         this.socketType = (String) row.get("Socket");
     }

@@ -1,5 +1,6 @@
 package com.example.ppp;
 
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,11 +30,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
+import pcpp_data.queries.CpuSearch;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.queries.MainSearch;
 
 public class cpuSearch extends AppCompatActivity {
-    private ArrayList<MainSearch> searchData;
+    private ArrayList<CpuSearch> searchData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +83,7 @@ public class cpuSearch extends AppCompatActivity {
         dialog.animate();
     }
 
-    public void addProduct(MainSearch data){
+    public void addProduct(CpuSearch data){
         // Parent vertical layout
         LinearLayout parentLayout = (LinearLayout) findViewById(R.id.searchID);
 
@@ -88,6 +91,33 @@ public class cpuSearch extends AppCompatActivity {
         View productLayout = LayoutInflater.from(this).inflate(R.layout.cpu_selection_template,
                 parentLayout,
                 false);
+
+        // Labels
+        TextView productName = productLayout.findViewById(R.id.product_name_label);
+        productName.setPaintFlags(productName.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+        productName.setText(data.getProductName());
+        RatingBar ratingBar = productLayout.findViewById(R.id.rating_bar);
+        double rating = data.getRatingAverage();
+        double averageRating = (rating > 0) ? rating : 0; // Accounts for -1 (set b/c null)
+        ratingBar.setRating((float) averageRating);
+        TextView ratingCount = productLayout.findViewById(R.id.rating_count);
+        int count = data.getRatingCount();
+        int cnt = (count >= 0) ? count : 0;
+        ratingCount.setText(String.format("(%d)", cnt));
+        TextView price = productLayout.findViewById(R.id.price_value);
+        double buff = data.getBestPrice();
+        double bestPrice = (buff > 0) ? buff : 0.0;
+        price.setText(String.format("$%.2f", bestPrice));
+        TextView socket = productLayout.findViewById(R.id.socket_value);
+        socket.setText(data.getSocketType().split("-")[0]); // Keep only the first part
+        TextView tdp = productLayout.findViewById(R.id.tdp_value);
+        tdp.setText(data.getTdp());
+        TextView cores = productLayout.findViewById(R.id.core_value);
+        cores.setText(data.getCores());
+        TextView clock = productLayout.findViewById(R.id.clock_value);
+        clock.setText(data.getBaseClock().replace(" GHz", "")
+                + "/" + data.getBoostClock());
+
 
         // Image
         ImageView img = productLayout.findViewById(R.id.product_image);
@@ -166,14 +196,14 @@ public class cpuSearch extends AppCompatActivity {
     }
 
 
-    private class RetrieveFeedTask extends AsyncTask<String, Void, ArrayList<MainSearch>>{
+    private class RetrieveFeedTask extends AsyncTask<String, Void, ArrayList<CpuSearch>>{
         @Override
-        protected ArrayList<MainSearch> doInBackground(String... strings) {
+        protected ArrayList<CpuSearch> doInBackground(String... strings) {
 
             try {
                 GetSearchLists obj = new GetSearchLists();
                 obj.getCPUsearchList();
-                ArrayList<MainSearch> data = obj.getSearchOptions();
+                ArrayList<CpuSearch> data = obj.getCPUsearchList();
                 return data;
             } catch (Exception e){
                 System.out.println("failed to load");
@@ -182,12 +212,17 @@ public class cpuSearch extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<MainSearch> data){
+        protected void onPostExecute(ArrayList<CpuSearch> data){
+            LinearLayout dialog   = (LinearLayout)findViewById(R.id.searchID);
+            dialog.setVisibility(LinearLayout.VISIBLE);
+            Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
+            animation.setDuration(1000);
+            dialog.setAnimation(animation);
             searchData = data;
-            for (MainSearch buff: data){
+            for (CpuSearch buff: data){
                 addProduct(buff);
             }
-            animateProductLayout();
+            dialog.animate();
             findViewById(R.id.loading_wheel).setVisibility(View.GONE);
             findViewById(R.id.loading_text).setVisibility(View.GONE);
         }
