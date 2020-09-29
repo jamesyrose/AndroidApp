@@ -115,14 +115,14 @@ public class SingleCpuQuery {
 
     protected double stringToDouble(String x) {
         if (x == null){
-            return -1.0;
+            return -2.0;
         }
         return Double.valueOf(x);
     }
 
     protected int stringToInteger(String x) {
         if (x == null){
-            return -1;
+            return -2;
         }
         return Integer.valueOf(x);
     }

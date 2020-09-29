@@ -50,20 +50,19 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/loading_wheel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical">
 
         <ProgressBar
-            android:id="@+id/loading_wheel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:indeterminate="true" />
 
         <TextView
-            android:id="@+id/loading_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="32sp"
