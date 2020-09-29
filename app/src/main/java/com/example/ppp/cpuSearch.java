@@ -1,5 +1,6 @@
 package com.example.ppp;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.content.Intent;
@@ -7,21 +8,24 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.PopupWindow;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,17 +36,32 @@ import java.util.ArrayList;
 
 import pcpp_data.queries.CpuSearch;
 import pcpp_data.queries.GetSearchLists;
-import pcpp_data.queries.MainSearch;
+import preferences.Preferences;
 
 public class cpuSearch extends AppCompatActivity {
-    private ArrayList<CpuSearch> searchData;
+    private static ArrayList<CpuSearch> searchData;
+    Preferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cpu_search);
+        loadingNotDone();
+        if (searchData == null){
+            searchData = new ArrayList<>();
+        }
+        prefs = new Preferences(cpuSearch.this);
+        RetrieveCpuData();
 
-        new RetrieveFeedTask().execute();
+        // Set filter
+        Button filter = findViewById(R.id.filter_button);
+        filter.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                filterPopup(v);
+            }
+        });
     }
 
     @Override
@@ -73,17 +92,97 @@ public class cpuSearch extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void animateProductLayout(){
-        // Decompress products in scroll window
-        LinearLayout dialog   = (LinearLayout)findViewById(R.id.searchID);
-        dialog.setVisibility(LinearLayout.VISIBLE);
-        Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
-        animation.setDuration(1000);
-        dialog.setAnimation(animation);
-        dialog.animate();
+    public void filterPopup(View view){
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.cpu_filter_window, null);
+
+        // Set the Branch Choices
+        LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
+        LinearLayout brandChoice = mainLayout.findViewById(R.id.brand_selection);
+        final LinearLayout brandOptions = mainLayout.findViewById(R.id.brand_options);
+        brandOptions.setVisibility(View.GONE);
+        brandChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (brandOptions.isShown()){
+                    brandOptions.setVisibility(View.GONE);
+                }else{
+                    brandOptions.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.MATCH_PARENT;
+        int height = LinearLayout.LayoutParams.MATCH_PARENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+    }
+
+    public void onButtonShowPopupWindowClick(View view) {
+
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.product_description_popup, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+    }
+
+    public void RetrieveCpuData(){
+        if (searchData.isEmpty()){
+            new RetrieveFeedTask().execute();
+        }else {
+            for (CpuSearch product:  searchData){
+                addProduct(product);
+                LinearLayout dialog   = (LinearLayout)findViewById(R.id.searchID);
+                dialog.setVisibility(LinearLayout.VISIBLE);
+                Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
+                animation.setDuration(1000);
+                dialog.setAnimation(animation);
+                dialog.animate();
+                loadingDone();
+            }
+        }
+
     }
 
     public void addProduct(CpuSearch data){
+
+
         // Parent vertical layout
         LinearLayout parentLayout = (LinearLayout) findViewById(R.id.searchID);
 
@@ -104,12 +203,15 @@ public class cpuSearch extends AppCompatActivity {
         int count = data.getRatingCount();
         int cnt = (count >= 0) ? count : 0;
         ratingCount.setText(String.format("(%d)", cnt));
+        TextView currencySymbol =  productLayout.findViewById(R.id.currency_symbol);
+        currencySymbol.setText(prefs.getCurrencySymbol());
         TextView price = productLayout.findViewById(R.id.price_value);
         double buff = data.getBestPrice();
         double bestPrice = (buff > 0) ? buff : 0.0;
-        price.setText(String.format("$%.2f", bestPrice));
+        price.setText(String.format("%.2f", bestPrice));
+
         TextView socket = productLayout.findViewById(R.id.socket_value);
-        socket.setText(data.getSocketType().split("-")[0]); // Keep only the first part
+        socket.setText(data.getSocketType()); // Keep only the first part
         TextView tdp = productLayout.findViewById(R.id.tdp_value);
         tdp.setText(data.getTdp());
         TextView cores = productLayout.findViewById(R.id.core_value);
@@ -128,7 +230,7 @@ public class cpuSearch extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                goToSettings(v);
+                onButtonShowPopupWindowClick(v);
             }
         });
 
@@ -213,19 +315,32 @@ public class cpuSearch extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<CpuSearch> data){
+            System.out.println("Query Complete");
             LinearLayout dialog   = (LinearLayout)findViewById(R.id.searchID);
             dialog.setVisibility(LinearLayout.VISIBLE);
             Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
             animation.setDuration(1000);
             dialog.setAnimation(animation);
-            searchData = data;
             for (CpuSearch buff: data){
                 addProduct(buff);
             }
+            searchData = data;
             dialog.animate();
-            findViewById(R.id.loading_wheel).setVisibility(View.GONE);
-            findViewById(R.id.loading_text).setVisibility(View.GONE);
+            System.out.println("Loading Complete");
+            loadingDone();
         }
     }
+
+    private void loadingDone(){
+        findViewById(R.id.loading_wheel).setVisibility(View.GONE);
+        findViewById(R.id.loading_text).setVisibility(View.GONE);
+    }
+
+    private void loadingNotDone(){
+        findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
+        findViewById(R.id.loading_text).setVisibility(View.VISIBLE);
+    }
+
+
 }
 
