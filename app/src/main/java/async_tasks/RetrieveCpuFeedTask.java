@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -31,17 +32,21 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSearch>> {
     Context context;
     LinearLayout dialog;
-    ArrayList<CpuSearch> searchData;
+    static ArrayList<CpuSearch> searchData;
     Preferences prefs;
     View root;
+    boolean dataFetched;
 
 
     public RetrieveCpuFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
-        this.searchData = new ArrayList<>();
         this.root = ((Activity) context).getWindow().getDecorView();
+        this.dataFetched = false;
+        if (this.searchData == null){
+            this.searchData = new ArrayList<>();
+        }
     }
 
 
@@ -61,6 +66,8 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
     @Override
     protected void onPostExecute(ArrayList<CpuSearch> data){
+        searchData = data;
+        dataFetched = true;
         System.out.println("Query Complete");
         dialog.setVisibility(LinearLayout.VISIBLE);
         Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
@@ -69,10 +76,13 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         for (CpuSearch buff: data){
             addProduct(buff);
         }
-        searchData = data;
         dialog.animate();
         System.out.println("Loading Complete");
         loadingDone();
+    }
+
+    public boolean isDataFetched(){
+        return dataFetched;
     }
 
     public void addProduct(final CpuSearch data){
@@ -195,6 +205,15 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
+        // close window by button
+        ImageButton closeButton = popupView.findViewById(R.id.close_button);
+        closeButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
         // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override

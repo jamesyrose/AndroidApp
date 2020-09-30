@@ -1,6 +1,7 @@
 package async_tasks;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,8 @@ public class DownloadCpuSpecs extends AsyncTask<String, Void, HashMap<String, St
                         false);
                 TextView spec_key = layout.findViewById(R.id.spec_key);
                 TextView spec_value = layout.findViewById(R.id.spec_value);
-                spec_key.setText(key);
+                spec_key.setPaintFlags(spec_key.getPaintFlags()| Paint.UNDERLINE_TEXT_FLAG);
+                spec_key.setText(key + ":");
                 spec_value.setText(value.replace(";", "\n"));
                 gallery.addView(layout);
             }

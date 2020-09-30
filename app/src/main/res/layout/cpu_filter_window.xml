@@ -26,35 +26,42 @@
             tools:layout_editor_absoluteX="90dp"
             tools:layout_editor_absoluteY="25dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:background="#000000">
 
+                <ImageButton
+                    android:id="@+id/close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_margin="10dp"
+                    android:scaleType="fitStart"
+                    android:background="@android:color/transparent"
+                    app:srcCompat="@drawable/close_mark"/>
 
                 <TextView
                     android:id="@+id/filters_label"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".8"
-                    android:background="#000000"
                     android:gravity="center"
                     android:padding="10dp"
                     android:text="@string/filters"
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold" />
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/brand_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -66,7 +73,7 @@
                     <TextView
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/brand_selection"
@@ -76,13 +83,14 @@
 
                     <ImageView
                         android:id="@+id/imageView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|left"
+                        android:gravity="left"
+                        android:scaleType="fitEnd"
                         app:srcCompat="@drawable/drop_down_arrow" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/brand_options"
@@ -94,23 +102,21 @@
                     android:paddingRight="20dp"
                     android:paddingBottom="5dp">
 
-                    <RadioButton
-                        android:id="@+id/radioButton"
+                    <CheckBox
+                        android:id="@+id/amd_option"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
                         android:buttonTint="#FFFFFF"
-                        android:checked="true"
                         android:text="@string/amd"
                         android:textColor="#FFFFFF" />
 
-                    <RadioButton
-                        android:id="@+id/radioButton2"
+                    <CheckBox
+                        android:id="@+id/intel_option"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
                         android:buttonTint="#FFFFFF"
-                        android:checked="true"
                         android:text="@string/intel"
                         android:textColor="#FFFFFF" />
 
@@ -123,10 +129,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/price_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -138,7 +144,7 @@
                     <TextView
                         android:id="@+id/textView4"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="@string/price"
@@ -148,13 +154,13 @@
 
                     <ImageView
                         android:id="@+id/imageView4"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|left"
+                        android:scaleType="fitEnd"
                         app:srcCompat="@drawable/drop_down_arrow" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
                     android:id="@+id/price_seek_bar"
@@ -164,9 +170,10 @@
                     android:layout_marginRight="15dp"/>
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/cores_selection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_margin="1dp"
                 android:background="#B34C4D7E"
                 android:clickable="true"
@@ -175,31 +182,24 @@
                 android:orientation="horizontal"
                 android:padding="5dp">
 
-                <LinearLayout
-                    android:id="@+id/cores_selection"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:text="@string/core_label"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/core_label"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    app:srcCompat="@drawable/drop_down_arrow" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|left"
-                        app:srcCompat="@drawable/drop_down_arrow" />
-                </LinearLayout>
+            </RelativeLayout>
 
-            </LinearLayout>
             <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
                 android:id="@+id/cores_seek_bar"
                 android:layout_width="match_parent"
@@ -212,10 +212,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/clock_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -227,8 +227,7 @@
                     <TextView
                         android:id="@+id/textView2"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="@string/clock_label"
                         android:textColor="#FFFFFF"
@@ -237,12 +236,12 @@
 
                     <ImageView
                         android:id="@+id/imageView2"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|left"
+                        android:scaleType="fitEnd"
                         app:srcCompat="@drawable/drop_down_arrow" />
-                </LinearLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/clock_option_section"
