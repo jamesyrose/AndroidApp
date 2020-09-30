@@ -5,7 +5,8 @@ import java.util.Map;
 
 public class Constants {
 
-    private Constants() {
+
+    public Constants() {
         // restrict instantiation
     }
 
@@ -22,4 +23,7 @@ public class Constants {
 
     public static final String[] PRODUCT_SPEC_COL_DROP = {"ProductID", "ProductName", "ProductLink",
             "NeedsUpdate", "LastUpdate", "id", "BestPrice", "ProductName", "Images", "COUNT", "Average"};
+
+    public static final int max_initial_load = 30;
+
 }

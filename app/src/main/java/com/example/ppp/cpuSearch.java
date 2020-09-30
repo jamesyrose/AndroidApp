@@ -2,6 +2,7 @@ package com.example.ppp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -19,8 +21,11 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
@@ -54,22 +59,25 @@ public class cpuSearch extends AppCompatActivity {
     int tdpMax=10000;
     String sortFilter = "Popularity (Ascending)";
 
+    // data
+    ArrayList<CpuSearch> filteredData;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cpu_search);
         loadingNotDone();
-        dialog   = (LinearLayout)findViewById(R.id.searchID);
+        dialog = (LinearLayout) findViewById(R.id.searchID);
 
         prefs = new Preferences(cpuSearch.this);
-        if (cpuFeed == null){
-            cpuFeed = new RetrieveCpuFeedTask(cpuSearch.this, dialog, prefs);
-        }
-        RetrieveCpuData();
+
+        cpuFeed = new RetrieveCpuFeedTask(cpuSearch.this, dialog, prefs);
+        cpuFeed.execute();
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
-        filter.setOnClickListener(new View.OnClickListener(){
+        filter.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -79,7 +87,7 @@ public class cpuSearch extends AppCompatActivity {
 
         // Set Sort
         Button sortButton = findViewById(R.id.sort_button);
-        sortButton.setOnClickListener(new View.OnClickListener(){
+        sortButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -87,8 +95,22 @@ public class cpuSearch extends AppCompatActivity {
             }
         });
 
-        //new testJson(cpuSearch.this, "test.json").execute();
+//        // Set Scroll listener
+        final ScrollView dialogScroll = findViewById(R.id.scroll_window);
+        dialogScroll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                dialogScroll.getY();
+                int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
+                View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
+                float lastViewY = lastView.getY();
+                System.out.println(dialog.getChildCount());
+                if (scrollY > lastViewY){
+                    onLoadMore();
+                }
 
+            }
+        });
     }
 
     @Override
@@ -120,20 +142,20 @@ public class cpuSearch extends AppCompatActivity {
     }
 
 
-    public void RetrieveCpuData() {
-        if (cpuFeed.getSearchData().isEmpty()){
-            cpuFeed.execute();
-        }else {
-            for (CpuSearch product:  cpuFeed.getSearchData()){
-                ArrayList<View> children = cpuFeed.getProductLayoutView();
-                for (View child: children){
-                    dialog.addView(child);
-                }
-                loadingDone();
-            }
+    public void onLoadMore(){
+        int currentChildCount = dialog.getChildCount();
+        ArrayList<CpuSearch> data = cpuFeed.getSearchData();
+        if (filteredData != null) {
+            data = filteredData;
+        }
+        int end = currentChildCount + 30;
+        end = (data.size() > end) ? end : data.size();
+        for (int i=currentChildCount; i<end; i++){
+            cpuFeed.addProduct(data.get(i));
         }
 
     }
+
 
     @SuppressLint("ClickableViewAccessibility")
     public void filterPopup(View view){
@@ -268,9 +290,10 @@ public class cpuSearch extends AppCompatActivity {
                 tdpBar.setSelectedMinValue(0);
                 tdpBar.setSelectedMaxValue(500);
 
+                filteredData = cpuFeed.getSearchData();
                 dialog.removeAllViews();
-                for (CpuSearch product: cpuFeed.getSearchData()){
-                    cpuFeed.addProduct(product);
+                for (int i=0; i<30; i++){
+                    cpuFeed.addProduct(filteredData.get(i));
                 }
                 filterWindow.dismiss();
             }
@@ -366,6 +389,21 @@ public class cpuSearch extends AppCompatActivity {
 
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
         final RadioGroup sortOptions = popupView.findViewById(R.id.sort_group);
+
+        //Reset button
+        Button resetButton = popupView.findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortFilter = "Popularity (Descending)";
+                filteredData = cpuFeed.getSearchData();
+                dialog.removeAllViews();
+                for (int i=0; i<30; i++){
+                    cpuFeed.addProduct(filteredData.get(i));
+                }
+                sortWindow.dismiss();
+            }
+        });
 
         // Apply Button
         Button applyButton = popupView.findViewById(R.id.apply_button);
@@ -480,13 +518,13 @@ public class cpuSearch extends AppCompatActivity {
                 }
             }
         }
+        filteredData = sorted;
         dialog.setVisibility(View.VISIBLE);
         Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
         animation.setDuration(1000);
         dialog.setAnimation(animation);
         dialog.animate();
     }
-
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;

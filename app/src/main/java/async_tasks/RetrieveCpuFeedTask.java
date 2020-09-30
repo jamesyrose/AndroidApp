@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import pcpp_data.constants.Constants;
 import pcpp_data.queries.CpuSearch;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.queries.SingleCpuQuery;
@@ -59,7 +60,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
     protected ArrayList<CpuSearch> doInBackground(String... strings) {
 
         try {
-            GetSearchLists obj = new GetSearchLists();
+            GetSearchLists obj = new GetSearchLists(context);
             obj.getCPUsearchList();
             ArrayList<CpuSearch> data = obj.getCPUsearchList();
             return data;
@@ -78,8 +79,10 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
         animation.setDuration(1000);
         dialog.setAnimation(animation);
-        for (CpuSearch buff: data){
-            addProduct(buff);
+        int max_initial_load = new Constants().max_initial_load;
+        max_initial_load = (data.size() > max_initial_load) ? max_initial_load: data.size();
+        for (int i=0; i<max_initial_load; i++){
+            addProduct(data.get(i));
         }
         dialog.animate();
         System.out.println("Loading Complete");
