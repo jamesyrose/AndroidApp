@@ -10,230 +10,262 @@
     android:paddingRight="40dp"
     android:orientation="vertical"
     android:background="#66000000">
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primaryBackground"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteX="90dp"
-        tools:layout_editor_absoluteY="25dp">
-        <LinearLayout
-            android:id="@+id/main_vert_layout"
+        android:orientation="vertical">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".1"
+            android:background="#000000"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/close_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitStart"
+                app:srcCompat="@drawable/close_mark" />
+
+            <TextView
+                android:id="@+id/filters_label"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/sort"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".83"
             android:background="@color/primaryBackground"
-            android:gravity="center_horizontal"
             android:orientation="vertical"
             tools:layout_editor_absoluteX="90dp"
             tools:layout_editor_absoluteY="25dp">
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/main_vert_layout"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="#000000"
+                android:layout_height="match_parent"
+                android:background="@color/primaryBackground"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                tools:layout_editor_absoluteX="90dp"
+                tools:layout_editor_absoluteY="25dp">
+
+                <RadioGroup
+                    android:id="@+id/sort_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:padding="6dp">
+
+                    <RadioButton
+                        android:id="@+id/popularity_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Popularity (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/popularity_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Popularity (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+
+                    <RadioButton
+                        android:id="@+id/name_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Name (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/name_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Name (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+
+                    <RadioButton
+                        android:id="@+id/price_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Price (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/price_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Price (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rating_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Rating (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rating_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Rating (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/cores_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Cores (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/cores_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Cores (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/base_clock_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Base Clock (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/base_clock_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Base Clock (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/boost_clock_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Boost Clock (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+
+                    <RadioButton
+                        android:id="@+id/boost_clock_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="Boost Clock (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/tdp_ascending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="TDP (Ascending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/tdp_descending"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#FFFFFF"
+                        android:text="TDP (Descending)"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <RelativeLayout
+            android:id="@+id/footer"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".07"
+            android:background="#6e6e6e">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/close_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_margin="10dp"
-                    android:background="@android:color/transparent"
-                    android:scaleType="fitStart"
-                    app:srcCompat="@drawable/close_mark" />
-
-                <TextView
-                    android:id="@+id/filters_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="@string/sort"
-                    android:textColor="#FFFFFF"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RadioGroup
-                android:id="@+id/sort_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:padding="6dp">
-
-                <RadioButton
-                    android:id="@+id/popularity_ascending"
+                <Button
+                    android:id="@+id/reset_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Popularity (Ascending)" />
+                    android:layout_weight="1"
+                    android:text="@string/reset" />
 
-                <RadioButton
-                    android:id="@+id/popularity_descending"
+                <Button
+                    android:id="@+id/apply_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Popularity (Descending)" />
+                    android:layout_weight="1"
+                    android:text="@string/apply" />
+            </LinearLayout>
+        </RelativeLayout>
 
-
-                <RadioButton
-                    android:id="@+id/name_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Name (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/name_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Name (Descending)" />
-
-
-                <RadioButton
-                    android:id="@+id/price_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Price (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/price_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Price (Descending)" />
-
-                <RadioButton
-                    android:id="@+id/rating_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Rating (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/rating_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Rating (Descending)" />
-
-                <RadioButton
-                    android:id="@+id/cores_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Cores (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/cores_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Cores (Descending)" />
-
-                <RadioButton
-                    android:id="@+id/base_clock_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Base Clock (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/boost_clock_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="Boost Clock (Descending)" />
-
-                <RadioButton
-                    android:id="@+id/tdp_ascending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="TDP (Ascending)" />
-
-                <RadioButton
-                    android:id="@+id/tdp_descending"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:buttonTint="#FFFFFF"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:text="TDP (Descending)" />
-            </RadioGroup>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <RelativeLayout
-        android:id="@+id/footer"
-        android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        android:background="#6e6e6e"
-        android:layout_alignParentBottom="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/reset_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/reset" />
-
-            <Button
-                android:id="@+id/apply_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/apply" />
-        </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>

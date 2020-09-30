@@ -1,5 +1,10 @@
 package pcpp_data.queries;
 
+import android.os.Build;
+import android.view.View;
+
+import androidx.annotation.RequiresApi;
+
 import org.json.simple.JSONObject;
 
 import pcpp_data.constants.Constants;
@@ -9,13 +14,17 @@ public class MainSearch {
     private String displayImg;
     private int productID, ratingCount;
     private double bestPrice, ratingAverage;
+    private int viewID;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public MainSearch(JSONObject row) {
         this.productID = stringToInteger((String) row.get("ProductID"));
         this.productName = (String) row.get("ProductName");
         this.bestPrice = stringToDouble((String) row.get("BestPrice"));
         this.ratingCount = stringToInteger((String) row.get("Count"));
         this.ratingAverage = stringToDouble((String) row.get("Average"));
+        this.viewID = View.generateViewId();
         // Adding the full url to image url
         String buff = (String) row.get("Images");
         if (buff != null) {
@@ -38,6 +47,14 @@ public class MainSearch {
             return -1;
         }
         return Integer.valueOf(x);
+    }
+
+    public void setViewId(int id){
+        this.viewID = id;
+    }
+
+    public int getViewID(){
+        return this.viewID;
     }
 
     public final String getProductName() {

@@ -9,14 +9,30 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import async_tasks.updateSQL;
+import pcpp_data.sqllite.database;
+import preferences.Preferences;
 
 
 public class MainActivity extends AppCompatActivity {
+    database db;
+    Preferences prefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = new Preferences(MainActivity.this);
         setContentView(R.layout.activity_main);
+        db = new database(MainActivity.this);
+
+        if (prefs.dbNeedUpdate()){
+            updateSQL sqlTask = new updateSQL(MainActivity.this);
+            sqlTask.execute();
+        } else{
+            System.out.println("DOEST NEED UPDATE");
+        }
+        db.getData("SELECT * FROM CPU;");
     }
 
     public void setComponentSearch(View view){

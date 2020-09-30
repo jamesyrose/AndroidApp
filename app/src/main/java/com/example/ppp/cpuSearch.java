@@ -29,17 +29,30 @@ import java.util.Collections;
 
 import async_tasks.RetrieveCpuFeedTask;
 import pcpp_data.queries.CpuSearch;
-import pcpp_data.sorters.PopularitySort;
+import pcpp_data.sorters.CpuProductSort;
 import preferences.Preferences;
 
 public class cpuSearch extends AppCompatActivity {
-    RetrieveCpuFeedTask cpuFeed;
+    static RetrieveCpuFeedTask cpuFeed;
     Preferences prefs;
     LinearLayout dialog;
-    ArrayList<CpuSearch> productsDisplayed;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
 
+    // Data filters
+    boolean amdSelected = true;
+    boolean intelSelected = true;
+    int priceMin = 0;
+    int priceMax = 1000000;
+    int coreMin = 0;
+    int coreMax = 64;
+    double baseClockMin = 0.0;
+    double baseClockMax = 10.0;
+    double boostClockMin = 0.0;
+    double boostClockMax = 10.0;
+    int tdpMin = 0;
+    int tdpMax=10000;
+    String sortFilter = "Popularity (Ascending)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +63,6 @@ public class cpuSearch extends AppCompatActivity {
 
         prefs = new Preferences(cpuSearch.this);
         if (cpuFeed == null){
-            System.out.println("#DKJSHKDSJLKFHSDF");
             cpuFeed = new RetrieveCpuFeedTask(cpuSearch.this, dialog, prefs);
         }
         RetrieveCpuData();
@@ -74,6 +86,9 @@ public class cpuSearch extends AppCompatActivity {
                 sortPopup(v);
             }
         });
+
+        //new testJson(cpuSearch.this, "test.json").execute();
+
     }
 
     @Override
@@ -106,25 +121,21 @@ public class cpuSearch extends AppCompatActivity {
 
 
     public void RetrieveCpuData() {
-        LinearLayout dialog   = (LinearLayout)findViewById(R.id.searchID);
-
         if (cpuFeed.getSearchData().isEmpty()){
             cpuFeed.execute();
         }else {
             for (CpuSearch product:  cpuFeed.getSearchData()){
-                cpuFeed.addProduct(product);
-                dialog.setVisibility(LinearLayout.VISIBLE);
-                Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
-                animation.setDuration(1000);
-                dialog.setAnimation(animation);
-                dialog.animate();
+                ArrayList<View> children = cpuFeed.getProductLayoutView();
+                for (View child: children){
+                    dialog.addView(child);
+                }
                 loadingDone();
             }
         }
 
     }
 
-
+    @SuppressLint("ClickableViewAccessibility")
     public void filterPopup(View view){
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
@@ -267,52 +278,26 @@ public class cpuSearch extends AppCompatActivity {
 
         Button filterButton = popupView.findViewById(R.id.apply_button);
         filterButton.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View v) {
+                // setting filters as parameters
+                amdSelected = amd_option.isChecked();
+                intelSelected= intel_option.isChecked();
+                priceMin = priceBar.getSelectedMinValue();
+                priceMax = priceBar.getSelectedMaxValue();
+                coreMin = coresBar.getSelectedMinValue();
+                coreMax = coresBar.getSelectedMaxValue();
+                baseClockMin = baseClockBar.getSelectedMinValue();
+                baseClockMax = baseClockBar.getSelectedMaxValue();
+                boostClockMin = boostClockBar.getSelectedMinValue();
+                boostClockMax = boostClockBar.getSelectedMaxValue();
+                tdpMin = tdpBar.getSelectedMinValue();
+                tdpMax = tdpBar.getSelectedMaxValue();
 
-                ArrayList<String> manufacturers = new ArrayList<>();
-                if (amd_option.isChecked()){
-                    manufacturers.add("AMD");
-                }
-                if (intel_option.isChecked()){
-                    manufacturers.add("Intel");
-                }
-
-                dialog.removeAllViews();
-                for (CpuSearch product: cpuFeed.getSearchData()){
-                    if (manufacturers.contains(product.getManufacturer()) &&
-                            priceBar.getSelectedMinValue() < product.getBestPrice() &&
-                            priceBar.getSelectedMaxValue() > product.getBestPrice()  &&
-                            coresBar.getSelectedMinValue() <= stringToValue(product.getCores()) &&
-                            coresBar.getSelectedMaxValue() >= stringToValue(product.getCores()) &&
-                            baseClockBar.getSelectedMinValue() <= stringToValue(product.getBaseClock()) &&
-                            baseClockBar.getSelectedMaxValue() >= stringToValue(product.getBaseClock()) &&
-                            boostClockBar.getSelectedMinValue() <= stringToValue(product.getBoostClock())  &&
-                            boostClockBar.getSelectedMaxValue() >= stringToValue(product.getBoostClock()) &&
-                            tdpBar.getSelectedMinValue() <= stringToValue(product.getTdp()) &&
-                            tdpBar.getSelectedMaxValue() >= stringToValue(product.getTdp())
-                    ){
-                        cpuFeed.addProduct(product);
-                    }
-                }
+                filterData();
                 filterWindow.dismiss();
             }
         });
-
-        // get starting values to set on popup close (non apply)
-        final boolean amdCheck = amd_option.isChecked();
-        final boolean intelCheck = intel_option.isChecked();
-        final int priceMin = priceBar.getSelectedMinValue();
-        final int priceMax = priceBar.getSelectedMaxValue();
-        final int coresMin = coresBar.getSelectedMinValue();
-        final int coresMax = coresBar.getSelectedMaxValue();
-        final double baseClockMin = baseClockBar.getSelectedMinValue();
-        final double baseClockMax = baseClockBar.getSelectedMaxValue();
-        final double boostClockMin = boostClockBar.getSelectedMinValue();
-        final double boostClockMax = boostClockBar.getSelectedMaxValue();
-        final int tdpMin = tdpBar.getSelectedMinValue();
-        final int tdpMax = tdpBar.getSelectedMaxValue();
 
         // close button
         ImageButton closeBtn = popupView.findViewById(R.id.close_button);
@@ -320,18 +305,18 @@ public class cpuSearch extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // reverting selections
-                amd_option.setChecked(amdCheck);
-                intel_option.setChecked(intelCheck);
-                priceBar.setSelectedMinValue(priceMin);
-                priceBar.setSelectedMaxValue(priceMax);
-                coresBar.setSelectedMinValue(coresMin);
-                coresBar.setSelectedMaxValue(coresMax);
-                baseClockBar.setSelectedMinValue(baseClockMin);
-                baseClockBar.setSelectedMaxValue(baseClockMax);
-                boostClockBar.setSelectedMinValue(boostClockMin);
-                boostClockBar.setSelectedMaxValue(boostClockMax);
-                tdpBar.setSelectedMinValue(tdpMin);
-                tdpBar.setSelectedMaxValue(tdpMax);
+                amd_option.setChecked(amd_option.isChecked());
+                intel_option.setChecked(intel_option.isChecked());
+                priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
+                priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
+                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
+                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
+                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
+                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
+                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
+                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
+                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
+                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -341,18 +326,18 @@ public class cpuSearch extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                amd_option.setChecked(amdCheck);
-                intel_option.setChecked(intelCheck);
-                priceBar.setSelectedMinValue(priceMin);
-                priceBar.setSelectedMaxValue(priceMax);
-                coresBar.setSelectedMinValue(coresMin);
-                coresBar.setSelectedMaxValue(coresMax);
-                baseClockBar.setSelectedMinValue(baseClockMin);
-                baseClockBar.setSelectedMaxValue(baseClockMax);
-                boostClockBar.setSelectedMinValue(boostClockMin);
-                boostClockBar.setSelectedMaxValue(boostClockMax);
-                tdpBar.setSelectedMinValue(tdpMin);
-                tdpBar.setSelectedMaxValue(tdpMax);
+                amd_option.setChecked(amd_option.isChecked());
+                intel_option.setChecked(intel_option.isChecked());
+                priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
+                priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
+                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
+                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
+                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
+                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
+                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
+                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
+                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
+                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -391,22 +376,8 @@ public class cpuSearch extends AppCompatActivity {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
                 RadioButton radioButton = sortOptions.findViewById(selectedId);
                 String selectedText = radioButton.getText().toString();
-                ArrayList<CpuSearch> sorted = cpuFeed.getSearchData();
-                if (selectedText.toLowerCase().contains("popularity")){
-                    sorted = new PopularitySort().sortPopularity(cpuFeed.getSearchData());
-                }
-
-                dialog.removeAllViews();
-                if (selectedText.toLowerCase().contains("descending")){
-                    Collections.reverse(sorted);
-                    for (CpuSearch product: sorted){
-                        cpuFeed.addProduct(product);
-                    }
-                }else {
-                    for (CpuSearch product : sorted) {
-                        cpuFeed.addProduct(product);
-                    }
-                }
+                sortFilter = selectedText;
+                filterData();
                 sortWindow.dismiss();
             }
         });
@@ -431,6 +402,91 @@ public class cpuSearch extends AppCompatActivity {
             }
         });
     }
+
+    public void filterData(){
+        ArrayList<String> manufacturers = new ArrayList<>();
+        ArrayList<CpuSearch> filtered = new ArrayList<>();
+
+        if (amdSelected){
+            manufacturers.add("AMD");
+        }
+        if (intelSelected){
+            manufacturers.add("Intel");
+        }
+
+        dialog.removeAllViews();
+        for (CpuSearch product: cpuFeed.getSearchData()){
+            if (manufacturers.contains(product.getManufacturer()) &&
+                    priceMin < product.getBestPrice() &&
+                    priceMax > product.getBestPrice()  &&
+                    coreMin<= stringToValue(product.getCores()) &&
+                    coreMax >= stringToValue(product.getCores()) &&
+                    baseClockMin <= stringToValue(product.getBaseClock()) &&
+                    baseClockMax >= stringToValue(product.getBaseClock()) &&
+                    boostClockMin <= stringToValue(product.getBoostClock())  &&
+                    boostClockMax >= stringToValue(product.getBoostClock()) &&
+                    tdpMin <= stringToValue(product.getTdp()) &&
+                    tdpMax >= stringToValue(product.getTdp())
+            ){
+                filtered.add(product);
+            }
+        }
+        ArrayList<CpuSearch> sorted = new ArrayList<>();
+        // Sorted
+        CpuProductSort sorter = new CpuProductSort();
+        if (sortFilter.toLowerCase().contains("popularity")) {
+            sorted = sorter.sortPopularity(filtered);
+        }else if (sortFilter.toLowerCase().contains("name")){
+            sorted = sorter.sortName(filtered);
+        }else if (sortFilter.toLowerCase().contains("price")){
+            sorted = sorter.sortPrice(filtered);
+        }else if (sortFilter.toLowerCase().contains("rating")){
+            sorted = sorter.sortRating(filtered);
+        }else if (sortFilter.toLowerCase().contains("cores")){
+            sorted = sorter.sortCores(filtered);
+        }else if (sortFilter.toLowerCase().contains("base")){
+            sorted = sorter.sortBaseClock(filtered);
+        }else if (sortFilter.toLowerCase().contains("boost")){
+            sorted = sorter.sortBoostClock(filtered);
+        }else if (sortFilter.toLowerCase().contains("tdp")){
+            sorted = sorter.sortTDP(filtered);
+        }else {
+            sorted = sorter.sortPopularity(filtered);
+        }
+
+        // get children views
+        ArrayList<View> children = cpuFeed.getProductLayoutView();
+
+
+        dialog.removeAllViews();
+        dialog.setVisibility(View.GONE);
+        if (sortFilter.toLowerCase().contains("descending")){
+            Collections.reverse(sorted);
+            for (CpuSearch product: sorted){
+                int id = product.getViewID();
+                for (View child: children){
+                    if (child.getId() == id){
+                        dialog.addView(child);
+                    }
+                }
+            }
+        }else {
+            for (CpuSearch product: sorted){
+                int id = product.getViewID();
+                for (View child: children){
+                    if (child.getId() == id){
+                        dialog.addView(child);
+                    }
+                }
+            }
+        }
+        dialog.setVisibility(View.VISIBLE);
+        Animation animation   =    AnimationUtils.loadAnimation(cpuSearch.this, R.anim.decompress);
+        animation.setDuration(1000);
+        dialog.setAnimation(animation);
+        dialog.animate();
+    }
+
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;

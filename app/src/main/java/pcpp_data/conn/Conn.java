@@ -12,11 +12,35 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import pcpp_data.queries.jsonFileManager;
+
 public class Conn {
+
+    public String getDataAsString(String webURL) throws IOException, ParseException, JSONException {
+        URL url = new URL(webURL);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.connect();
+        int responsecode = conn.getResponseCode();
+        StringBuilder inline = new StringBuilder();
+        if(responsecode != 200){
+            throw new RuntimeException("HttpResponseCode: " +responsecode);
+        } else{
+            Scanner sc = new Scanner(url.openStream());
+            while(sc.hasNext()){
+                String buff = sc.nextLine();
+                inline.append(buff);
+            }
+            sc.close();
+        }
+        return inline.toString();
+    }
+
     public JSONArray getData(String webURL) throws IOException, ParseException, JSONException {
         URL url = new URL(webURL);
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         conn.setRequestMethod("GET");
+
         conn.connect();
         int responsecode = conn.getResponseCode();
         String inline = "";
@@ -29,6 +53,7 @@ public class Conn {
             }
             sc.close();
         }
+
         JSONParser parse = new JSONParser();
         JSONArray jobj = (JSONArray) parse.parse(inline);
         return jobj;

@@ -5,50 +5,60 @@
     android:layout_height="match_parent"
     android:background="@color/primaryBackground">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
-        <LinearLayout
-            android:id="@+id/searchID"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical">
-
-        </LinearLayout>
+            android:layout_height="0dp"
+            android:layout_weight=".93">
 
 
-    </ScrollView>
-
-    <RelativeLayout
-    android:id="@+id/footer"
-    android:layout_width="fill_parent"
-    android:layout_height="50dp"
-    android:background="#6e6e6e"
-    android:layout_alignParentBottom="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/sort_button"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/searchID"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/sort" />
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/filter_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/filters" />
-        </LinearLayout>
-    </RelativeLayout>
+            </LinearLayout>
+
+
+        </ScrollView>
+
+        <RelativeLayout
+            android:id="@+id/footer"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".07"
+            android:background="#6e6e6e">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/sort_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="@string/sort" />
+
+                <Button
+                    android:id="@+id/filter_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="@string/filters" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/loading_wheel"

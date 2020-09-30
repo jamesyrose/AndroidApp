@@ -18,8 +18,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.ppp.R;
-import com.example.ppp.cpuSearch;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import pcpp_data.queries.CpuSearch;
@@ -33,6 +34,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
     Context context;
     LinearLayout dialog;
     static ArrayList<CpuSearch> searchData;
+    static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
@@ -46,6 +48,9 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         this.dataFetched = false;
         if (this.searchData == null){
             this.searchData = new ArrayList<>();
+        }
+        if (this.productLayoutView == null){
+            this.productLayoutView = new ArrayList<>();
         }
     }
 
@@ -69,7 +74,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
-        dialog.setVisibility(LinearLayout.VISIBLE);
+        dialog.setVisibility(View.VISIBLE);
         Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
         animation.setDuration(1000);
         dialog.setAnimation(animation);
@@ -85,7 +90,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         return dataFetched;
     }
 
-    public void addProduct(final CpuSearch data){
+    public void addProduct(final CpuSearch data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -129,7 +134,15 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
         // Image
         ImageView img = productLayout.findViewById(R.id.product_image);
-        new DownloadImageTask(img).execute(data.getDisplayImg());
+        // checking if url is null, if not, get the image
+        String url = data.getDisplayImg();
+        if (url != null){
+            try {
+                new URL(url); // check the url before opening another thread
+                new DownloadImageTask(img).execute(url);
+            }catch (MalformedURLException e){}
+        }
+
         // Setting the horizontal layout to be clickable to include clickability on both image and text
         productLayout.setClickable(true);
         productLayout.setOnClickListener(new View.OnClickListener(){
@@ -140,6 +153,12 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
             }
         });
 
+        // Set id
+        productLayout.setId(data.getViewID());
+        // adding productLayout to an array
+        productLayoutView.add(productLayout);
+
+        // Add to layout
         parentLayout.addView(productLayout);
 
     }
@@ -234,6 +253,10 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
     public ArrayList<CpuSearch> getSearchData(){
         return searchData;
+    }
+
+    public ArrayList<View> getProductLayoutView(){
+        return productLayoutView;
     }
 
 }
