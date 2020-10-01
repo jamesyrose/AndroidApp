@@ -12,14 +12,14 @@ import com.example.ppp.cpuSearch;
 
 import java.util.ArrayList;
 
-import pcpp_data.queries.SingleCpuQuery;
+import pcpp_data.queries.SingleProductQuery;
 
 public class DownloadImageGallery extends AsyncTask<String, Void, ArrayList<String>> {
-    SingleCpuQuery query;
+    SingleProductQuery query;
     LinearLayout gallery;
     Context context;
 
-    public DownloadImageGallery(Context context, SingleCpuQuery query, LinearLayout gallery){
+    public DownloadImageGallery(Context context, SingleProductQuery query, LinearLayout gallery){
         this.query = query;
         this.gallery = gallery;
         this.context = context;

@@ -1,5 +1,7 @@
 package pcpp_data.queries;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,88 +11,76 @@ import org.json.simple.JSONObject;
 
 import pcpp_data.conn.Conn;
 import pcpp_data.constants.Constants;
+import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.PriceObj;
+import pcpp_data.sqllite.database;
 
-public class SingleCpuQuery {
+public class SingleProductQuery {
     private int productID;
     private String urlBase;
-    private Conn conn;
+    private database db;
 
-    public SingleCpuQuery(int productID){
+    public SingleProductQuery(int productID, Context context){
         this.productID = productID;
-        this.conn = new Conn();
-        this.urlBase = "https://pcpp.verlet.io/singleProductSpec.php?prodType=%s&id=%d";
+        this.db = new database(context);
+        this.urlBase = new SqlConstants().SINGLE_PRODUCT;
     }
 
     public ArrayList<String> getImageGallery() {
         ArrayList<String> images = new ArrayList<>();
         String url = String.format(this.urlBase, "Images", this.productID);
-        try {
-            JSONArray data = conn.getData(url);
-            for (Object buff: data) {
-                JSONObject row = (JSONObject) buff;
-                String image = (String) row.get("Images");
-                if (image!= null) {
-                    for (String key: Constants.IMAGE_BASE_MAP.keySet()) {
-                        image = image.replace(key, Constants.IMAGE_BASE_MAP.get(key));
-                    }
+        JSONArray data = db.getData(url);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            String image = (String) row.get("Images");
+            if (image!= null) {
+                for (String key: Constants.IMAGE_BASE_MAP.keySet()) {
+                    image = image.replace(key, Constants.IMAGE_BASE_MAP.get(key));
                 }
-                images.add(image);
             }
-        }catch (Exception e) {
-            e.printStackTrace();
+            images.add(image);
         }
         return images;
     }
 
-    public HashMap<String, String> getSpecs(){
+    public HashMap<String, String> getSpecs(String table){
         HashMap <String, String> specs = new HashMap<>();
-        String url = String.format(this.urlBase, "CPU", this.productID);
-        try {
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4");
-            System.out.println(url);
-            JSONArray data = conn.getData(url);
-            for (Object buff: data) {
-                JSONObject row = (JSONObject) buff;
-                for(Iterator iterator = row.keySet().iterator(); iterator.hasNext();) {
-                    String key = (String) iterator.next();
-                    if (!key.equals("id") && !key.equals("ProductID")) {
-                        specs.put(key,  (String) row.get(key));
-                        System.out.println(key+ "  " + (String) row.get(key));
-                    }
+        String url = String.format(this.urlBase, table, this.productID);
+        JSONArray data = db.getData(url);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            for(Iterator iterator = row.keySet().iterator(); iterator.hasNext();) {
+                String key = (String) iterator.next();
+                if (!key.equals("id") && !key.equals("ProductID")) {
+                    specs.put(key,  (String) row.get(key));
+                    System.out.println(key+ "  " + (String) row.get(key));
                 }
             }
-            return specs;
-        }catch (Exception e) {
-
         }
-        return null;
+        return specs;
+
     }
 
-    public ArrayList<String> getSpecOrder() {
-        String url = "https://pcpp.verlet.io/describeTable.php?prodType=CPU";
+    public ArrayList<String> getSpecOrder(String table) {
+        String url = "PRAGMA table_info([%s]);";
+        url = String.format(url, table);
         ArrayList<String> fields = new ArrayList<>();
-        try {
-            JSONArray data = conn.getData(url);
-            for (Object buff: data) {
-                JSONObject row = (JSONObject) buff;
-                String field = (String) row.get("Field");
-                if (!field.equals("id") && !field.equals("ProductID")) {
-                    fields.add(field);
-                }
+        JSONArray data = db.getData(url);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            String field = (String) row.get("name");
+            if (!field.equals("id") && !field.equals("ProductID")) {
+                fields.add(field);
             }
-        }catch (Exception e) {
-            e.getStackTrace();
         }
         return fields;
-
     }
 
     public ArrayList<PriceObj> getPrice(){
         ArrayList<PriceObj> priceData = new ArrayList<>();
         String url = String.format(this.urlBase, "Price", this.productID);
         try {
-            JSONArray data = conn.getData(url);
+            JSONArray data = db.getData(url);
             for (Object buff: data) {
                 JSONObject row = (JSONObject) buff;
                 String image = (String) row.get("Images");

@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".15"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:text="name"
         android:textColor="#FFFFFF"
@@ -32,8 +33,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
-            android:layout_weight=".3"
             android:layout_marginLeft="5dp"
+            android:layout_weight=".3"
             android:background="@android:color/transparent"
             android:gravity="center_vertical|center_horizontal"
             android:scaleType="fitCenter"
@@ -143,11 +144,11 @@
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/tdp_label"
+                                android:id="@+id/form_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/tdp_label"
+                                android:text="@string/form_factor"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
@@ -169,11 +170,11 @@
                                 android:textSize="14sp" />
 
                             <TextView
-                                android:id="@+id/tdp_value"
+                                android:id="@+id/form_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="tdp"
+                                android:text="form factor"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -185,21 +186,21 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/cores_label"
+                                android:id="@+id/memory_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/core_label"
+                                android:text="@string/max_memory_label"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/clock_label"
+                                android:id="@+id/chipset_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/clock_label"
+                                android:text="@string/chipset_label"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
@@ -212,20 +213,20 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/core_value"
+                                android:id="@+id/memory_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="cores"
+                                android:text="memory"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 
                             <TextView
-                                android:id="@+id/clock_value"
+                                android:id="@+id/chipset_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="clock"
+                                android:text="chipset"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 

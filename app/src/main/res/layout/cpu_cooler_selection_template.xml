@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight=".15"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
         android:text="name"
         android:textColor="#FFFFFF"
@@ -32,8 +33,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
-            android:layout_weight=".3"
             android:layout_marginLeft="5dp"
+            android:layout_weight=".3"
             android:background="@android:color/transparent"
             android:gravity="center_vertical|center_horizontal"
             android:scaleType="fitCenter"
@@ -133,73 +134,19 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/socket_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/socket_label"
+                                android:text="@string/fan_speed_label"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/tdp_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/tdp_label"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/socket_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="socket"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/tdp_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="tdp"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/cores_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/core_label"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/clock_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/clock_label"
+                                android:text="@string/noise_label"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
@@ -212,20 +159,70 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/core_value"
+                                android:id="@+id/rpm_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="cores"
+                                android:text="rpm "
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 
                             <TextView
-                                android:id="@+id/clock_value"
+                                android:id="@+id/noise_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="clock"
+                                android:text="form factor"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/water_cooled_label"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/height_label"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/water_cooled_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="memory"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/height_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="chipset"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 

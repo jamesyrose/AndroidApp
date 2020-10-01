@@ -17,16 +17,16 @@ import com.example.ppp.cpuSearch;
 import java.util.ArrayList;
 
 import pcpp_data.products.PriceObj;
-import pcpp_data.queries.SingleCpuQuery;
+import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>> {
-    SingleCpuQuery query;
+    SingleProductQuery query;
     LinearLayout gallery;
     Preferences prefs;
     Context context;
 
-    public DownloadSellers(Context context, SingleCpuQuery query, LinearLayout gallery, Preferences prefs){
+    public DownloadSellers(Context context, SingleProductQuery query, LinearLayout gallery, Preferences prefs){
         this.context = context;
         this.query = query;
         this.gallery = gallery;
@@ -87,7 +87,7 @@ public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>
                     }
                 });
                 ImageButton btn =  layout.findViewById(R.id.realbutton);
-                String merch = merchant.toLowerCase().replace(" ", "") + "_logo";
+                String merch = merchant.toLowerCase().replace(" ", "").replace("&", "and") + "_logo";
                 int resource = getDrawableIdentifier(context, merch);
                 btn.setImageResource(resource);
                 btn.setOnClickListener(new View.OnClickListener(){

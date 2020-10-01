@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
         db = new database(MainActivity.this);
 
         if (prefs.dbNeedUpdate()){
+            System.out.println("# UPDATING DATA");
             updateSQL sqlTask = new updateSQL(MainActivity.this);
             sqlTask.execute();
         } else{
             System.out.println("DOEST NEED UPDATE");
         }
-        db.getData("SELECT * FROM CPU;");
     }
 
     public void setComponentSearch(View view){

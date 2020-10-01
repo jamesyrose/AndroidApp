@@ -32,50 +32,46 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import async_tasks.RetrieveCpuFeedTask;
-import pcpp_data.queries.CpuSearch;
-import pcpp_data.sorters.CpuProductSort;
+import async_tasks.RetrieveCpuCoolerFeedTask;
+import pcpp_data.queries.CpuCoolerSearch;
+import pcpp_data.queries.MotherboardSearch;
+import pcpp_data.sorters.CpuCoolerProductSort;
 import preferences.Preferences;
 
-public class cpuSearch extends AppCompatActivity {
-    static RetrieveCpuFeedTask cpuFeed;
+public class cpuCoolerSearch extends AppCompatActivity {
+    static RetrieveCpuCoolerFeedTask cpuCoolerFeed;
     Preferences prefs;
     LinearLayout dialog;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
-    Context context; 
+    Context context;
 
     // Data filters
-    boolean amdSelected = true;
-    boolean intelSelected = true;
     int priceMin = 0;
     int priceMax = 1000000;
-    int coreMin = 0;
-    int coreMax = 64;
-    double baseClockMin = 0.0;
-    double baseClockMax = 10.0;
-    double boostClockMin = 0.0;
-    double boostClockMax = 10.0;
-    int tdpMin = 0;
-    int tdpMax=10000;
+
     String sortFilter = "Popularity (Ascending)";
+    boolean waterCooled = true;
+    boolean airCooled = true;
+    ArrayList<CheckBox> brandList = new ArrayList<>();
+    ArrayList<String> brandSelected = new ArrayList<String>();
 
     // data
-    ArrayList<CpuSearch> filteredData;
+    ArrayList<CpuCoolerSearch> filteredData;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
-        context = cpuSearch.this;
+        context = cpuCoolerSearch.this;
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
 
         prefs = new Preferences(context);
 
-        cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
-        cpuFeed.execute();
+        cpuCoolerFeed = new RetrieveCpuCoolerFeedTask(context, dialog, prefs);
+        cpuCoolerFeed.execute();
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -146,14 +142,14 @@ public class cpuSearch extends AppCompatActivity {
 
     public void onLoadMore(){
         int currentChildCount = dialog.getChildCount();
-        ArrayList<CpuSearch> data = cpuFeed.getSearchData();
+        ArrayList<CpuCoolerSearch> data = cpuCoolerFeed.getSearchData();
         if (filteredData != null) {
             data = filteredData;
         }
         int end = currentChildCount + 30;
         end = (data.size() > end) ? end : data.size();
         for (int i=currentChildCount; i<end; i++){
-            cpuFeed.addProduct(data.get(i));
+            cpuCoolerFeed.addProduct(data.get(i));
         }
 
     }
@@ -164,7 +160,7 @@ public class cpuSearch extends AppCompatActivity {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.cpu_filter_window, null);
+        View popupView = inflater.inflate(R.layout.cpu_cooler_filter_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -181,23 +177,56 @@ public class cpuSearch extends AppCompatActivity {
 
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
         // Set the Branch Choices
-        final RelativeLayout brandChoice = mainLayout.findViewById(R.id.brand_selection);
-        final LinearLayout brandOptions = mainLayout.findViewById(R.id.brand_options);
-        final CheckBox amd_option =  popupView.findViewById(R.id.amd_option);
-        final CheckBox intel_option =  popupView.findViewById(R.id.intel_option);
-        amd_option.setChecked(true);
-        intel_option.setChecked(true);
-        brandOptions.setVisibility(View.GONE);
-        brandChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (brandOptions.isShown()){
-                    brandOptions.setVisibility(View.GONE);
-                }else{
-                    brandOptions.setVisibility(View.VISIBLE);
+// Set the Branch Choices
+        if (brandList.isEmpty()){
+            RelativeLayout brand_selection = popupView.findViewById(R.id.brand_selection);
+            final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
+            final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
+            final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
+            brandOptions.setVisibility(View.GONE);
+            ArrayList<String> brands = new ArrayList<>();
+            for (CpuCoolerSearch prod: cpuCoolerFeed.getSearchData()){
+                String brand = prod.getManufacturer();
+                if (!brands.contains(brand) && brand != null){
+                    brands.add(brand);
+                    brandSelected.add(brand); // initialize as true
                 }
             }
-        });
+            int brandCount = brands.size();
+            int midPoint = Math.floorDiv(brandCount, 2);
+            for (int i=0; i<midPoint; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        brand_choice1,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(brands.get(i));
+                brand_choice1.addView(checkBoxLayout);
+                brandList.add(box);
+            }
+            for (int i=midPoint; i<brandCount; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        brand_choice2,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(brands.get(i));
+                brand_choice2.addView(checkBoxLayout);
+                brandList.add(box);
+            }
+            brand_selection.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    if (brandOptions.isShown()){
+                        brandOptions.setVisibility(View.GONE);
+                    }else{
+                        brandOptions.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+
 
         // Set price choices
         final RangeSeekBar<Integer> priceBar = popupView.findViewById(R.id.price_seek_bar);
@@ -216,54 +245,22 @@ public class cpuSearch extends AppCompatActivity {
             }
         });
 
-        // Set Core Choices
-        final RangeSeekBar<Integer> coresBar = popupView.findViewById(R.id.cores_seek_bar);
-        coresBar.setRangeValues(0, 64);
-        RelativeLayout coresChoice = popupView.findViewById(R.id.cores_selection);
-        coresBar.setVisibility(View.GONE);
-        coresChoice.setOnClickListener(new View.OnClickListener() {
+        // Cooling type
+        RelativeLayout typeSelection = popupView.findViewById(R.id.type_selection);
+        LinearLayout typeOptions = popupView.findViewById(R.id.type_options);
+        CheckBox air = popupView.findViewById(R.id.air_option);
+        CheckBox water = popupView.findViewById(R.id.water_option);
+        air.setChecked(true);
+        water.setChecked(true);
+        typeOptions.setVisibility(View.GONE);
+
+        typeSelection.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                if (coresBar.isShown()){
-                    coresBar.setVisibility(View.GONE);
+                if (typeOptions.isShown()){
+                    typeOptions.setVisibility(View.GONE);
                 }else{
-                    coresBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        // Set Clock Speed Choice
-        final RelativeLayout clockChoice = popupView.findViewById(R.id.clock_selection);
-        final LinearLayout clockOptionSection= popupView.findViewById(R.id.clock_option_section);
-        final RangeSeekBar<Double> baseClockBar = popupView.findViewById(R.id.base_clock_seek_bar);
-        final RangeSeekBar<Double> boostClockBar = popupView.findViewById(R.id.boost_clock_seek_bar);
-        baseClockBar.setRangeValues(0.0, 6.0);
-        boostClockBar.setRangeValues(0.0, 6.0);
-        clockOptionSection.setVisibility(View.GONE);
-        clockChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (clockOptionSection.isShown()){
-                    clockOptionSection.setVisibility(View.GONE);
-                }else{
-                    clockOptionSection.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        // Set tdp Choices
-        final RangeSeekBar<Integer> tdpBar = popupView.findViewById(R.id.tdp_seek_bar);
-        tdpBar.setRangeValues(0, 500);
-        LinearLayout tdpChoice = popupView.findViewById(R.id.tdp_selection);
-        tdpBar.setVisibility(View.GONE);
-        tdpChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tdpBar.isShown()){
-                    tdpBar.setVisibility(View.GONE);
-                }else{
-                    tdpBar.setVisibility(View.VISIBLE);
+                    typeOptions.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -272,30 +269,24 @@ public class cpuSearch extends AppCompatActivity {
         Button resetButton = popupView.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(new View.OnClickListener(){
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
-               // Set both brands selected
-                amd_option.setChecked(true);
-                intel_option.setChecked(true);
                 // price options
                 priceBar.setSelectedMinValue(0);
                 priceBar.setSelectedMaxValue(maxPrice);
-                // Cores
-                coresBar.setSelectedMinValue(0);
-                coresBar.setSelectedMaxValue(64);
-                // Clock speeds
-                baseClockBar.setSelectedMinValue(0.0);
-                baseClockBar.setSelectedMaxValue(6.0);
-                boostClockBar.setSelectedMinValue(0.0);
-                boostClockBar.setSelectedMaxValue(6.0);
-                // tdp
-                tdpBar.setSelectedMinValue(0);
-                tdpBar.setSelectedMaxValue(500);
+                brandSelected.clear();
+                brandList.stream().forEach(ch -> ch.setChecked(true));
+                brandList.stream().forEach(ch -> brandSelected.add((String) ch.getText()));
+                air.setChecked(true);
+                water.setChecked(true);
+                airCooled = true;
+                waterCooled = true;
 
-                filteredData = cpuFeed.getSearchData();
+                filteredData = cpuCoolerFeed.getSearchData();
                 dialog.removeAllViews();
                 for (int i=0; i<30; i++){
-                    cpuFeed.addProduct(filteredData.get(i));
+                    cpuCoolerFeed.addProduct(filteredData.get(i));
                 }
                 filterWindow.dismiss();
             }
@@ -303,21 +294,21 @@ public class cpuSearch extends AppCompatActivity {
 
         Button filterButton = popupView.findViewById(R.id.apply_button);
         filterButton.setOnClickListener(new View.OnClickListener(){
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 // setting filters as parameters
-                amdSelected = amd_option.isChecked();
-                intelSelected= intel_option.isChecked();
                 priceMin = priceBar.getSelectedMinValue();
                 priceMax = priceBar.getSelectedMaxValue();
-                coreMin = coresBar.getSelectedMinValue();
-                coreMax = coresBar.getSelectedMaxValue();
-                baseClockMin = baseClockBar.getSelectedMinValue();
-                baseClockMax = baseClockBar.getSelectedMaxValue();
-                boostClockMin = boostClockBar.getSelectedMinValue();
-                boostClockMax = boostClockBar.getSelectedMaxValue();
-                tdpMin = tdpBar.getSelectedMinValue();
-                tdpMax = tdpBar.getSelectedMaxValue();
+                brandSelected.clear();
+                brandList.stream().forEach(cb -> {
+                    if (cb.isChecked()){
+                        System.out.println(cb.getText());
+                        brandSelected.add((String) cb.getText());
+                    };
+                });
+                waterCooled = water.isChecked();
+                airCooled = air.isChecked();
 
                 filterData();
                 filterWindow.dismiss();
@@ -330,18 +321,9 @@ public class cpuSearch extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // reverting selections
-                amd_option.setChecked(amd_option.isChecked());
-                intel_option.setChecked(intel_option.isChecked());
+
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
-                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
-                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
-                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
-                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
-                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
-                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
-                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -351,18 +333,8 @@ public class cpuSearch extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                amd_option.setChecked(amd_option.isChecked());
-                intel_option.setChecked(intel_option.isChecked());
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
-                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
-                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
-                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
-                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
-                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
-                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
-                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -374,7 +346,7 @@ public class cpuSearch extends AppCompatActivity {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.cpu_sort_window, null);
+        View popupView = inflater.inflate(R.layout.cpu_cooler_sort_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -394,17 +366,14 @@ public class cpuSearch extends AppCompatActivity {
 
         //Reset button
         Button resetButton = popupView.findViewById(R.id.reset_button);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortFilter = "Popularity (Descending)";
-                filteredData = cpuFeed.getSearchData();
-                dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    cpuFeed.addProduct(filteredData.get(i));
-                }
-                sortWindow.dismiss();
+        resetButton.setOnClickListener(v -> {
+            sortFilter = "Popularity (Descending)";
+            filteredData = cpuCoolerFeed.getSearchData();
+            dialog.removeAllViews();
+            for (int i=0; i<30; i++){
+                cpuCoolerFeed.addProduct(filteredData.get(i));
             }
+            sortWindow.dismiss();
         });
 
         // Apply Button
@@ -444,36 +413,29 @@ public class cpuSearch extends AppCompatActivity {
     }
 
     public void filterData(){
-        ArrayList<String> manufacturers = new ArrayList<>();
-        ArrayList<CpuSearch> filtered = new ArrayList<>();
-
-        if (amdSelected){
-            manufacturers.add("AMD");
-        }
-        if (intelSelected){
-            manufacturers.add("Intel");
-        }
+        ArrayList<CpuCoolerSearch> filtered = new ArrayList<>();
 
         dialog.removeAllViews();
-        for (CpuSearch product: cpuFeed.getSearchData()){
-            if (manufacturers.contains(product.getManufacturer()) &&
+        for (CpuCoolerSearch product: cpuCoolerFeed.getSearchData()){
+            if (brandSelected.contains(product.getManufacturer()) &&
                     priceMin < product.getBestPrice() &&
-                    priceMax > product.getBestPrice()  &&
-                    coreMin<= stringToValue(product.getCores()) &&
-                    coreMax >= stringToValue(product.getCores()) &&
-                    baseClockMin <= stringToValue(product.getBaseClock()) &&
-                    baseClockMax >= stringToValue(product.getBaseClock()) &&
-                    boostClockMin <= stringToValue(product.getBoostClock())  &&
-                    boostClockMax >= stringToValue(product.getBoostClock()) &&
-                    tdpMin <= stringToValue(product.getTdp()) &&
-                    tdpMax >= stringToValue(product.getTdp())
+                    priceMax > product.getBestPrice()
             ){
-                filtered.add(product);
+                if (waterCooled){
+                    if (product.getWaterCooled().contains("Yes")){
+                        filtered.add(product);
+                    }
+                }
+                if (airCooled) {
+                    if (product.getWaterCooled().contains("No")){
+                        filtered.add(product);
+                    }
+                }
             }
         }
-        ArrayList<CpuSearch> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
         // Sorted
-        CpuProductSort sorter = new CpuProductSort();
+        CpuCoolerProductSort sorter = new CpuCoolerProductSort();
         if (sortFilter.toLowerCase().contains("popularity")) {
             sorted = sorter.sortPopularity(filtered);
         }else if (sortFilter.toLowerCase().contains("name")){
@@ -482,27 +444,19 @@ public class cpuSearch extends AppCompatActivity {
             sorted = sorter.sortPrice(filtered);
         }else if (sortFilter.toLowerCase().contains("rating")){
             sorted = sorter.sortRating(filtered);
-        }else if (sortFilter.toLowerCase().contains("cores")){
-            sorted = sorter.sortCores(filtered);
-        }else if (sortFilter.toLowerCase().contains("base")){
-            sorted = sorter.sortBaseClock(filtered);
-        }else if (sortFilter.toLowerCase().contains("boost")){
-            sorted = sorter.sortBoostClock(filtered);
-        }else if (sortFilter.toLowerCase().contains("tdp")){
-            sorted = sorter.sortTDP(filtered);
         }else {
             sorted = sorter.sortPopularity(filtered);
         }
 
         // get children views
-        ArrayList<View> children = cpuFeed.getProductLayoutView();
+        ArrayList<View> children = cpuCoolerFeed.getProductLayoutView();
 
 
         dialog.removeAllViews();
         dialog.setVisibility(View.GONE);
         if (sortFilter.toLowerCase().contains("descending")){
             Collections.reverse(sorted);
-            for (CpuSearch product: sorted){
+            for (CpuCoolerSearch product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -511,7 +465,7 @@ public class cpuSearch extends AppCompatActivity {
                 }
             }
         }else {
-            for (CpuSearch product: sorted){
+            for (CpuCoolerSearch product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -530,7 +484,7 @@ public class cpuSearch extends AppCompatActivity {
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;
-        for (CpuSearch prod: cpuFeed.getSearchData()){
+        for (CpuCoolerSearch prod: cpuCoolerFeed.getSearchData()){
             double bestPrice = prod.getBestPrice();
             if (bestPrice > maxPrice)
                 maxPrice = bestPrice;

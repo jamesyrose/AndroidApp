@@ -63,4 +63,17 @@ public class searchComponents extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
+
+    public void goToCpuCoolerSearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.cpuCoolerSearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+
+    public void goToMotherboardSearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.motherboardSearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 }

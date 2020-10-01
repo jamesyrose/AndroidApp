@@ -15,7 +15,7 @@ public class CpuProductSort {
             CpuSearch mostPopular = orig.get(0);
             for (CpuSearch product: orig){
                 int nextItemPop = product.getRatingCount();
-                if (nextItemPop > popularity){
+                if (nextItemPop < popularity){
                     popularity = nextItemPop;
                     mostPopular = product;
                 }

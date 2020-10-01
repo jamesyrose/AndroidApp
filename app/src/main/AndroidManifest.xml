@@ -22,7 +22,7 @@
         </activity>
         <activity
             android:name=".searchComponents"
-            android:label="PPP" >
+            android:label="Components" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.searchComponents" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -41,6 +41,23 @@
             android:label="Search CPU" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.cpuSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".cpuCoolerSearch"
+            android:label="Search CPU Cooler" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.cpuCoolerSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".motherboardSearch"
+            android:label="Search Motherboards" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.motherboardSearch" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

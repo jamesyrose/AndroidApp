@@ -24,24 +24,24 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import pcpp_data.constants.Constants;
-import pcpp_data.queries.CpuSearch;
 import pcpp_data.queries.GetSearchLists;
+import pcpp_data.queries.MotherboardSearch;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSearch>> {
+public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<MotherboardSearch>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<CpuSearch> searchData;
+    static ArrayList<MotherboardSearch> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
 
 
-    public RetrieveCpuFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public RetrieveMemoryFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -57,12 +57,12 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
 
     @Override
-    protected ArrayList<CpuSearch> doInBackground(String... strings) {
+    protected ArrayList<MemorySearch> doInBackground(String... strings) {
 
         try {
             GetSearchLists obj = new GetSearchLists(context);
-            obj.getCPUsearchList();
-            ArrayList<CpuSearch> data = obj.getCPUsearchList();
+            obj.getMotherboardSearchList();
+            ArrayList<MotherboardSearch> data = obj.getMotherboardSearchList();
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -71,7 +71,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
     }
 
     @Override
-    protected void onPostExecute(ArrayList<CpuSearch> data){
+    protected void onPostExecute(ArrayList<MotherboardSearch> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -93,7 +93,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         return dataFetched;
     }
 
-    public void addProduct(final CpuSearch data) {
+    public void addProduct(final MotherboardSearch data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -101,7 +101,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         LinearLayout parentLayout = dialog;
 
         // Inflator
-        View productLayout = LayoutInflater.from(context).inflate(R.layout.cpu_selection_template,
+        View productLayout = LayoutInflater.from(context).inflate(R.layout.motherboard_selection_template,
                 parentLayout,
                 false);
 
@@ -126,13 +126,12 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
         TextView socket = productLayout.findViewById(R.id.socket_value);
         socket.setText(data.getSocketType()); // Keep only the first part
-        TextView tdp = productLayout.findViewById(R.id.tdp_value);
-        tdp.setText(data.getTdp());
-        TextView cores = productLayout.findViewById(R.id.core_value);
-        cores.setText(data.getCores());
-        TextView clock = productLayout.findViewById(R.id.clock_value);
-        clock.setText(data.getBaseClock().replace(" GHz", "")
-                + "/" + data.getBoostClock());
+        TextView tdp = productLayout.findViewById(R.id.form_value);
+        tdp.setText(data.getFormFactor());
+        TextView cores = productLayout.findViewById(R.id.memory_value);
+        cores.setText(data.getMaxMemory());
+        TextView clock = productLayout.findViewById(R.id.chipset_value);
+        clock.setText(data.getChipSet());
 
 
         // Image
@@ -185,7 +184,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("CPU");
+        new DownloadSpecs(context, query, specGallery).execute("Motherboard");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {
@@ -254,7 +253,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<CpuSearch> getSearchData(){
+    public ArrayList<MotherboardSearch> getSearchData(){
         return searchData;
     }
 

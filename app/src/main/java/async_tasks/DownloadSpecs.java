@@ -9,30 +9,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.ppp.R;
-import com.example.ppp.cpuSearch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import pcpp_data.queries.SingleCpuQuery;
+import pcpp_data.queries.SingleProductQuery;
 
 
-public class DownloadCpuSpecs extends AsyncTask<String, Void, HashMap<String, String>> {
-    SingleCpuQuery query;
+public class DownloadSpecs extends AsyncTask<String, Void, HashMap<String, String>> {
+    SingleProductQuery query;
     LinearLayout gallery;
     ArrayList<String> order;
     Context context;
 
-    public DownloadCpuSpecs(Context context, SingleCpuQuery query, LinearLayout gallery){
+    public DownloadSpecs(Context context, SingleProductQuery query, LinearLayout gallery){
         this.query = query;
         this.gallery = gallery;
         this.context = context;
+
     }
 
     @Override
-    protected HashMap<String, String> doInBackground(String... strings) {
-        HashMap<String, String> specs = query.getSpecs();
-        ArrayList<String> order = query.getSpecOrder();
+    protected HashMap<String, String> doInBackground(String...strings) {
+        String table = strings[0];
+        HashMap<String, String> specs = query.getSpecs(table);
+        ArrayList<String> order = query.getSpecOrder(table);
         this.order = order;
         return specs;
     }

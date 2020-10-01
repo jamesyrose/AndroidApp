@@ -56,6 +56,21 @@
     <string name="seller"><u>Seller</u></string>
     <string name="available"><u>Available</u></string>
     <string name="shipping"><u>Shipping</u></string>
+    <string name="form_factor"><u>Form Factor</u></string>
+    <string name="max_memory_label"><u>Max Memory</u></string>
+    <string name="chipset_label"><u>Chipset</u></string>
+    <string name="memory_label">Memory</string>
+    <string name="socket_selection_label">Socket</string>
+    <string name="memory_slot_label">Memory Slots</string>
+    <string name="memory_speed_label">Memory Speed</string>
+    <string name="form_factor_label">Form Factor</string>
+    <string name="fan_speed_label"><u>Fan RPM</u></string>
+    <string name="noise_label"><u>Noise Level</u></string>
+    <string name="height_label"><u>Height</u></string>
+    <string name="water_cooled_label"><u>Water Cooled</u></string>
+    <string name="cooling_type_label">Cooling Type</string>
+    <string name="water_cooled">Water</string>
+    <string name="air">Air</string>
 
 
 </resources>
