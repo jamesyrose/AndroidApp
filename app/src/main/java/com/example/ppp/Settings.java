@@ -94,8 +94,6 @@ public class Settings extends AppCompatActivity {
 
         pref.updateCurrency(String.valueOf(selectedRadioButton.getText()));
         pref.updateTaxRate(String.valueOf(taxPercentage));
-
-
         returnPage();
 
     }

@@ -9,6 +9,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:screenOrientation="portrait"
         android:theme="@style/AppTheme">
 
         <activity
@@ -67,6 +68,15 @@
             android:label="Search Memory" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.memorySearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".storageSearchActivity"
+            android:label="Search Storage" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.storageSearch" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

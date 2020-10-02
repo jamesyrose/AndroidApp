@@ -29,6 +29,7 @@ public class Conn {
             }
             sc.close();
         }
+        conn.disconnect();
         return inline.toString();
     }
 
@@ -49,7 +50,7 @@ public class Conn {
             }
             sc.close();
         }
-
+        conn.disconnect();
         JSONParser parse = new JSONParser();
         JSONArray jobj = (JSONArray) parse.parse(inline);
         return jobj;

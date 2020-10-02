@@ -13,6 +13,7 @@ import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.products.CpuSearchProduct;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.products.MotherboardProduct;
+import pcpp_data.products.StorageProduct;
 import pcpp_data.sqllite.database;
 
 public class GetSearchLists{
@@ -60,8 +61,19 @@ public class GetSearchLists{
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
             JSONObject row = (JSONObject) buff;
-            MemoryProduct cpuRow = new MemoryProduct(row);
-            searchOptions.add(cpuRow);
+            MemoryProduct memoryRow = new MemoryProduct(row);
+            searchOptions.add(memoryRow);
+        }
+        return searchOptions;
+    }
+
+    public ArrayList<StorageProduct> getStorageSearchList(String sql) {
+        ArrayList<StorageProduct> searchOptions = new ArrayList<>();
+        JSONArray data = new database(context).getData(sql);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            StorageProduct storageRow = new StorageProduct(row);
+            searchOptions.add(storageRow);
         }
         return searchOptions;
     }

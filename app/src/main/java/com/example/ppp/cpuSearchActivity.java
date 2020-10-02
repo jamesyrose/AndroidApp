@@ -3,6 +3,7 @@ package com.example.ppp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -43,6 +44,7 @@ public class cpuSearchActivity extends AppCompatActivity {
     PopupWindow sortWindow;
     Context context;
     View loadingWheel;
+    boolean hasBeenPaused = false;
 
     // Data filters
     boolean amdSelected = true;
@@ -65,20 +67,26 @@ public class cpuSearchActivity extends AppCompatActivity {
     // Constants
     SqlConstants sqlConst = new SqlConstants();
 
+    Bundle savedInstanceState;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
         setContentView(R.layout.scroll_search);
         context = cpuSearchActivity.this;
         dialog = (LinearLayout) findViewById(R.id.searchID);
         loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
 
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
         loadingNotDone();
         cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
-        cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
+        cpuFeed.execute( sqlConst.CPU_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -100,18 +108,18 @@ public class cpuSearchActivity extends AppCompatActivity {
             }
         });
 
-//        // Set Scroll listener
+        // Set Scroll listener
         dialogScroll = findViewById(R.id.scroll_window);
         dialogScroll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
-                View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                if (lastView != null){
+                View lastView = dialog.getChildAt(dialog.getChildCount() - 1);
+                if (lastView != null) {
                     float lastViewY = lastView.getY();
                     System.out.println(dialog.getChildCount());
-                    if (scrollY > lastViewY){
+                    if (scrollY > lastViewY) {
                         loadingNotDone();
                         onLoadMore();
                         loadingDone();
@@ -148,7 +156,6 @@ public class cpuSearchActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     public void onLoadMore(){
         int currentChildCount = dialog.getChildCount();

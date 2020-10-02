@@ -132,5 +132,35 @@ public class SqlConstants {
             "AND (Memory.`ECC / Registered` LIKE '%s' OR Memory.`ECC / Registered` LIKE '%s') \n" +
             "ORDER BY %s ;\n";
 
+    public final String STORAGE_SEARCH_LIST = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "Storage.Manufacturer, Storage.Capacity, Storage.`Form Factor`, Storage.Type, Storage.NVME\n" +
+            "FROM ProductMain \n" +
+            "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Storage on Storage.ProductID=ProductMain.ProductID \n" +
+            "WHERE  ProductMain.ProductType = 'Storage';";
+
+    public final String STORAGE_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "Storage.Manufacturer, Storage.Capacity, Storage.`Form Factor`, Storage.Type, Storage.NVME\n" +
+            "FROM ProductMain \n" +
+            "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Storage on Storage.ProductID=ProductMain.ProductID \n" +
+            "WHERE  ProductMain.ProductType = 'Storage'\n" +
+            "AND Storage.Manufacturer IN (%s)\n" +
+            "AND Storage.`Form Factor` IN (%s)\n" +
+            "AND Storage.Type IN (%s)\n" +
+            "AND Storage.NVME = '%s'\n" +
+            "AND ProductMain.BestPrice > %d\n" +
+            "AND ProductMain.BestPrice < %d\n" +
+            "AND CAST(Storage.Capacity AS INT) > %d\n" +
+            "AND CAST(Storage.Capacity AS INT) < %d\n" +
+            "ORDER BY %s";
+
+
     public final String SINGLE_PRODUCT  = "SELECT * FROM %s WHERE ProductID = %d";
 }

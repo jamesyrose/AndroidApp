@@ -189,7 +189,8 @@
                 android:background="#B340445c"
                 android:orientation="vertical"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:clickable="true"
+                android:onClick="goToStorageSearch">
 
                 <ImageView
                     android:id="@+id/choosePartStorage"
@@ -225,7 +226,8 @@
                 android:background="#B340445c"
                 android:orientation="vertical"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:clickable="true"
+                android:onClick="goToGpuSearch">
 
                 <ImageView
                     android:id="@+id/choosePartGPU"
@@ -267,7 +269,8 @@
                 android:background="#B340445c"
                 android:orientation="vertical"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:clickable="true"
+                android:onClick="goToPsuSearch">
 
                 <ImageView
                     android:id="@+id/choosePartPSU"
@@ -303,7 +306,8 @@
                 android:background="#B340445c"
                 android:orientation="vertical"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:clickable="true">
+                android:clickable="true"
+                android:onClick="goToCaseSearch">
 
                 <ImageView
                     android:id="@+id/choosePartCase"

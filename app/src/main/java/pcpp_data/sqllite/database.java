@@ -14,54 +14,54 @@ import preferences.Preferences;
 public class database extends SQLiteOpenHelper {
     public Preferences prefs;
     public static final String DB_NAME = "test.db";
-    public static final String TABLE = "student_table";
-    public static final String COL_1 = "ID";
-    public static final String COL_2 = "name";
     public static final String[] tables = new String[] {"Cases", "CPU", "CPU_Cooler", "ExchangeRates", "GPU",
             "Images", "Memory", "Motherboard", "Price", "ProductMain", "PSU",
             "Rating", "Storage"};
-    public static String createSqlString = "";
+    public static String createSqlString = "CREATE IF NOT EXISTS TABLE buffer (ID, INT)";
     public static String deleteSqlString = "";
-
 
     public database(Context context){
         super(context, DB_NAME, null, 1);
         prefs = new Preferences(context);
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        this.createSqlString= "";
-        this.deleteSqlString= "";
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        db.execSQL(createSqlString);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE);
-        onCreate(db);
+    }
+
+    public void dropTable(String table){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sql = String.format("DROP TABLE IF EXISTS `%s`; ", table);
+        db.execSQL(sql);
     }
 
     public void buildDatabase(String sql){
+        showTables();
         SQLiteDatabase db = this.getWritableDatabase();
         String[] splitData = sql.split("!@#");
         for (String buff: splitData){
-            for (String table: tables){
-                // Checks if its creates table so it may delete the old one
-                deleteSqlString = String.format("DROP TABLE IF EXISTS `%s`; ", table);
-                String checkString = String.format("CREATE TABLE `%s`", table);
-                if (buff.contains(checkString)){
-                    db.execSQL(deleteSqlString);
-                }
-            }
-            System.out.println(buff);
-            createSqlString = buff;
-            onCreate(db);
+//            if (buff.contains("CREATE TABLE")){
+//                for (String table: tables){
+//                    // Checks if its creates table so it may delete the old one
+//                    deleteSqlString = String.format("DROP TABLE IF EXISTS `%s`; ", table);
+//                    String checkString = String.format("CREATE TABLE `%s`", table);
+//                    if (buff.contains(checkString)){
+//                        db.execSQL(deleteSqlString);
+//                    }
+//                }
+//            }
+            // System.out.println(buff);
+            //onCreate(db);
+            db.execSQL(buff);
+
         }
-        showTables();
+        db.close();
         prefs.updateDbUpdateData();
     }
 
@@ -76,18 +76,20 @@ public class database extends SQLiteOpenHelper {
                 System.out.println(tableName);
             }
         }
+        db.close();
         System.out.println(":########DONE ");
     }
-
 
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM  " + "Motherboard; ", null);
+        db.close();
         return res;
     }
 
     public JSONArray getData(String sqlString){
         SQLiteDatabase db = this.getWritableDatabase();
+        System.out.println(sqlString);
         Cursor res = db.rawQuery(sqlString, null);
         JSONArray resultSet = new JSONArray();
         res.moveToFirst();
@@ -107,6 +109,7 @@ public class database extends SQLiteOpenHelper {
             resultSet.add(rowObject);
             res.moveToNext();
         }
+        db.close();
         res.close();
         return resultSet;
 

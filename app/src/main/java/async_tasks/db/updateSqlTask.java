@@ -10,15 +10,14 @@ import java.io.IOException;
 
 import pcpp_data.conn.Conn;
 import pcpp_data.sqllite.database;
-import pcpp_data.sqllite.updateDatabase;
 import preferences.Preferences;
 
-public class updateSQL  extends AsyncTask<String, Integer, String>{
+public class updateSqlTask extends AsyncTask<String, Integer, String> {
     String updateUrl;
-    Context  context;
+    Context context;
     Preferences prefs;
 
-    public updateSQL(Context context) {
+    public updateSqlTask(Context context){
         this.updateUrl = "https://pcpp.verlet.io/updateData.php";
         this.context = context;
         this.prefs = new Preferences(context);
@@ -27,18 +26,14 @@ public class updateSQL  extends AsyncTask<String, Integer, String>{
     @Override
     protected String doInBackground(String... strings) {
         Conn conn = new Conn();
-        String [] tables = new String[] {"Cases", "CPU", "CPU_Cooler", "ExchangeRates", "GPU",
-                "Images", "Memory", "Motherboard", "Price", "ProductMain", "PSU",
-                "Rating", "Storage"};
         String sqlData = "";
         try {
-            for (String table: tables){
-                String url = String.format("%s?table=%s", this.updateUrl, table);
+            for (int i=0; i<=12; i++){
+                String url = String.format("%s?num=%d", this.updateUrl, i);
                 System.out.println(url);
                 sqlData = conn.getDataAsString(url);
                 System.out.println(url + "   SQL string loaded");
                 database db = new database(context);
-                db.dropTable(table);
                 db.buildDatabase(sqlData);
             }
             prefs.updateDbUpdateData();

@@ -82,6 +82,13 @@
     <string name="heat_spreader">Heat Spreader</string>
     <string name="ecc_opt_label">ECC</string>
     <string name="non_ecc_opt_label">Non ECC</string>
+    <string name="update_db">Updating Data</string>
+    <string name="capacity_label"><u>Capactiy</u></string>
+    <string name="type_label"><u>Type</u></string>
+    <string name="nvme_label"><u>NVME</u></string>
+    <string name="capacity">Capacity</string>
+    <string name="nvme">NVME</string>
+    <string name="type">Type</string>
 
 
 </resources>

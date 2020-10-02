@@ -1,6 +1,7 @@
 package com.example.ppp;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         if (prefs.dbNeedUpdate()){
             System.out.println("# UPDATING DATA");
             updateSQL sqlTask = new updateSQL(MainActivity.this);
-            sqlTask.execute();
+            sqlTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "" );
         } else{
             System.out.println("DOEST NEED UPDATE");
         }
