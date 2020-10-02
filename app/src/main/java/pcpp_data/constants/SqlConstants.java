@@ -27,16 +27,16 @@ public class SqlConstants {
             "LEFT JOIN CPU on CPU.ProductID=ProductMain.ProductID \n" +
             "WHERE  ProductMain.ProductType = 'CPU'\n" +
             "AND CPU.Manufacturer IN (%s)\n" +
-            "AND ProductMain.BestPrice > %d " +
-            "AND ProductMain.BestPrice < %d " +
-            "AND CAST(CPU.`Core Count` AS INT) > %d\n" +
-            "AND CAST(CPU.`Core Count` AS INT) < %d\n" +
-            "AND CAST(CPU.`Core Clock` AS FLOAT) > %.2f\n" +
-            "AND CAST(CPU.`Core Clock` AS FLOAT) < %.2f\n" +
-            "AND CAST(CPU.`Boost Clock` AS FLOAT) > %.2f \n" +
-            "AND CAST(CPU.`Boost Clock` AS FLOAT) < %.2f \n" +
-            "AND CAST(CPU.TDP AS INT) > %d \n" +
-            "AND CAST(CPU.TDP AS INT) < %d\n" +
+            "AND ProductMain.BestPrice >= %d " +
+            "AND ProductMain.BestPrice <= %d " +
+            "AND CAST(CPU.`Core Count` AS INT) >= %d\n" +
+            "AND CAST(CPU.`Core Count` AS INT) <= %d\n" +
+            "AND CAST(CPU.`Core Clock` AS FLOAT) >= %.2f\n" +
+            "AND CAST(CPU.`Core Clock` AS FLOAT) <= %.2f\n" +
+            "AND CAST(CPU.`Boost Clock` AS FLOAT) >= %.2f \n" +
+            "AND CAST(CPU.`Boost Clock` AS FLOAT) <= %.2f \n" +
+            "AND CAST(CPU.TDP AS INT) >= %d \n" +
+            "AND CAST(CPU.TDP AS INT) <= %d\n" +
             "ORDER BY %s;";
 
     public final String CPU_COOLER_SEARCH_LIST =  "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, " +
@@ -59,8 +59,8 @@ public class SqlConstants {
             "LEFT JOIN CPU_Cooler on CPU_Cooler.ProductID=ProductMain.ProductID \n" +
             "WHERE  ProductMain.ProductType = 'CPU_Cooler' \n" +
             "AND CPU_Cooler.Manufacturer IN (%s) " +
-            "AND ProductMain.BestPrice > %d " +
-            "AND ProductMain.BestPrice < %d " +
+            "AND ProductMain.BestPrice >= %d " +
+            "AND ProductMain.BestPrice <= %d " +
             "AND  (CPU_Cooler.`Water Cooled` LIKE '%s' OR CPU_Cooler.`Water Cooled` LIKE '%s')  "  +
             "ORDER BY %s;";
 
@@ -90,12 +90,12 @@ public class SqlConstants {
             "AND Motherboard.Manufacturer IN (%s) \n" +
             "AND Motherboard.`Socket / CPU` IN (%s)\n" +
             "AND Motherboard.`Form Factor` IN (%s) \n" +
-            "AND ProductMain.BestPrice > %d \n" +
-            "AND ProductMain.BestPrice < %d \n" +
-            "AND CAST(Motherboard.`Memory Max` AS INT) > %d\n" +
-            "AND CAST(Motherboard.`Memory Max` AS INT) < %d\n" +
-            "AND CAST(Motherboard.`Memory Slots` AS INT) > %d\n" +
-            "AND CAST(Motherboard.`Memory Slots` AS INT) <%d\n" +
+            "AND ProductMain.BestPrice >= %d \n" +
+            "AND ProductMain.BestPrice <= %d \n" +
+            "AND CAST(Motherboard.`Memory Max` AS INT) >= %d\n" +
+            "AND CAST(Motherboard.`Memory Max` AS INT) <= %d\n" +
+            "AND CAST(Motherboard.`Memory Slots` AS INT) >= %d\n" +
+            "AND CAST(Motherboard.`Memory Slots` AS INT) <=%d\n" +
             "ORDER BY %s ;";
 
 
@@ -108,6 +108,29 @@ public class SqlConstants {
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Memory on Memory.ProductID=ProductMain.ProductID " +
             "WHERE  ProductMain.ProductType = 'Memory';";
+
+    public final String MEMORY_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, \n" +
+            "Memory.Manufacturer, Memory.Modules, Memory.`Price / GB`, Memory.`ECC / Registered`, Memory.Speed \n" +
+            "FROM ProductMain \n" +
+            "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Memory on Memory.ProductID=ProductMain.ProductID \n" +
+            "WHERE  ProductMain.ProductType = 'Memory'\n" +
+            "AND Memory.Manufacturer IN (%s)\n" +
+            "AND ProductMain.BestPrice >= %d\n" +
+            "AND ProductMain.BestPrice <= %d\n" +
+            "AND CAST(Memory.Speed AS INT) >= %d\n" +
+            "AND CAST(Memory.Speed AS INT) <= %d\n" +
+            "AND CAST(REPLACE(SUBSTR(REPLACE(Modules, 'x', 'XXXX'), 1, 3), 'X', '') AS INT) >= %d\n" +
+            "AND CAST(REPLACE(SUBSTR(REPLACE(Modules, 'x', 'XXXX'), 1, 3), 'X', '') AS INT) <= %d\n" +
+            "AND CAST(REPLACE(SUBSTR(REPLACE(Modules, 'x', 'XXXX'), 4, 20), 'X', '') AS INT) >= %d\n" +
+            "AND CAST(REPLACE(SUBSTR(REPLACE(Modules, 'x', 'XXXX'), 4, 20), 'X', '') AS INT) <= %d\n" +
+            "AND CAST(REPLACE(Memory.`Price / GB`, '$', '') AS FLOAT) >= %.2f\n" +
+            "AND CAST(REPLACE(Memory.`Price / GB`, '$', '') AS FLOAT) <= %.2f\n" +
+            "AND (Memory.`ECC / Registered` LIKE '%s' OR Memory.`ECC / Registered` LIKE '%s') \n" +
+            "ORDER BY %s ;\n";
 
     public final String SINGLE_PRODUCT  = "SELECT * FROM %s WHERE ProductID = %d";
 }

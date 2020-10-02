@@ -76,6 +76,7 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         Button filter = findViewById(R.id.filter_button);
         filter.setOnClickListener(new View.OnClickListener() {
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 filterPopup(v);
@@ -445,10 +446,10 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         String ac = ""; // Air cooled
         String brands = "";
         if (waterCooled){
-            wc = "Yes";
+            wc = "%Yes%";
         }
         if (airCooled){
-            ac = "No";
+            ac = "%No%";
         }
 
         for (String brand: brandSelected){

@@ -62,11 +62,10 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
 
     @Override
     protected ArrayList<MemoryProduct> doInBackground(String... strings) {
-
         try {
+            String sql = strings[0];
             GetSearchLists obj = new GetSearchLists(context);
-            obj.getMemorySearchList();
-            ArrayList<MemoryProduct> data = obj.getMemorySearchList();
+            ArrayList<MemoryProduct> data = obj.getMemorySearchList(sql);
             return data;
         } catch (Exception e){
             System.out.println("failed to load");

@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -30,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import async_tasks.feeds.RetrieveMotherboardFeedTask;
 import pcpp_data.constants.SqlConstants;

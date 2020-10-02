@@ -55,8 +55,7 @@ public class GetSearchLists{
         return searchOptions;
     }
 
-    public ArrayList<MemoryProduct> getMemorySearchList() {
-        String sql  = new SqlConstants().MEMORY_SEARCH_LIST;
+    public ArrayList<MemoryProduct> getMemorySearchList(String sql) {
         ArrayList<MemoryProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {

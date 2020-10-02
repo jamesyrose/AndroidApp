@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import async_tasks.feeds.RetrieveMemoryFeedTask;
+import pcpp_data.constants.SqlConstants;
+import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.sorters.MemoryProductSort;
 import preferences.Preferences;
@@ -41,9 +43,11 @@ public class memorySearchActivity extends AppCompatActivity {
     static RetrieveMemoryFeedTask memoryFeed;
     Preferences prefs;
     LinearLayout dialog;
+    ScrollView dialogScroll;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
     Context context;
+    SqlConstants sqlConst;
 
     // Data filters
     int priceMin = 0;
@@ -73,13 +77,14 @@ public class memorySearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
         context = memorySearchActivity.this;
+        sqlConst = new SqlConstants();
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
-
+        dialogScroll  = findViewById(R.id.scroll_window);
         prefs = new Preferences(context);
 
         memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
-        memoryFeed.execute();
+        memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -110,14 +115,15 @@ public class memorySearchActivity extends AppCompatActivity {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
                 View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                float lastViewY = lastView.getY();
-                System.out.println(dialog.getChildCount());
-                if (scrollY > lastViewY){
-                    loadingNotDone();
-                    onLoadMore();
-                    loadingDone();
+                if (lastView != null){
+                    float lastViewY = lastView.getY();
+                    System.out.println(dialog.getChildCount());
+                    if (scrollY > lastViewY){
+                        loadingNotDone();
+                        onLoadMore();
+                        loadingDone();
+                    }
                 }
-
             }
         });
     }
@@ -362,10 +368,12 @@ public class memorySearchActivity extends AppCompatActivity {
                 brandList.stream().forEach(cb -> cb.setChecked(true));
 
                 filteredData = memoryFeed.getSearchData();
+                loadingNotDone();
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    memoryFeed.addProduct(filteredData.get(i));
-                }
+                memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
+                loadingDone();
+
             }
         });
 
@@ -474,11 +482,12 @@ public class memorySearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 sortFilter = "Popularity (Descending)";
                 filteredData = memoryFeed.getSearchData();
+                loadingNotDone();
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    memoryFeed.addProduct(filteredData.get(i));
-                }
+                memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
                 sortWindow.dismiss();
+                loadingDone();
             }
         });
 
@@ -491,7 +500,10 @@ public class memorySearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
                 RadioButton radioButton = sortOptions.findViewById(selectedId);
-                String selectedText = radioButton.getText().toString();
+                String selectedText = "Popularity (Ascending)";
+                if (radioButton != null){
+                    selectedText = radioButton.getText().toString();
+                }
                 sortFilter = selectedText;
                 filterData();
                 sortWindow.dismiss();
@@ -521,77 +533,66 @@ public class memorySearchActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void filterData(){
-        ArrayList<MemoryProduct> filtered = new ArrayList<>();
-        System.out.println(sortFilter);
-        dialog.removeAllViews();
-
-        System.out.println(brandSelected.toString());
-        for (MemoryProduct product: memoryFeed.getSearchData()){
-            if ((brandSelected.contains(product.getManufacturer()) || brandSelected.isEmpty()) &&
-                    priceMin <= product.getBestPrice() &&
-                    priceMax >= product.getBestPrice()  &&
-                    memoryMin <= getModuleSize(product) &&
-                    memoryMax >= getModuleSize(product) &&
-                    memorySpeedMin <= getMemorySpeed(product) &&
-                    memorySpeedMax >= getMemorySpeed(product)  &&
-                    numModsMin <= getNumModules(product) &&
-                    numModsMax >= getNumModules(product) &&
-                    pricePerGbMin <= getPricePerGb(product) &&
-                    pricePerGbMax >= getPricePerGb(product)
-             ){
-                if (eccMemory){
-                    if (isECC(product)){
-                        filtered.add(product);
-                    }
-                }
-                if (nonEccMemory){
-                    if (!isECC(product)){
-                        filtered.add(product);
-                    }
+        if (brandSelected.isEmpty()){
+            for (MemoryProduct prod: memoryFeed.getSearchData()){
+                String prodBrand = prod.getManufacturer();
+                if (!brandSelected.contains(prodBrand)){
+                    brandSelected.add(prodBrand);
                 }
             }
+        };
+        String brands = "";
+        for (String brand: brandSelected){
+            brands += String.format("'%s',", brand);
         }
-        System.out.println("######" + filtered.size());
-        ArrayList<MemoryProduct> sorted = new ArrayList<>();
-        // Sorted
-        MemoryProductSort sorter = new MemoryProductSort();
-        if (sortFilter.toLowerCase().contains("popularity")) {
-            sorted = sorter.sortPopularity(filtered);
-        }else if (sortFilter.toLowerCase().contains("name")){
-            sorted = sorter.sortName(filtered);
-        }else if (sortFilter.toLowerCase().contains("price")){
-            sorted = sorter.sortPrice(filtered);
-        }else if (sortFilter.toLowerCase().contains("rating")){
-            sorted = sorter.sortRating(filtered);
-        }else if (sortFilter.toLowerCase().contains("price / gb")){
-            sorted = sorter.sortPricePerGB(filtered);
-        }else if (sortFilter.toLowerCase().contains("speed")) {
-            sorted = sorter.sortSpeed(filtered);
-        }else {
-            sorted = sorter.sortPopularity(filtered);
+        brands = brands.replaceAll(",$", "");
+
+
+        String yesECC = "";
+        String nonEcc = "";
+        if (eccMemory){
+            yesECC = "ECC%";
+        }
+        if (nonEccMemory){
+            nonEcc = "Non-ECC%";
         }
 
-        // get children views
+        String sortBy = "";
+        String desc = "";
+        if (sortFilter.toLowerCase().contains("descending")){
+            desc = "DESC";
+        }
+        if (sortFilter.toLowerCase().contains("popularity")) {
+            sortBy = String.format("Rating.Count %s, Rating.Average %s", desc, desc);
+        }else if (sortFilter.toLowerCase().contains("name")){
+            sortBy = "ProductMain.ProductName " + desc;
+        }else if (sortFilter.toLowerCase().contains("price")){
+            sortBy = "ProductMain.BestPrice " + desc;
+        }else if (sortFilter.toLowerCase().contains("rating")){
+            sortBy = "Rating.Average " + desc;
+        }else if (sortFilter.toLowerCase().contains("cores")){
+            sortBy = "CAST(CPU.`Core Count` AS INT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("base")){
+            sortBy = "CAST(CPU.`Core Clock` AS FLOAT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("boost")){
+            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT" + desc;
+        }else if (sortFilter.toLowerCase().contains("tdp")){
+            sortBy = "CAST(CPU.`TDP` AS INT) " + desc;
+        }
+
+        System.out.println(" #$########" + sortBy);
+
+        String sqlStringBuild = String.format(sqlConst.MEMORY_SEARCH_FILTER, brands, priceMin, priceMax,
+                memorySpeedMin, memorySpeedMax, numModsMin, numModsMax, memoryMin, memoryMax,
+                pricePerGbMin, pricePerGbMax, yesECC, nonEcc, sortBy);
+
+        System.out.println(sqlStringBuild);
         loadingNotDone();
         dialog.removeAllViews();
-        dialog.setVisibility(View.GONE);
-        if (sortFilter.toLowerCase().contains("descending")){
-            Collections.reverse(sorted);
-            for (MemoryProduct product: sorted){
-                memoryFeed.addProduct(product);
-            }
-        }else {
-            for (MemoryProduct product: sorted){
-                memoryFeed.addProduct(product);
-            }
-        }
+        dialogScroll.smoothScrollTo(0,0);
+        memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+        memoryFeed.execute(sqlStringBuild);
         loadingDone();
-        filteredData = sorted;
-        dialog.setVisibility(View.VISIBLE);
-        Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
-        animation.setDuration(1000);
-        dialog.setAnimation(animation);
-        dialog.animate();
     }
 
     public int getHighestPriceProdcuct(){
