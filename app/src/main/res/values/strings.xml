@@ -71,6 +71,17 @@
     <string name="cooling_type_label">Cooling Type</string>
     <string name="water_cooled">Water</string>
     <string name="air">Air</string>
+    <string name="price_gb_label"><u>Price / GB</u></string>
+    <string name="modules_factor"><u>Modules</u></string>
+    <string name="ecc_reg_label"><u>ECC</u></string>
+    <string name="memory_speed_u_label"><u>Memory Speed</u></string>
+    <string name="memory_modules_label">Number of Modules</string>
+    <string name="price_pgb_label">Price / GB</string>
+    <string name="ecc_label">Other</string>
+    <string name="memory_per_mod_label">Memory / Module</string>
+    <string name="heat_spreader">Heat Spreader</string>
+    <string name="ecc_opt_label">ECC</string>
+    <string name="non_ecc_opt_label">Non ECC</string>
 
 
 </resources>

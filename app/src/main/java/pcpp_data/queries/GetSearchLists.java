@@ -9,6 +9,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import pcpp_data.constants.SqlConstants;
+import pcpp_data.products.CpuCoolerProduct;
+import pcpp_data.products.CpuSearchProduct;
+import pcpp_data.products.MemoryProduct;
+import pcpp_data.products.MotherboardProduct;
 import pcpp_data.sqllite.database;
 
 public class GetSearchLists{
@@ -18,41 +22,51 @@ public class GetSearchLists{
         this.context = context;
     }
 
-    public ArrayList<CpuSearch> getCPUsearchList() {
+    public ArrayList<CpuSearchProduct> getCPUsearchList() {
         String sql  = new SqlConstants().CPU_SEARCH_LIST;
-        ArrayList<CpuSearch> searchOptions = new ArrayList<>();
+        ArrayList<CpuSearchProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
             JSONObject row = (JSONObject) buff;
-            CpuSearch cpuRow = new CpuSearch(row);
+            CpuSearchProduct cpuRow = new CpuSearchProduct(row);
             searchOptions.add(cpuRow);
         }
         return searchOptions;
     }
 
-    public ArrayList<CpuCoolerSearch> getCpuCoolerSearchList() {
+    public ArrayList<CpuCoolerProduct> getCpuCoolerSearchList() {
         String sql  = new SqlConstants().CPU_COOLER_SEARCH_LIST;
-        ArrayList<CpuCoolerSearch> searchOptions = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
             JSONObject row = (JSONObject) buff;
-            CpuCoolerSearch cpuRow = new CpuCoolerSearch(row);
+            CpuCoolerProduct cpuRow = new CpuCoolerProduct(row);
             searchOptions.add(cpuRow);
         }
         return searchOptions;
     }
 
-    public ArrayList<MotherboardSearch> getMotherboardSearchList() {
+    public ArrayList<MotherboardProduct> getMotherboardSearchList() {
         String sql  = new SqlConstants().MOTHERBOARD_SEARCH_LIST;
-        ArrayList<MotherboardSearch> searchOptions = new ArrayList<>();
+        ArrayList<MotherboardProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
             JSONObject row = (JSONObject) buff;
-            MotherboardSearch cpuRow = new MotherboardSearch(row);
+            MotherboardProduct cpuRow = new MotherboardProduct(row);
             searchOptions.add(cpuRow);
         }
         return searchOptions;
     }
 
-
+    public ArrayList<MemoryProduct> getMemorySearchList() {
+        String sql  = new SqlConstants().MEMORY_SEARCH_LIST;
+        ArrayList<MemoryProduct> searchOptions = new ArrayList<>();
+        JSONArray data = new database(context).getData(sql);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            MemoryProduct cpuRow = new MemoryProduct(row);
+            searchOptions.add(cpuRow);
+        }
+        return searchOptions;
+    }
 }

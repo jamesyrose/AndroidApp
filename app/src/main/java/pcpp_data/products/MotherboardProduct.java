@@ -1,18 +1,18 @@
-package pcpp_data.queries;
+package pcpp_data.products;
 
 
 import org.json.simple.JSONObject;
 
 
 // Selection list of data
-public class MemorySearch extends MainSearch{
+public class MotherboardProduct extends MainProduct {
     private String manufacturer;
     private String socketType;
     private String formFactor;
     private String maxMemory;
     private String chipSet;
 
-    public MemorySearch(JSONObject row) {
+    public MotherboardProduct(JSONObject row) {
         super(row);
         getSpecs(row);
     }

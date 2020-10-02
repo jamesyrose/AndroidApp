@@ -32,13 +32,12 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import async_tasks.RetrieveCpuCoolerFeedTask;
-import pcpp_data.queries.CpuCoolerSearch;
-import pcpp_data.queries.MotherboardSearch;
+import async_tasks.general.RetrieveCpuCoolerFeedTask;
+import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.sorters.CpuCoolerProductSort;
 import preferences.Preferences;
 
-public class cpuCoolerSearch extends AppCompatActivity {
+public class cpuCoolerSearchActivity extends AppCompatActivity {
     static RetrieveCpuCoolerFeedTask cpuCoolerFeed;
     Preferences prefs;
     LinearLayout dialog;
@@ -57,14 +56,14 @@ public class cpuCoolerSearch extends AppCompatActivity {
     ArrayList<String> brandSelected = new ArrayList<String>();
 
     // data
-    ArrayList<CpuCoolerSearch> filteredData;
+    ArrayList<CpuCoolerProduct> filteredData;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
-        context = cpuCoolerSearch.this;
+        context = cpuCoolerSearchActivity.this;
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
 
@@ -104,7 +103,9 @@ public class cpuCoolerSearch extends AppCompatActivity {
                 float lastViewY = lastView.getY();
                 System.out.println(dialog.getChildCount());
                 if (scrollY > lastViewY){
+                    loadingNotDone();
                     onLoadMore();
+                    loadingDone();
                 }
 
             }
@@ -142,7 +143,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
 
     public void onLoadMore(){
         int currentChildCount = dialog.getChildCount();
-        ArrayList<CpuCoolerSearch> data = cpuCoolerFeed.getSearchData();
+        ArrayList<CpuCoolerProduct> data = cpuCoolerFeed.getSearchData();
         if (filteredData != null) {
             data = filteredData;
         }
@@ -185,7 +186,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
             final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
-            for (CpuCoolerSearch prod: cpuCoolerFeed.getSearchData()){
+            for (CpuCoolerProduct prod: cpuCoolerFeed.getSearchData()){
                 String brand = prod.getManufacturer();
                 if (!brands.contains(brand) && brand != null){
                     brands.add(brand);
@@ -413,11 +414,11 @@ public class cpuCoolerSearch extends AppCompatActivity {
     }
 
     public void filterData(){
-        ArrayList<CpuCoolerSearch> filtered = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> filtered = new ArrayList<>();
 
         dialog.removeAllViews();
-        for (CpuCoolerSearch product: cpuCoolerFeed.getSearchData()){
-            if (brandSelected.contains(product.getManufacturer()) &&
+        for (CpuCoolerProduct product: cpuCoolerFeed.getSearchData()){
+            if  ((brandSelected.contains(product.getManufacturer()) || brandSelected.isEmpty()) &&
                     priceMin < product.getBestPrice() &&
                     priceMax > product.getBestPrice()
             ){
@@ -433,7 +434,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
                 }
             }
         }
-        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
         // Sorted
         CpuCoolerProductSort sorter = new CpuCoolerProductSort();
         if (sortFilter.toLowerCase().contains("popularity")) {
@@ -451,12 +452,12 @@ public class cpuCoolerSearch extends AppCompatActivity {
         // get children views
         ArrayList<View> children = cpuCoolerFeed.getProductLayoutView();
 
-
+        loadingNotDone();
         dialog.removeAllViews();
         dialog.setVisibility(View.GONE);
         if (sortFilter.toLowerCase().contains("descending")){
             Collections.reverse(sorted);
-            for (CpuCoolerSearch product: sorted){
+            for (CpuCoolerProduct product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -465,7 +466,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
                 }
             }
         }else {
-            for (CpuCoolerSearch product: sorted){
+            for (CpuCoolerProduct product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -474,6 +475,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
                 }
             }
         }
+        loadingDone();
         filteredData = sorted;
         dialog.setVisibility(View.VISIBLE);
         Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
@@ -484,7 +486,7 @@ public class cpuCoolerSearch extends AppCompatActivity {
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;
-        for (CpuCoolerSearch prod: cpuCoolerFeed.getSearchData()){
+        for (CpuCoolerProduct prod: cpuCoolerFeed.getSearchData()){
             double bestPrice = prod.getBestPrice();
             if (bestPrice > maxPrice)
                 maxPrice = bestPrice;

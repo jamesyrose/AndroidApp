@@ -1,4 +1,4 @@
-package pcpp_data.queries;
+package pcpp_data.products;
 
 import android.os.Build;
 import android.view.View;
@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
 
 import pcpp_data.constants.Constants;
 
-public class MainSearch {
+public class MainProduct {
     private String productName;
     private String displayImg;
     private int productID, ratingCount;
@@ -18,7 +18,7 @@ public class MainSearch {
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public MainSearch(JSONObject row) {
+    public MainProduct(JSONObject row) {
         this.productID = stringToInteger((String) row.get("ProductID"));
         this.productName = (String) row.get("ProductName");
         this.bestPrice = stringToDouble((String) row.get("BestPrice"));

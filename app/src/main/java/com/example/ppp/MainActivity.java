@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import async_tasks.updateSQL;
+import async_tasks.db.updateSQL;
 import pcpp_data.sqllite.database;
 import preferences.Preferences;
 

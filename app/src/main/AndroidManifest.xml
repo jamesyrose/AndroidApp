@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".cpuSearch"
+            android:name=".cpuSearchActivity"
             android:label="Search CPU" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.cpuSearch" />
@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".cpuCoolerSearch"
+            android:name=".cpuCoolerSearchActivity"
             android:label="Search CPU Cooler" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.cpuCoolerSearch" />
@@ -54,10 +54,19 @@
         </activity>
 
         <activity
-            android:name=".motherboardSearch"
+            android:name=".motherboardSearchActivity"
             android:label="Search Motherboards" >
             <intent-filter>
                 <action android:name="com.iphonik.chameleon.motherboardSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".memorySearchActivity"
+            android:label="Search Memory" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.memorySearch" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

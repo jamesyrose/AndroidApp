@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.feeds;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

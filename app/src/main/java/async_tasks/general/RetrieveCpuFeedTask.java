@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.general;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,18 +23,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import async_tasks.feeds.DownloadImageGallery;
+import async_tasks.feeds.DownloadImageTask;
+import async_tasks.feeds.DownloadSellers;
+import async_tasks.feeds.DownloadSpecs;
 import pcpp_data.constants.Constants;
-import pcpp_data.queries.CpuSearch;
+import pcpp_data.products.CpuSearchProduct;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSearch>> {
+public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSearchProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<CpuSearch> searchData;
+    static ArrayList<CpuSearchProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
@@ -57,12 +61,12 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
 
 
     @Override
-    protected ArrayList<CpuSearch> doInBackground(String... strings) {
+    protected ArrayList<CpuSearchProduct> doInBackground(String... strings) {
 
         try {
             GetSearchLists obj = new GetSearchLists(context);
             obj.getCPUsearchList();
-            ArrayList<CpuSearch> data = obj.getCPUsearchList();
+            ArrayList<CpuSearchProduct> data = obj.getCPUsearchList();
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -71,7 +75,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
     }
 
     @Override
-    protected void onPostExecute(ArrayList<CpuSearch> data){
+    protected void onPostExecute(ArrayList<CpuSearchProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -93,7 +97,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         return dataFetched;
     }
 
-    public void addProduct(final CpuSearch data) {
+    public void addProduct(final CpuSearchProduct data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -254,7 +258,7 @@ public class RetrieveCpuFeedTask extends AsyncTask<String, Void, ArrayList<CpuSe
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<CpuSearch> getSearchData(){
+    public ArrayList<CpuSearchProduct> getSearchData(){
         return searchData;
     }
 

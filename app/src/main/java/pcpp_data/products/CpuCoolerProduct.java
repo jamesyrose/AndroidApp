@@ -1,18 +1,18 @@
-package pcpp_data.queries;
+package pcpp_data.products;
 
 
 import org.json.simple.JSONObject;
 
 
 // Selection list of data
-public class CpuCoolerSearch extends MainSearch{
+public class CpuCoolerProduct extends MainProduct {
     private String manufacturer;
     private String rpm;
     private String noise;
     private String height;
     private String waterCooled;
 
-    public CpuCoolerSearch(JSONObject row) {
+    public CpuCoolerProduct(JSONObject row) {
         super(row);
         getSpecs(row);
     }

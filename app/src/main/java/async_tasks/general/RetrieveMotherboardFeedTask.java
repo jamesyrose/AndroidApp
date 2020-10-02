@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.general;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,18 +23,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import async_tasks.feeds.DownloadImageGallery;
+import async_tasks.feeds.DownloadImageTask;
+import async_tasks.feeds.DownloadSellers;
+import async_tasks.feeds.DownloadSpecs;
 import pcpp_data.constants.Constants;
 import pcpp_data.queries.GetSearchLists;
-import pcpp_data.queries.MotherboardSearch;
+import pcpp_data.products.MotherboardProduct;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayList<MotherboardSearch>> {
+public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayList<MotherboardProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<MotherboardSearch> searchData;
+    static ArrayList<MotherboardProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
@@ -57,12 +61,12 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
 
 
     @Override
-    protected ArrayList<MotherboardSearch> doInBackground(String... strings) {
+    protected ArrayList<MotherboardProduct> doInBackground(String... strings) {
 
         try {
             GetSearchLists obj = new GetSearchLists(context);
             obj.getMotherboardSearchList();
-            ArrayList<MotherboardSearch> data = obj.getMotherboardSearchList();
+            ArrayList<MotherboardProduct> data = obj.getMotherboardSearchList();
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -71,7 +75,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MotherboardSearch> data){
+    protected void onPostExecute(ArrayList<MotherboardProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -93,7 +97,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         return dataFetched;
     }
 
-    public void addProduct(final MotherboardSearch data) {
+    public void addProduct(final MotherboardProduct data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -253,7 +257,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MotherboardSearch> getSearchData(){
+    public ArrayList<MotherboardProduct> getSearchData(){
         return searchData;
     }
 

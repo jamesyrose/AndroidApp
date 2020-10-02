@@ -32,59 +32,55 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import async_tasks.RetrieveMotherboardFeedTask;
-import pcpp_data.queries.MotherboardSearch;
-import pcpp_data.sorters.MotherboardProductSort;
+import async_tasks.general.RetrieveCpuFeedTask;
+import pcpp_data.products.CpuSearchProduct;
+import pcpp_data.sorters.CpuProductSort;
 import preferences.Preferences;
 
-public class motherboardSearch  extends AppCompatActivity {
-    static RetrieveMotherboardFeedTask motherboardFeed;
+public class cpuSearchActivity extends AppCompatActivity {
+    static RetrieveCpuFeedTask cpuFeed;
     Preferences prefs;
     LinearLayout dialog;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
-    Context context;
+    Context context; 
 
     // Data filters
+    boolean amdSelected = true;
+    boolean intelSelected = true;
     int priceMin = 0;
     int priceMax = 1000000;
-    int memoryMin = 0;
-    int memoryMax = 2000;
-    int memorySpeedMin = 0;
-    int memorySpeedMax = 10000;
-    int memorySlotMin = 0;
-    int memorySlotMax = 16;
-    ArrayList<CheckBox> brandList = new ArrayList<>();
-    ArrayList<CheckBox> socketList = new ArrayList<>();
-    ArrayList<CheckBox> formFactorList = new ArrayList<>();
-    ArrayList<String> brandSelected = new ArrayList<String>();
-    ArrayList<String> socketSelected = new ArrayList<String>();
-    ArrayList<String> formFactorSelected = new ArrayList<String>();
-
+    int coreMin = 0;
+    int coreMax = 64;
+    double baseClockMin = 0.0;
+    double baseClockMax = 10.0;
+    double boostClockMin = 0.0;
+    double boostClockMax = 10.0;
+    int tdpMin = 0;
+    int tdpMax=10000;
     String sortFilter = "Popularity (Ascending)";
 
     // data
-    ArrayList<MotherboardSearch> filteredData;
+    ArrayList<CpuSearchProduct> filteredData;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
-        context = motherboardSearch.this;
+        context = cpuSearchActivity.this;
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
 
         prefs = new Preferences(context);
 
-        motherboardFeed = new RetrieveMotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute();
+        cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+        cpuFeed.execute();
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
         filter.setOnClickListener(new View.OnClickListener() {
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 filterPopup(v);
@@ -112,7 +108,9 @@ public class motherboardSearch  extends AppCompatActivity {
                 float lastViewY = lastView.getY();
                 System.out.println(dialog.getChildCount());
                 if (scrollY > lastViewY){
+                    loadingNotDone();
                     onLoadMore();
+                    loadingDone();
                 }
 
             }
@@ -150,25 +148,25 @@ public class motherboardSearch  extends AppCompatActivity {
 
     public void onLoadMore(){
         int currentChildCount = dialog.getChildCount();
-        ArrayList<MotherboardSearch> data = motherboardFeed.getSearchData();
+        ArrayList<CpuSearchProduct> data = cpuFeed.getSearchData();
         if (filteredData != null) {
             data = filteredData;
         }
         int end = currentChildCount + 30;
         end = (data.size() > end) ? end : data.size();
         for (int i=currentChildCount; i<end; i++){
-            motherboardFeed.addProduct(data.get(i));
+            cpuFeed.addProduct(data.get(i));
         }
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
     @SuppressLint("ClickableViewAccessibility")
     public void filterPopup(View view){
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.motherboard_filter_window, null);
+        View popupView = inflater.inflate(R.layout.cpu_filter_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -181,58 +179,27 @@ public class motherboardSearch  extends AppCompatActivity {
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
         filterWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
-
         // Set the Branch Choices
-        if (brandList.isEmpty()){
-            RelativeLayout brand_selection = popupView.findViewById(R.id.brand_selection);
-            final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
-            final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
-            final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
-            brandOptions.setVisibility(View.GONE);
-            ArrayList<String> brands = new ArrayList<>();
-            for (MotherboardSearch prod: motherboardFeed.getSearchData()){
-                String brand = prod.getManufacturer();
-                if (!brands.contains(brand) && brand != null){
-                    brands.add(brand);
-                    brandSelected.add(brand); // initialize as true
+        final RelativeLayout brandChoice = mainLayout.findViewById(R.id.brand_selection);
+        final LinearLayout brandOptions = mainLayout.findViewById(R.id.brand_options);
+        final CheckBox amd_option =  popupView.findViewById(R.id.amd_option);
+        final CheckBox intel_option =  popupView.findViewById(R.id.intel_option);
+        amd_option.setChecked(true);
+        intel_option.setChecked(true);
+        brandOptions.setVisibility(View.GONE);
+        brandChoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (brandOptions.isShown()){
+                    brandOptions.setVisibility(View.GONE);
+                }else{
+                    brandOptions.setVisibility(View.VISIBLE);
                 }
             }
-            int brandCount = brands.size();
-            int midPoint = Math.floorDiv(brandCount, 2);
-            for (int i=0; i<midPoint; i++){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        brand_choice1,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(brands.get(i));
-                brand_choice1.addView(checkBoxLayout);
-                brandList.add(box);
-            }
-            for (int i=midPoint; i<brandCount; i++){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        brand_choice2,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(brands.get(i));
-                brand_choice2.addView(checkBoxLayout);
-                brandList.add(box);
-            }
-            brand_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (brandOptions.isShown()){
-                        brandOptions.setVisibility(View.GONE);
-                    }else{
-                        brandOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-
+        });
 
         // Set price choices
         final RangeSeekBar<Integer> priceBar = popupView.findViewById(R.id.price_seek_bar);
@@ -251,135 +218,57 @@ public class motherboardSearch  extends AppCompatActivity {
             }
         });
 
-
-        // Set memory range
-        final RangeSeekBar<Integer> memoryBar = popupView.findViewById(R.id.memory_seek_bar);
-        memoryBar.setRangeValues(0, 2000);
-        final RelativeLayout memoryChoice = popupView.findViewById(R.id.max_memory_selection);
-        memoryBar.setVisibility(View.GONE);
-        memoryChoice.setOnClickListener(new View.OnClickListener() {
+        // Set Core Choices
+        final RangeSeekBar<Integer> coresBar = popupView.findViewById(R.id.cores_seek_bar);
+        coresBar.setRangeValues(0, 64);
+        RelativeLayout coresChoice = popupView.findViewById(R.id.cores_selection);
+        coresBar.setVisibility(View.GONE);
+        coresChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (memoryBar.isShown()){
-                    memoryBar.setVisibility(View.GONE);
+                if (coresBar.isShown()){
+                    coresBar.setVisibility(View.GONE);
                 }else{
-                    memoryBar.setVisibility(View.VISIBLE);
+                    coresBar.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        // Set memory slot range
-        final RangeSeekBar<Integer> memorySlotBar = popupView.findViewById(R.id.memory_slot_seek_bar);
-        memorySlotBar.setRangeValues(0, 16);
-        final RelativeLayout memorySlotChoice = popupView.findViewById(R.id.memory_slot_selection);
-        memorySlotBar.setVisibility(View.GONE);
-        memorySlotChoice.setOnClickListener(new View.OnClickListener() {
+
+        // Set Clock Speed Choice
+        final RelativeLayout clockChoice = popupView.findViewById(R.id.clock_selection);
+        final LinearLayout clockOptionSection= popupView.findViewById(R.id.clock_option_section);
+        final RangeSeekBar<Double> baseClockBar = popupView.findViewById(R.id.base_clock_seek_bar);
+        final RangeSeekBar<Double> boostClockBar = popupView.findViewById(R.id.boost_clock_seek_bar);
+        baseClockBar.setRangeValues(0.0, 6.0);
+        boostClockBar.setRangeValues(0.0, 6.0);
+        clockOptionSection.setVisibility(View.GONE);
+        clockChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (memorySlotBar.isShown()){
-                    memorySlotBar.setVisibility(View.GONE);
+                if (clockOptionSection.isShown()){
+                    clockOptionSection.setVisibility(View.GONE);
                 }else{
-                    memorySlotBar.setVisibility(View.VISIBLE);
+                    clockOptionSection.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        // Set memory slot range
-        final RangeSeekBar<Integer> memorySpeedBar = popupView.findViewById(R.id.memory_speed_seek_bar);
-        memorySpeedBar.setRangeValues(0, 16);
-        final RelativeLayout memorySpeedChoice = popupView.findViewById(R.id.memory_speed_selection);
-        memorySpeedBar.setVisibility(View.GONE);
-        memorySpeedChoice.setOnClickListener(new View.OnClickListener() {
+        // Set tdp Choices
+        final RangeSeekBar<Integer> tdpBar = popupView.findViewById(R.id.tdp_seek_bar);
+        tdpBar.setRangeValues(0, 500);
+        LinearLayout tdpChoice = popupView.findViewById(R.id.tdp_selection);
+        tdpBar.setVisibility(View.GONE);
+        tdpChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (memorySpeedBar.isShown()){
-                    memorySpeedBar.setVisibility(View.GONE);
+                if (tdpBar.isShown()){
+                    tdpBar.setVisibility(View.GONE);
                 }else{
-                    memorySpeedBar.setVisibility(View.VISIBLE);
+                    tdpBar.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-        if (socketList.isEmpty()){
-            // Socket Types
-            RelativeLayout socket_selection = popupView.findViewById(R.id.socket_selection);
-            final LinearLayout socketOptions = popupView.findViewById(R.id.socket_options);
-            socketOptions.setVisibility(View.GONE);
-            ArrayList<String> sockets = new ArrayList<>();
-            for (MotherboardSearch prod: motherboardFeed.getSearchData()){
-                String socket = prod.getSocketType();
-                if (!sockets.contains(socket) && socket != null){
-                    sockets.add(socket);
-                    socketSelected.add(socket); // initialize as true
-
-                }
-            }
-            for(String socket: sockets){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        socketOptions,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(socket);
-                socketList.add(box);
-                socketOptions.addView(checkBoxLayout);
-
-            }
-
-            socket_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (socketOptions.isShown()){
-                        socketOptions.setVisibility(View.GONE);
-                    }else{
-                        socketOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-
-        }
-
-
-        if (formFactorList.isEmpty()){
-            // Form factor Types
-            RelativeLayout form_factor_selection = popupView.findViewById(R.id.form_factor_selection);
-            final LinearLayout form_factorOptions = popupView.findViewById(R.id.form_factor_options);
-            form_factorOptions.setVisibility(View.GONE);
-            ArrayList<String> form_factors = new ArrayList<>();
-            for (MotherboardSearch prod: motherboardFeed.getSearchData()){
-                String form_factor = prod.getFormFactor();
-                if (!form_factors.contains(form_factor) && form_factor != null){
-                    form_factors.add(form_factor);
-                    formFactorSelected.add(form_factor); // initialize as true
-
-                }
-            }
-            for(String form_factor: form_factors){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        form_factorOptions,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(form_factor);
-                System.out.println(box.getText());
-                formFactorList.add(box);
-                form_factorOptions.addView(checkBoxLayout);
-            }
-
-            form_factor_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (form_factorOptions.isShown()){
-                        form_factorOptions.setVisibility(View.GONE);
-                    }else{
-                        form_factorOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-
 
         // Reset Button
         Button resetButton = popupView.findViewById(R.id.reset_button);
@@ -387,63 +276,50 @@ public class motherboardSearch  extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+               // Set both brands selected
+                amd_option.setChecked(true);
+                intel_option.setChecked(true);
                 // price options
                 priceBar.setSelectedMinValue(0);
                 priceBar.setSelectedMaxValue(maxPrice);
-                memoryBar.setSelectedMinValue(0);
-                memoryBar.setSelectedMaxValue(2000);
-                memorySlotBar.setSelectedMinValue(0);
-                memorySlotBar.setSelectedMaxValue(16);
-                memorySpeedBar.setSelectedMinValue(0);
-                memorySpeedBar.setSelectedMaxValue(10000);
-                brandList.stream().forEach(cb -> cb.setChecked(true));
-                socketList.stream().forEach(cb -> cb.setChecked(true));
-                formFactorList.stream().forEach(cb -> cb.setChecked(true));
+                // Cores
+                coresBar.setSelectedMinValue(0);
+                coresBar.setSelectedMaxValue(64);
+                // Clock speeds
+                baseClockBar.setSelectedMinValue(0.0);
+                baseClockBar.setSelectedMaxValue(6.0);
+                boostClockBar.setSelectedMinValue(0.0);
+                boostClockBar.setSelectedMaxValue(6.0);
+                // tdp
+                tdpBar.setSelectedMinValue(0);
+                tdpBar.setSelectedMaxValue(500);
 
-                filteredData = motherboardFeed.getSearchData();
+                filteredData = cpuFeed.getSearchData();
                 dialog.removeAllViews();
                 for (int i=0; i<30; i++){
-                    motherboardFeed.addProduct(filteredData.get(i));
+                    cpuFeed.addProduct(filteredData.get(i));
                 }
+                filterWindow.dismiss();
             }
         });
 
         Button filterButton = popupView.findViewById(R.id.apply_button);
         filterButton.setOnClickListener(new View.OnClickListener(){
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 // setting filters as parameters
+                amdSelected = amd_option.isChecked();
+                intelSelected= intel_option.isChecked();
                 priceMin = priceBar.getSelectedMinValue();
                 priceMax = priceBar.getSelectedMaxValue();
-                memoryMin = memoryBar.getSelectedMinValue();
-                memoryMax = memoryBar.getSelectedMaxValue();
-                memorySlotMin = memorySlotBar.getSelectedMinValue();
-                memorySlotMax = memorySlotBar.getSelectedMaxValue();
-                memorySpeedMin = memorySpeedBar.getSelectedMinValue();
-                memorySpeedMax = memorySpeedBar.getSelectedMaxValue();
-                brandSelected.clear();
-                socketSelected.clear();
-                formFactorSelected.clear();
-                System.out.println("###################1111");
-                brandList.stream().forEach(cb -> {
-                    if (cb.isChecked()){
-                        System.out.println(cb.getText());
-                        brandSelected.add((String) cb.getText());
-                    };
-                });
-                socketList.stream().forEach(cb -> {
-                    if (cb.isChecked()){
-                        socketSelected.add((String) cb.getText());
-                    };
-                });
-                formFactorList.stream().forEach(cb -> {
-                    if (cb.isChecked()){
-                        formFactorSelected.add((String) cb.getText());
-                    };
-                });
-
-                System.out.println("###################22222");
+                coreMin = coresBar.getSelectedMinValue();
+                coreMax = coresBar.getSelectedMaxValue();
+                baseClockMin = baseClockBar.getSelectedMinValue();
+                baseClockMax = baseClockBar.getSelectedMaxValue();
+                boostClockMin = boostClockBar.getSelectedMinValue();
+                boostClockMax = boostClockBar.getSelectedMaxValue();
+                tdpMin = tdpBar.getSelectedMinValue();
+                tdpMax = tdpBar.getSelectedMaxValue();
 
                 filterData();
                 filterWindow.dismiss();
@@ -456,12 +332,18 @@ public class motherboardSearch  extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // reverting selections
+                amd_option.setChecked(amd_option.isChecked());
+                intel_option.setChecked(intel_option.isChecked());
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
+                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
+                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
+                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
+                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
+                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
+                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
+                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
+                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -471,12 +353,18 @@ public class motherboardSearch  extends AppCompatActivity {
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                amd_option.setChecked(amd_option.isChecked());
+                intel_option.setChecked(intel_option.isChecked());
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
+                coresBar.setSelectedMinValue(coresBar.getSelectedMinValue());
+                coresBar.setSelectedMaxValue(coresBar.getSelectedMaxValue());
+                baseClockBar.setSelectedMinValue(baseClockBar.getSelectedMinValue());
+                baseClockBar.setSelectedMaxValue(baseClockBar.getSelectedMaxValue());
+                boostClockBar.setSelectedMinValue(boostClockBar.getSelectedMinValue());
+                boostClockBar.setSelectedMaxValue(boostClockBar.getSelectedMaxValue());
+                tdpBar.setSelectedMinValue(tdpBar.getSelectedMinValue());
+                tdpBar.setSelectedMaxValue(tdpBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -488,7 +376,7 @@ public class motherboardSearch  extends AppCompatActivity {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.motherboard_sort_window, null);
+        View popupView = inflater.inflate(R.layout.cpu_sort_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -512,10 +400,10 @@ public class motherboardSearch  extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sortFilter = "Popularity (Descending)";
-                filteredData = motherboardFeed.getSearchData();
+                filteredData = cpuFeed.getSearchData();
                 dialog.removeAllViews();
                 for (int i=0; i<30; i++){
-                    motherboardFeed.addProduct(filteredData.get(i));
+                    cpuFeed.addProduct(filteredData.get(i));
                 }
                 sortWindow.dismiss();
             }
@@ -525,7 +413,6 @@ public class motherboardSearch  extends AppCompatActivity {
         Button applyButton = popupView.findViewById(R.id.apply_button);
         applyButton.setOnClickListener(new View.OnClickListener(){
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
@@ -558,30 +445,37 @@ public class motherboardSearch  extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void filterData(){
-        ArrayList<MotherboardSearch> filtered = new ArrayList<>();
+        ArrayList<String> manufacturers = new ArrayList<>();
+        ArrayList<CpuSearchProduct> filtered = new ArrayList<>();
 
-        System.out.println(sortFilter);
-
+        if (amdSelected){
+            manufacturers.add("AMD");
+        }
+        if (intelSelected){
+            manufacturers.add("Intel");
+        }
 
         dialog.removeAllViews();
-        for (MotherboardSearch product: motherboardFeed.getSearchData()){
-            if (brandSelected.contains(product.getManufacturer()) &&
-                    socketSelected.contains(product.getSocketType()) &&
-                    formFactorSelected.contains(product.getFormFactor()) &&
+        for (CpuSearchProduct product: cpuFeed.getSearchData()){
+            if (manufacturers.contains(product.getManufacturer()) &&
                     priceMin < product.getBestPrice() &&
-                    priceMax > product.getBestPrice() &&
-                    memoryMin < stringToInteger(product.getMaxMemory()) &&
-                    memoryMax > stringToInteger(product.getMaxMemory())
-            )
-            {
+                    priceMax > product.getBestPrice()  &&
+                    coreMin<= stringToValue(product.getCores()) &&
+                    coreMax >= stringToValue(product.getCores()) &&
+                    baseClockMin <= stringToValue(product.getBaseClock()) &&
+                    baseClockMax >= stringToValue(product.getBaseClock()) &&
+                    boostClockMin <= stringToValue(product.getBoostClock())  &&
+                    boostClockMax >= stringToValue(product.getBoostClock()) &&
+                    tdpMin <= stringToValue(product.getTdp()) &&
+                    tdpMax >= stringToValue(product.getTdp())
+            ){
                 filtered.add(product);
             }
         }
-        ArrayList<MotherboardSearch> sorted = new ArrayList<>();
+        ArrayList<CpuSearchProduct> sorted = new ArrayList<>();
         // Sorted
-        MotherboardProductSort sorter = new MotherboardProductSort();
+        CpuProductSort sorter = new CpuProductSort();
         if (sortFilter.toLowerCase().contains("popularity")) {
             sorted = sorter.sortPopularity(filtered);
         }else if (sortFilter.toLowerCase().contains("name")){
@@ -590,18 +484,27 @@ public class motherboardSearch  extends AppCompatActivity {
             sorted = sorter.sortPrice(filtered);
         }else if (sortFilter.toLowerCase().contains("rating")){
             sorted = sorter.sortRating(filtered);
+        }else if (sortFilter.toLowerCase().contains("cores")){
+            sorted = sorter.sortCores(filtered);
+        }else if (sortFilter.toLowerCase().contains("base")){
+            sorted = sorter.sortBaseClock(filtered);
+        }else if (sortFilter.toLowerCase().contains("boost")){
+            sorted = sorter.sortBoostClock(filtered);
+        }else if (sortFilter.toLowerCase().contains("tdp")){
+            sorted = sorter.sortTDP(filtered);
         }else {
             sorted = sorter.sortPopularity(filtered);
         }
 
         // get children views
-        ArrayList<View> children = motherboardFeed.getProductLayoutView();
+        ArrayList<View> children = cpuFeed.getProductLayoutView();
 
+        loadingNotDone();
         dialog.removeAllViews();
         dialog.setVisibility(View.GONE);
         if (sortFilter.toLowerCase().contains("descending")){
             Collections.reverse(sorted);
-            for (MotherboardSearch product: sorted){
+            for (CpuSearchProduct product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -610,7 +513,7 @@ public class motherboardSearch  extends AppCompatActivity {
                 }
             }
         }else {
-            for (MotherboardSearch product: sorted){
+            for (CpuSearchProduct product: sorted){
                 int id = product.getViewID();
                 for (View child: children){
                     if (child.getId() == id){
@@ -619,6 +522,7 @@ public class motherboardSearch  extends AppCompatActivity {
                 }
             }
         }
+        loadingDone();
         filteredData = sorted;
         dialog.setVisibility(View.VISIBLE);
         Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
@@ -629,7 +533,7 @@ public class motherboardSearch  extends AppCompatActivity {
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;
-        for (MotherboardSearch prod: motherboardFeed.getSearchData()){
+        for (CpuSearchProduct prod: cpuFeed.getSearchData()){
             double bestPrice = prod.getBestPrice();
             if (bestPrice > maxPrice)
                 maxPrice = bestPrice;
@@ -657,7 +561,7 @@ public class motherboardSearch  extends AppCompatActivity {
         findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    private Double stringToInteger(String val){
+    private Double stringToValue(String val){
         if (val != null){
             String value = val.replaceAll("[^0-9.]", "");
             if (value == ""){
@@ -669,3 +573,4 @@ public class motherboardSearch  extends AppCompatActivity {
     }
 
 }
+

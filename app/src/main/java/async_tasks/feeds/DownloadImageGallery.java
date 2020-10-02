@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.feeds;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.ppp.R;
-import com.example.ppp.cpuSearch;
 
 import java.util.ArrayList;
 

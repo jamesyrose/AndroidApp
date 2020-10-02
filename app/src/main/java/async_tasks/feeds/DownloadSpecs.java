@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.feeds;
 
 import android.content.Context;
 import android.graphics.Paint;

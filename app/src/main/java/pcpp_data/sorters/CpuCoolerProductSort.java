@@ -2,18 +2,18 @@ package pcpp_data.sorters;
 
 import java.util.ArrayList;
 
-import pcpp_data.queries.CpuCoolerSearch;
+import pcpp_data.products.CpuCoolerProduct;
 
 public class CpuCoolerProductSort {
 
-    public ArrayList<CpuCoolerSearch> sortPopularity(ArrayList<CpuCoolerSearch> data){
-        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
-        ArrayList<CpuCoolerSearch> orig = data;
+    public ArrayList<CpuCoolerProduct> sortPopularity(ArrayList<CpuCoolerProduct> data){
+        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> orig = data;
         int size = orig.size();
         for(int i=0; i<size; i++){
             int popularity = orig.get(0).getRatingCount();
-            CpuCoolerSearch mostPopular = orig.get(0);
-            for (CpuCoolerSearch product: orig){
+            CpuCoolerProduct mostPopular = orig.get(0);
+            for (CpuCoolerProduct product: orig){
                 int nextItemPop = product.getRatingCount();
                 if (nextItemPop < popularity){
                     popularity = nextItemPop;
@@ -26,14 +26,14 @@ public class CpuCoolerProductSort {
         return sorted;
     }
 
-    public ArrayList<CpuCoolerSearch> sortName(ArrayList<CpuCoolerSearch> data){
-        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
-        ArrayList<CpuCoolerSearch> orig = data;
+    public ArrayList<CpuCoolerProduct> sortName(ArrayList<CpuCoolerProduct> data){
+        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> orig = data;
         int size = orig.size();
         for(int i=0; i<size; i++){
             String val = orig.get(0).getProductName();
-            CpuCoolerSearch valObj= orig.get(0);
-            for (CpuCoolerSearch product: orig){
+            CpuCoolerProduct valObj= orig.get(0);
+            for (CpuCoolerProduct product: orig){
                 String val2 = product.getProductName();
                 if (val2.compareToIgnoreCase(val) < 0){
                     val = val2;
@@ -46,14 +46,14 @@ public class CpuCoolerProductSort {
         return sorted;
     }
 
-    public ArrayList<CpuCoolerSearch> sortPrice(ArrayList<CpuCoolerSearch> data){
-        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
-        ArrayList<CpuCoolerSearch> orig = data;
+    public ArrayList<CpuCoolerProduct> sortPrice(ArrayList<CpuCoolerProduct> data){
+        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> orig = data;
         int size = orig.size();
         for(int i=0; i<size; i++){
             double val = orig.get(0).getBestPrice();
-            CpuCoolerSearch valObj= orig.get(0);
-            for (CpuCoolerSearch product: orig){
+            CpuCoolerProduct valObj= orig.get(0);
+            for (CpuCoolerProduct product: orig){
                 double nextItemPop = product.getBestPrice();
                 if (nextItemPop < val){
                     val = nextItemPop;
@@ -66,14 +66,14 @@ public class CpuCoolerProductSort {
         return sorted;
     }
 
-    public ArrayList<CpuCoolerSearch> sortRating(ArrayList<CpuCoolerSearch> data){
-        ArrayList<CpuCoolerSearch> sorted = new ArrayList<>();
-        ArrayList<CpuCoolerSearch> orig = data;
+    public ArrayList<CpuCoolerProduct> sortRating(ArrayList<CpuCoolerProduct> data){
+        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
+        ArrayList<CpuCoolerProduct> orig = data;
         int size = orig.size();
         for(int i=0; i<size; i++){
             double val = orig.get(0).getRatingAverage();
-            CpuCoolerSearch valObj= orig.get(0);
-            for (CpuCoolerSearch product: orig){
+            CpuCoolerProduct valObj= orig.get(0);
+            for (CpuCoolerProduct product: orig){
                 double nextItemPop = product.getRatingAverage();
                 if (nextItemPop < val){
                     val = nextItemPop;

@@ -3,16 +3,12 @@ package pcpp_data.conn;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Scanner;
 
 import org.json.JSONException;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import pcpp_data.queries.jsonFileManager;
 
 public class Conn {
 

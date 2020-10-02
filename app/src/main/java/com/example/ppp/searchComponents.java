@@ -76,4 +76,10 @@ public class searchComponents extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
+
+    public void goToMemorySearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.memorySearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 }

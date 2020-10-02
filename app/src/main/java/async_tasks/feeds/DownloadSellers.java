@@ -1,4 +1,4 @@
-package async_tasks;
+package async_tasks.feeds;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.ppp.R;
-import com.example.ppp.cpuSearch;
 
 import java.util.ArrayList;
 

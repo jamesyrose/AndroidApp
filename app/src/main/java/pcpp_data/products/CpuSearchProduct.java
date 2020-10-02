@@ -1,15 +1,11 @@
-package pcpp_data.queries;
+package pcpp_data.products;
 
-
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.json.simple.JSONObject;
 
 
 // Selection list of data
-public class CpuSearch extends MainSearch{
+public class CpuSearchProduct extends MainProduct {
     private String manufacturer;
     private String socketType;
     private String cores;
@@ -17,7 +13,7 @@ public class CpuSearch extends MainSearch{
     private String BoostClock;
     private String tdp;
 
-    public CpuSearch(JSONObject row) {
+    public CpuSearchProduct(JSONObject row) {
         super(row);
         getSpecs(row);
     }

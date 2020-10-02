@@ -15,6 +15,12 @@ import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.PriceObj;
 import pcpp_data.sqllite.database;
 
+
+/*
+Queries the product information. This is for the details related to the product.
+It is used when the product is clicked on to present more information.
+ */
+
 public class SingleProductQuery {
     private int productID;
     private String urlBase;
