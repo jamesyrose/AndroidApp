@@ -32,7 +32,7 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import async_tasks.general.RetrieveMemoryFeedTask;
+import async_tasks.feeds.RetrieveMemoryFeedTask;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.sorters.MemoryProductSort;
 import preferences.Preferences;
@@ -257,7 +257,7 @@ public class memorySearchActivity extends AppCompatActivity {
 
         // Set memory range
         final RangeSeekBar<Integer> memoryBar = popupView.findViewById(R.id.memory_per_mod_seek_bar);
-        memoryBar.setRangeValues(0, 256);
+        memoryBar.setRangeValues(0, getMaxMemoryPerModule());
         final RelativeLayout memoryChoice = popupView.findViewById(R.id.memory_per_mod_selection);
         memoryBar.setVisibility(View.GONE);
         memoryChoice.setOnClickListener(new View.OnClickListener() {
@@ -572,28 +572,17 @@ public class memorySearchActivity extends AppCompatActivity {
         }
 
         // get children views
-        ArrayList<View> children = memoryFeed.getProductLayoutView();
         loadingNotDone();
         dialog.removeAllViews();
         dialog.setVisibility(View.GONE);
         if (sortFilter.toLowerCase().contains("descending")){
             Collections.reverse(sorted);
             for (MemoryProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
+                memoryFeed.addProduct(product);
             }
         }else {
             for (MemoryProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
+                memoryFeed.addProduct(product);
             }
         }
         loadingDone();
@@ -615,6 +604,17 @@ public class memorySearchActivity extends AppCompatActivity {
         return (int) Math.floor(maxPrice);
     }
 
+    public int getMaxMemoryPerModule(){
+        int maxMem = 0;
+        for (MemoryProduct prod: memoryFeed.getSearchData()){
+            int nextMem = getModuleSize(prod);
+            if (nextMem > maxMem){
+                maxMem = nextMem;
+            }
+        }
+        return maxMem;
+    }
+
     public int getNumModules(MemoryProduct prod){
         String modString = prod.getModules();
         if (modString != null){
@@ -628,6 +628,7 @@ public class memorySearchActivity extends AppCompatActivity {
         String modString = prod.getModules();
         if (modString != null){
             String mod = modString.split("x")[1];
+
             return stringToInteger(mod);
         }
         return 0;
@@ -656,7 +657,7 @@ public class memorySearchActivity extends AppCompatActivity {
         if (buff != null){
             return stringToInteger(buff);
         }
-        return 0;
+        return 100;
     }
 
     public void goToSettings(){

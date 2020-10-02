@@ -1,4 +1,4 @@
-package async_tasks.general;
+package async_tasks.feeds;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,10 +23,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import async_tasks.feeds.DownloadImageGallery;
-import async_tasks.feeds.DownloadImageTask;
-import async_tasks.feeds.DownloadSellers;
-import async_tasks.feeds.DownloadSpecs;
+import async_tasks.general.DownloadImageGallery;
+import async_tasks.general.DownloadImageTask;
+import async_tasks.general.DownloadSellers;
+import async_tasks.general.DownloadSpecs;
 import pcpp_data.constants.Constants;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.products.MotherboardProduct;
@@ -64,9 +64,9 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
     protected ArrayList<MotherboardProduct> doInBackground(String... strings) {
 
         try {
+            String sql = strings[0];
             GetSearchLists obj = new GetSearchLists(context);
-            obj.getMotherboardSearchList();
-            ArrayList<MotherboardProduct> data = obj.getMotherboardSearchList();
+            ArrayList<MotherboardProduct> data = obj.getMotherboardSearchList(sql);
             return data;
         } catch (Exception e){
             System.out.println("failed to load");

@@ -32,26 +32,26 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import async_tasks.general.RetrieveMotherboardFeedTask;
+import async_tasks.feeds.RetrieveMotherboardFeedTask;
+import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.MotherboardProduct;
-import pcpp_data.sorters.MotherboardProductSort;
 import preferences.Preferences;
 
 public class motherboardSearchActivity extends AppCompatActivity {
     static RetrieveMotherboardFeedTask motherboardFeed;
     Preferences prefs;
     LinearLayout dialog;
+    ScrollView dialogScroll;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
     Context context;
+    SqlConstants sqlConst;
 
     // Data filters
     int priceMin = 0;
     int priceMax = 1000000;
     int memoryMin = 0;
     int memoryMax = 2000;
-    int memorySpeedMin = 0;
-    int memorySpeedMax = 10000;
     int memorySlotMin = 0;
     int memorySlotMax = 16;
     ArrayList<CheckBox> brandList = new ArrayList<>();
@@ -74,11 +74,13 @@ public class motherboardSearchActivity extends AppCompatActivity {
         context = motherboardSearchActivity.this;
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
+        dialogScroll = findViewById(R.id.scroll_window);
+        sqlConst = new SqlConstants();
 
         prefs = new Preferences(context);
 
         motherboardFeed = new RetrieveMotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute();
+        motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -109,14 +111,15 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
                 View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                float lastViewY = lastView.getY();
-                System.out.println(dialog.getChildCount());
-                if (scrollY > lastViewY){
-                    loadingNotDone();
-                    onLoadMore();
-                    loadingDone();
+                if (lastView != null){
+                    float lastViewY = lastView.getY();
+                    System.out.println(dialog.getChildCount());
+                    if (scrollY > lastViewY){
+                        loadingNotDone();
+                        onLoadMore();
+                        loadingDone();
+                    }
                 }
-
             }
         });
     }
@@ -184,7 +187,6 @@ public class motherboardSearchActivity extends AppCompatActivity {
         // which view you pass in doesn't matter, it is only used for the window tolken
         filterWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
-
         // Set the Branch Choices
         if (brandList.isEmpty()){
             RelativeLayout brand_selection = popupView.findViewById(R.id.brand_selection);
@@ -194,6 +196,8 @@ public class motherboardSearchActivity extends AppCompatActivity {
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
             for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$" + brandList.isEmpty());
+
                 String brand = prod.getManufacturer();
                 if (!brands.contains(brand) && brand != null){
                     brands.add(brand);
@@ -286,21 +290,6 @@ public class motherboardSearchActivity extends AppCompatActivity {
             }
         });
 
-        // Set memory slot range
-        final RangeSeekBar<Integer> memorySpeedBar = popupView.findViewById(R.id.memory_speed_seek_bar);
-        memorySpeedBar.setRangeValues(0, 16);
-        final RelativeLayout memorySpeedChoice = popupView.findViewById(R.id.memory_speed_selection);
-        memorySpeedBar.setVisibility(View.GONE);
-        memorySpeedChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (memorySpeedBar.isShown()){
-                    memorySpeedBar.setVisibility(View.GONE);
-                }else{
-                    memorySpeedBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
 
         if (socketList.isEmpty()){
             // Socket Types
@@ -396,17 +385,17 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 memoryBar.setSelectedMaxValue(2000);
                 memorySlotBar.setSelectedMinValue(0);
                 memorySlotBar.setSelectedMaxValue(16);
-                memorySpeedBar.setSelectedMinValue(0);
-                memorySpeedBar.setSelectedMaxValue(10000);
                 brandList.stream().forEach(cb -> cb.setChecked(true));
                 socketList.stream().forEach(cb -> cb.setChecked(true));
                 formFactorList.stream().forEach(cb -> cb.setChecked(true));
 
                 filteredData = motherboardFeed.getSearchData();
+                loadingNotDone();
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    motherboardFeed.addProduct(filteredData.get(i));
-                }
+                motherboardFeed = new RetrieveMotherboardFeedTask(context, dialog, prefs);
+                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+                loadingDone();
+                filterWindow.dismiss();
             }
         });
 
@@ -422,12 +411,10 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 memoryMax = memoryBar.getSelectedMaxValue();
                 memorySlotMin = memorySlotBar.getSelectedMinValue();
                 memorySlotMax = memorySlotBar.getSelectedMaxValue();
-                memorySpeedMin = memorySpeedBar.getSelectedMinValue();
-                memorySpeedMax = memorySpeedBar.getSelectedMaxValue();
                 brandSelected.clear();
                 socketSelected.clear();
                 formFactorSelected.clear();
-                System.out.println("###################1111");
+
                 brandList.stream().forEach(cb -> {
                     if (cb.isChecked()){
                         System.out.println(cb.getText());
@@ -445,9 +432,9 @@ public class motherboardSearchActivity extends AppCompatActivity {
                     };
                 });
 
-                System.out.println("###################22222");
-
+                loadingNotDone();
                 filterData();
+                loadingDone();
                 filterWindow.dismiss();
             }
         });
@@ -516,10 +503,11 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 sortFilter = "Popularity (Descending)";
                 filteredData = motherboardFeed.getSearchData();
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    motherboardFeed.addProduct(filteredData.get(i));
-                }
+                loadingNotDone();
+                motherboardFeed = new RetrieveMotherboardFeedTask(context, dialog, prefs);
+                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
                 sortWindow.dismiss();
+                loadingDone();
             }
         });
 
@@ -532,10 +520,15 @@ public class motherboardSearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
                 RadioButton radioButton = sortOptions.findViewById(selectedId);
-                String selectedText = radioButton.getText().toString();
+                String selectedText = "Popularity (Ascending)";
+                if (radioButton != null){
+                    selectedText = radioButton.getText().toString();
+                }
                 sortFilter = selectedText;
+                loadingNotDone();
                 filterData();
                 sortWindow.dismiss();
+                loadingDone();
             }
         });
 
@@ -562,71 +555,73 @@ public class motherboardSearchActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void filterData(){
-        ArrayList<MotherboardProduct> filtered = new ArrayList<>();
-
-        System.out.println(sortFilter);
-        dialog.removeAllViews();
-        for (MotherboardProduct product: motherboardFeed.getSearchData()){
-            if ((brandSelected.contains(product.getManufacturer()) || brandSelected.isEmpty()) &&
-                    (socketSelected.contains(product.getSocketType()) || socketSelected.isEmpty()) &&
-                    (formFactorSelected.contains(product.getFormFactor()) || formFactorSelected.isEmpty()) &&
-                    priceMin < product.getBestPrice() &&
-                    priceMax > product.getBestPrice() &&
-                    memoryMin < stringToInteger(product.getMaxMemory()) &&
-                    memoryMax > stringToInteger(product.getMaxMemory())
-            )
-            {
-                filtered.add(product);
+        if (brandSelected.isEmpty()){
+            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+                String prodBrand = prod.getManufacturer();
+                if (!brandSelected.contains(prodBrand)){
+                    brandSelected.add(prodBrand);
+                }
             }
         }
-        System.out.println(filtered.toString());
-        ArrayList<MotherboardProduct> sorted = new ArrayList<>();
-        // Sorted
-        MotherboardProductSort sorter = new MotherboardProductSort();
-        if (sortFilter.toLowerCase().contains("popularity")) {
-            sorted = sorter.sortPopularity(filtered);
-        }else if (sortFilter.toLowerCase().contains("name")){
-            sorted = sorter.sortName(filtered);
-        }else if (sortFilter.toLowerCase().contains("price")){
-            sorted = sorter.sortPrice(filtered);
-        }else if (sortFilter.toLowerCase().contains("rating")){
-            sorted = sorter.sortRating(filtered);
-        }else {
-            sorted = sorter.sortPopularity(filtered);
+        if (socketSelected.isEmpty()){
+            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+                String prodBrand = prod.getSocketType();
+                if (!socketSelected.contains(prodBrand)){
+                    socketSelected.add(prodBrand);
+                }
+            }
+        }
+        if (formFactorSelected.isEmpty()){
+            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+                String prodBrand = prod.getFormFactor();
+                if (!formFactorSelected.contains(prodBrand)){
+                    formFactorSelected.add(prodBrand);
+                }
+            }
         }
 
-        // get children views
-        ArrayList<View> children = motherboardFeed.getProductLayoutView();
+        String brands = "";
+        for (String brand: brandSelected){
+            brands += String.format("'%s',", brand);
+        }
+        brands = brands.replaceAll(",$", "");
+
+        String sockets = "";
+        for (String socket: socketSelected){
+            sockets += String.format("'%s',", socket);
+        }
+        sockets = sockets.replaceAll(",$", "");
+
+        String formFactor = "";
+        for (String form: formFactorSelected){
+            formFactor += String.format("'%s',", form);
+        }
+        formFactor = formFactor.replaceAll(",$", "");
+
+        String sortBy = "";
+        String desc = "";
+        if (sortFilter.toLowerCase().contains("descending")){
+            desc = "DESC";
+        }
+        if (sortFilter.toLowerCase().contains("popularity")) {
+            sortBy = String.format("Rating.Count %s, Rating.Average %s", desc, desc);
+        }else if (sortFilter.toLowerCase().contains("name")){
+            sortBy = "ProductMain.ProductName " + desc;
+        }else if (sortFilter.toLowerCase().contains("price")){
+            sortBy = "ProductMain.BestPrice " + desc;
+        }else if (sortFilter.toLowerCase().contains("rating")) {
+            sortBy = "Rating.Average " + desc;
+        }
+
+        String sqlStringBuilt = String.format(sqlConst.MOTHERBOARD_SEARCH_FILTER, brands, sockets,
+                formFactor, priceMin, priceMax, memoryMin, memoryMax, memorySlotMin, memorySlotMax,
+                sortBy);
+        System.out.println(sqlStringBuilt);
         loadingNotDone();
         dialog.removeAllViews();
-        dialog.setVisibility(View.GONE);
-        if (sortFilter.toLowerCase().contains("descending")){
-            Collections.reverse(sorted);
-            for (MotherboardProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
-        }else {
-            for (MotherboardProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
-        }
-        filteredData = sorted;
+        motherboardFeed = new RetrieveMotherboardFeedTask(context, dialog, prefs);
+        motherboardFeed.execute(sqlStringBuilt);
         loadingDone();
-        dialog.setVisibility(View.VISIBLE);
-        Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
-        animation.setDuration(1000);
-        dialog.setAnimation(animation);
-        dialog.animate();
     }
 
     public int getHighestPriceProdcuct(){

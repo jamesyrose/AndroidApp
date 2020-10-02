@@ -22,6 +22,7 @@ public class CpuSearchProduct extends MainProduct {
         this.setManufacturer((String) row.get("Manufacturer"));
         this.cores = (String) row.get("Core Count");
         this.baseClock = (String) row.get("Core Clock");
+        this.baseClock = (this.baseClock == null) ? "0 Ghz": this.baseClock;
         this.BoostClock = (String) row.get("Boost Clock");
         this.BoostClock = (this.BoostClock == null) ? this.baseClock : this.BoostClock; // If no Boost
         this.tdp = (String) row.get("TDP");

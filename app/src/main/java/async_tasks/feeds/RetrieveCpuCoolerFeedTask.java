@@ -1,4 +1,4 @@
-package async_tasks.general;
+package async_tasks.feeds;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,29 +23,29 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import async_tasks.feeds.DownloadImageGallery;
-import async_tasks.feeds.DownloadImageTask;
-import async_tasks.feeds.DownloadSellers;
-import async_tasks.feeds.DownloadSpecs;
+import async_tasks.general.DownloadImageGallery;
+import async_tasks.general.DownloadImageTask;
+import async_tasks.general.DownloadSellers;
+import async_tasks.general.DownloadSpecs;
 import pcpp_data.constants.Constants;
+import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.queries.GetSearchLists;
-import pcpp_data.products.MemoryProduct;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<MemoryProduct>> {
+public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList<CpuCoolerProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<MemoryProduct> searchData;
+    static ArrayList<CpuCoolerProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
 
 
-    public RetrieveMemoryFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public RetrieveCpuCoolerFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -61,12 +61,11 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
 
 
     @Override
-    protected ArrayList<MemoryProduct> doInBackground(String... strings) {
-
+    protected ArrayList<CpuCoolerProduct> doInBackground(String... strings) {
         try {
+            String sql = strings[0];
             GetSearchLists obj = new GetSearchLists(context);
-            obj.getMemorySearchList();
-            ArrayList<MemoryProduct> data = obj.getMemorySearchList();
+            ArrayList<CpuCoolerProduct> data = obj.getCpuCoolerSearchList(sql);
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -75,7 +74,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MemoryProduct> data){
+    protected void onPostExecute(ArrayList<CpuCoolerProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -97,7 +96,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         return dataFetched;
     }
 
-    public void addProduct(final MemoryProduct data) {
+    public void addProduct(final CpuCoolerProduct data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -105,7 +104,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         LinearLayout parentLayout = dialog;
 
         // Inflator
-        View productLayout = LayoutInflater.from(context).inflate(R.layout.memory_selection_template,
+        View productLayout = LayoutInflater.from(context).inflate(R.layout.cpu_cooler_selection_template,
                 parentLayout,
                 false);
 
@@ -128,14 +127,15 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         double bestPrice = (buff > 0) ? buff : 0.0;
         price.setText(String.format("%.2f", bestPrice));
 
-        TextView pricePerGb = productLayout.findViewById(R.id.price_gb_value);
-        pricePerGb.setText(data.getPricePerGB()); // Keep only the first part
-        TextView modules = productLayout.findViewById(R.id.modules_value);
-        modules.setText(data.getModules());
-        TextView memSpeed = productLayout.findViewById(R.id.memory_speed_value);
-        memSpeed.setText(data.getMemorySpeed());
-        TextView ecc = productLayout.findViewById(R.id.ecc_value);
-        ecc.setText(data.getEcc().split("/")[0]);
+        TextView rpm = productLayout.findViewById(R.id.rpm_value);
+        rpm.setText(data.getRpm()); // Keep only the first part
+        TextView noise = productLayout.findViewById(R.id.noise_value);
+        noise.setText(data.getNoise());
+        TextView waterCooled = productLayout.findViewById(R.id.water_cooled_value);
+        waterCooled.setText(data.getWaterCooled());
+        TextView height = productLayout.findViewById(R.id.height_value);
+        height.setText(data.getheight());
+
 
         // Image
         ImageView img = productLayout.findViewById(R.id.product_image);
@@ -187,7 +187,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("Memory");
+        new DownloadSpecs(context, query, specGallery).execute("CPU_Cooler");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {
@@ -256,7 +256,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MemoryProduct> getSearchData(){
+    public ArrayList<CpuCoolerProduct> getSearchData(){
         return searchData;
     }
 

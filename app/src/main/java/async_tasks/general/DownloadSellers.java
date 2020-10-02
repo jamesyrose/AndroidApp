@@ -1,4 +1,4 @@
-package async_tasks.feeds;
+package async_tasks.general;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

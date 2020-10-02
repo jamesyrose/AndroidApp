@@ -12,10 +12,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -30,20 +29,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import async_tasks.general.RetrieveCpuCoolerFeedTask;
+import async_tasks.feeds.RetrieveCpuCoolerFeedTask;
+import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.CpuCoolerProduct;
-import pcpp_data.sorters.CpuCoolerProductSort;
 import preferences.Preferences;
 
 public class cpuCoolerSearchActivity extends AppCompatActivity {
     static RetrieveCpuCoolerFeedTask cpuCoolerFeed;
     Preferences prefs;
     LinearLayout dialog;
+    ScrollView dialogScroll;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
     Context context;
+    SqlConstants sqlConst;
 
     // Data filters
     int priceMin = 0;
@@ -64,13 +64,13 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
         context = cpuCoolerSearchActivity.this;
-        loadingNotDone();
-        dialog = (LinearLayout) findViewById(R.id.searchID);
-
         prefs = new Preferences(context);
-
+        sqlConst = new SqlConstants();
+        loadingNotDone();
+        dialog = findViewById(R.id.searchID);
+        dialogScroll = findViewById(R.id.scroll_window);
         cpuCoolerFeed = new RetrieveCpuCoolerFeedTask(context, dialog, prefs);
-        cpuCoolerFeed.execute();
+        cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -100,14 +100,15 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
                 View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                float lastViewY = lastView.getY();
-                System.out.println(dialog.getChildCount());
-                if (scrollY > lastViewY){
-                    loadingNotDone();
-                    onLoadMore();
-                    loadingDone();
+                if (lastView != null){
+                    float lastViewY = lastView.getY();
+                    System.out.println(dialog.getChildCount());
+                    if (scrollY > lastViewY){
+                        loadingNotDone();
+                        onLoadMore();
+                        loadingDone();
+                    }
                 }
-
             }
         });
     }
@@ -156,6 +157,7 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("ClickableViewAccessibility")
     public void filterPopup(View view){
         // inflate the layout of the popup window
@@ -184,6 +186,18 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
             final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
             final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
             final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_brands); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    brandList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    brandList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
             for (CpuCoolerProduct prod: cpuCoolerFeed.getSearchData()){
@@ -285,10 +299,10 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
                 waterCooled = true;
 
                 filteredData = cpuCoolerFeed.getSearchData();
+                dialogScroll.smoothScrollTo(0,0);
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    cpuCoolerFeed.addProduct(filteredData.get(i));
-                }
+                cpuCoolerFeed = new RetrieveCpuCoolerFeedTask(context, dialog, prefs);
+                cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
                 filterWindow.dismiss();
             }
         });
@@ -344,6 +358,7 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     public void sortPopup(View view){
+
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -371,9 +386,9 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
             sortFilter = "Popularity (Descending)";
             filteredData = cpuCoolerFeed.getSearchData();
             dialog.removeAllViews();
-            for (int i=0; i<30; i++){
-                cpuCoolerFeed.addProduct(filteredData.get(i));
-            }
+            dialogScroll.smoothScrollTo(0, 0);
+            cpuCoolerFeed = new RetrieveCpuCoolerFeedTask(context, dialog, prefs);
+            cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
             sortWindow.dismiss();
         });
 
@@ -385,7 +400,10 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
                 RadioButton radioButton = sortOptions.findViewById(selectedId);
-                String selectedText = radioButton.getText().toString();
+                String selectedText = "Popularity (Ascending)";
+                if (radioButton != null){
+                    selectedText = radioButton.getText().toString();
+                }
                 sortFilter = selectedText;
                 filterData();
                 sortWindow.dismiss();
@@ -414,74 +432,60 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
     }
 
     public void filterData(){
-        ArrayList<CpuCoolerProduct> filtered = new ArrayList<>();
-
-        dialog.removeAllViews();
-        for (CpuCoolerProduct product: cpuCoolerFeed.getSearchData()){
-            if  ((brandSelected.contains(product.getManufacturer()) || brandSelected.isEmpty()) &&
-                    priceMin < product.getBestPrice() &&
-                    priceMax > product.getBestPrice()
-            ){
-                if (waterCooled){
-                    if (product.getWaterCooled().contains("Yes")){
-                        filtered.add(product);
-                    }
-                }
-                if (airCooled) {
-                    if (product.getWaterCooled().contains("No")){
-                        filtered.add(product);
-                    }
+        if (brandSelected.isEmpty()){
+            for (CpuCoolerProduct prod: cpuCoolerFeed.getSearchData()){
+                String prodBrand = prod.getManufacturer();
+                if (!brandSelected.contains(prodBrand)){
+                    brandSelected.add(prodBrand);
                 }
             }
+        };
+
+        String wc = ""; // Water cooled
+        String ac = ""; // Air cooled
+        String brands = "";
+        if (waterCooled){
+            wc = "Yes";
         }
-        ArrayList<CpuCoolerProduct> sorted = new ArrayList<>();
-        // Sorted
-        CpuCoolerProductSort sorter = new CpuCoolerProductSort();
-        if (sortFilter.toLowerCase().contains("popularity")) {
-            sorted = sorter.sortPopularity(filtered);
-        }else if (sortFilter.toLowerCase().contains("name")){
-            sorted = sorter.sortName(filtered);
-        }else if (sortFilter.toLowerCase().contains("price")){
-            sorted = sorter.sortPrice(filtered);
-        }else if (sortFilter.toLowerCase().contains("rating")){
-            sorted = sorter.sortRating(filtered);
-        }else {
-            sorted = sorter.sortPopularity(filtered);
+        if (airCooled){
+            ac = "No";
         }
 
-        // get children views
-        ArrayList<View> children = cpuCoolerFeed.getProductLayoutView();
+        for (String brand: brandSelected){
+            brands += String.format("'%s',", brand);
+        }
+        brands = brands.replaceAll(",$", "");
 
-        loadingNotDone();
-        dialog.removeAllViews();
-        dialog.setVisibility(View.GONE);
+        String sortBy = "";
+        String desc = "";
         if (sortFilter.toLowerCase().contains("descending")){
-            Collections.reverse(sorted);
-            for (CpuCoolerProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
-        }else {
-            for (CpuCoolerProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
+            desc = "DESC";
         }
-        loadingDone();
-        filteredData = sorted;
-        dialog.setVisibility(View.VISIBLE);
-        Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
-        animation.setDuration(1000);
-        dialog.setAnimation(animation);
-        dialog.animate();
+        if (sortFilter.toLowerCase().contains("popularity")) {
+            sortBy = String.format("Rating.Count %s, Rating.Average %s", desc, desc);
+        }else if (sortFilter.toLowerCase().contains("name")){
+            sortBy = "ProductMain.ProductName " + desc;
+        }else if (sortFilter.toLowerCase().contains("price")){
+            sortBy = "ProductMain.BestPrice " + desc;
+        }else if (sortFilter.toLowerCase().contains("rating")){
+            sortBy = "Rating.Average " + desc;
+        }else if (sortFilter.toLowerCase().contains("cores")){
+            sortBy = "CAST(CPU.`Core Count` AS INT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("base")){
+            sortBy = "CAST(CPU.`Core Clock` AS FLOAT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("boost")){
+            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT" + desc;
+        }else if (sortFilter.toLowerCase().contains("tdp")){
+            sortBy = "CAST(CPU.`TDP` AS INT) " + desc;
+        }
+
+        String sqlStringBuilt = String.format(sqlConst.CPU_COOLER_SEARCH_LIST_FILTERED,
+                brands, priceMin, priceMax, wc, ac, sortBy);
+        System.out.println(sqlStringBuilt);
+        dialog.removeAllViews();
+        dialogScroll.smoothScrollTo(0, 0);
+        cpuCoolerFeed = new RetrieveCpuCoolerFeedTask(context, dialog, prefs);
+        cpuCoolerFeed.execute(sqlStringBuilt);
     }
 
     public int getHighestPriceProdcuct(){

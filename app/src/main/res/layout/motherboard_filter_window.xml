@@ -208,42 +208,6 @@
 
 
             <RelativeLayout
-                android:id="@+id/memory_speed_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="@string/memory_speed_label"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-
-            </RelativeLayout>
-
-            <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
-                android:id="@+id/memory_speed_seek_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
-            <RelativeLayout
                 android:id="@+id/memory_slot_selection"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"

@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -30,20 +28,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import async_tasks.general.RetrieveCpuFeedTask;
+import async_tasks.feeds.RetrieveCpuFeedTask;
+import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.CpuSearchProduct;
-import pcpp_data.sorters.CpuProductSort;
 import preferences.Preferences;
 
 public class cpuSearchActivity extends AppCompatActivity {
     static RetrieveCpuFeedTask cpuFeed;
     Preferences prefs;
+    ScrollView dialogScroll;
     LinearLayout dialog;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
-    Context context; 
+    Context context;
+    View loadingWheel;
 
     // Data filters
     boolean amdSelected = true;
@@ -63,19 +62,23 @@ public class cpuSearchActivity extends AppCompatActivity {
     // data
     ArrayList<CpuSearchProduct> filteredData;
 
+    // Constants
+    SqlConstants sqlConst = new SqlConstants();
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scroll_search);
         context = cpuSearchActivity.this;
-        loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
-
+        loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
 
+
+        loadingNotDone();
         cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
-        cpuFeed.execute();
+        cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -98,21 +101,22 @@ public class cpuSearchActivity extends AppCompatActivity {
         });
 
 //        // Set Scroll listener
-        final ScrollView dialogScroll = findViewById(R.id.scroll_window);
+        dialogScroll = findViewById(R.id.scroll_window);
         dialogScroll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
                 View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                float lastViewY = lastView.getY();
-                System.out.println(dialog.getChildCount());
-                if (scrollY > lastViewY){
-                    loadingNotDone();
-                    onLoadMore();
-                    loadingDone();
+                if (lastView != null){
+                    float lastViewY = lastView.getY();
+                    System.out.println(dialog.getChildCount());
+                    if (scrollY > lastViewY){
+                        loadingNotDone();
+                        onLoadMore();
+                        loadingDone();
+                    }
                 }
-
             }
         });
     }
@@ -293,12 +297,9 @@ public class cpuSearchActivity extends AppCompatActivity {
                 // tdp
                 tdpBar.setSelectedMinValue(0);
                 tdpBar.setSelectedMaxValue(500);
-
-                filteredData = cpuFeed.getSearchData();
+                cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
                 dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    cpuFeed.addProduct(filteredData.get(i));
-                }
+                cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
                 filterWindow.dismiss();
             }
         });
@@ -396,17 +397,14 @@ public class cpuSearchActivity extends AppCompatActivity {
 
         //Reset button
         Button resetButton = popupView.findViewById(R.id.reset_button);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortFilter = "Popularity (Descending)";
-                filteredData = cpuFeed.getSearchData();
-                dialog.removeAllViews();
-                for (int i=0; i<30; i++){
-                    cpuFeed.addProduct(filteredData.get(i));
-                }
-                sortWindow.dismiss();
-            }
+        resetButton.setOnClickListener(v -> {
+            sortFilter = "Popularity (Descending)";
+            filteredData = cpuFeed.getSearchData();
+            dialog.removeAllViews();
+            cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+            dialog.removeAllViews();
+            cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
+            sortWindow.dismiss();
         });
 
         // Apply Button
@@ -417,10 +415,15 @@ public class cpuSearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
                 RadioButton radioButton = sortOptions.findViewById(selectedId);
-                String selectedText = radioButton.getText().toString();
+                String selectedText = "Popularity (Ascending)";
+                if (radioButton != null){
+                    selectedText = radioButton.getText().toString();
+                }
                 sortFilter = selectedText;
-                filterData();
                 sortWindow.dismiss();
+                loadingNotDone();
+                filterData();
+                loadingDone();
             }
         });
 
@@ -446,89 +449,50 @@ public class cpuSearchActivity extends AppCompatActivity {
     }
 
     public void filterData(){
-        ArrayList<String> manufacturers = new ArrayList<>();
-        ArrayList<CpuSearchProduct> filtered = new ArrayList<>();
-
+        String brandFilter = "";
         if (amdSelected){
-            manufacturers.add("AMD");
+            brandFilter += "'AMD',";
         }
         if (intelSelected){
-            manufacturers.add("Intel");
+            brandFilter += "'Intel'";
         }
+        brandFilter = brandFilter.replaceAll(",$", "");
 
-        dialog.removeAllViews();
-        for (CpuSearchProduct product: cpuFeed.getSearchData()){
-            if (manufacturers.contains(product.getManufacturer()) &&
-                    priceMin < product.getBestPrice() &&
-                    priceMax > product.getBestPrice()  &&
-                    coreMin<= stringToValue(product.getCores()) &&
-                    coreMax >= stringToValue(product.getCores()) &&
-                    baseClockMin <= stringToValue(product.getBaseClock()) &&
-                    baseClockMax >= stringToValue(product.getBaseClock()) &&
-                    boostClockMin <= stringToValue(product.getBoostClock())  &&
-                    boostClockMax >= stringToValue(product.getBoostClock()) &&
-                    tdpMin <= stringToValue(product.getTdp()) &&
-                    tdpMax >= stringToValue(product.getTdp())
-            ){
-                filtered.add(product);
-            }
-        }
-        ArrayList<CpuSearchProduct> sorted = new ArrayList<>();
-        // Sorted
-        CpuProductSort sorter = new CpuProductSort();
-        if (sortFilter.toLowerCase().contains("popularity")) {
-            sorted = sorter.sortPopularity(filtered);
-        }else if (sortFilter.toLowerCase().contains("name")){
-            sorted = sorter.sortName(filtered);
-        }else if (sortFilter.toLowerCase().contains("price")){
-            sorted = sorter.sortPrice(filtered);
-        }else if (sortFilter.toLowerCase().contains("rating")){
-            sorted = sorter.sortRating(filtered);
-        }else if (sortFilter.toLowerCase().contains("cores")){
-            sorted = sorter.sortCores(filtered);
-        }else if (sortFilter.toLowerCase().contains("base")){
-            sorted = sorter.sortBaseClock(filtered);
-        }else if (sortFilter.toLowerCase().contains("boost")){
-            sorted = sorter.sortBoostClock(filtered);
-        }else if (sortFilter.toLowerCase().contains("tdp")){
-            sorted = sorter.sortTDP(filtered);
-        }else {
-            sorted = sorter.sortPopularity(filtered);
-        }
 
-        // get children views
-        ArrayList<View> children = cpuFeed.getProductLayoutView();
-
-        loadingNotDone();
-        dialog.removeAllViews();
-        dialog.setVisibility(View.GONE);
+        String sortBy = "";
+        String desc = "";
         if (sortFilter.toLowerCase().contains("descending")){
-            Collections.reverse(sorted);
-            for (CpuSearchProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
-        }else {
-            for (CpuSearchProduct product: sorted){
-                int id = product.getViewID();
-                for (View child: children){
-                    if (child.getId() == id){
-                        dialog.addView(child);
-                    }
-                }
-            }
+            desc = "DESC";
         }
+
+        if (sortFilter.toLowerCase().contains("popularity")) {
+            sortBy = String.format("Rating.Count %s, Rating.Average %s", desc, desc);
+        }else if (sortFilter.toLowerCase().contains("name")){
+            sortBy = "ProductMain.ProductName " + desc;
+        }else if (sortFilter.toLowerCase().contains("price")){
+            sortBy = "ProductMain.BestPrice " + desc;
+        }else if (sortFilter.toLowerCase().contains("rating")){
+            sortBy = "Rating.Average " + desc;
+        }else if (sortFilter.toLowerCase().contains("cores")){
+            sortBy = "CAST(CPU.`Core Count` AS INT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("base")){
+            sortBy = "CAST(CPU.`Core Clock` AS FLOAT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("boost")){
+            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT" + desc;
+        }else if (sortFilter.toLowerCase().contains("tdp")){
+            sortBy = "CAST(CPU.`TDP` AS INT) " + desc;
+        }
+
+        String sqlStringBuilt = String.format(sqlConst.CPU_SEARCH_LIST_FILTERED, brandFilter,
+                priceMin, priceMax, coreMin, coreMax,
+                  baseClockMin, baseClockMax, boostClockMin, boostClockMax, tdpMin, tdpMax, sortBy);
+        System.out.println(sqlStringBuilt);
+        dialogScroll.smoothScrollTo(0,0);
+        dialog.removeAllViews();
+        loadingNotDone();
+        cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+        cpuFeed.execute(sqlStringBuilt);
         loadingDone();
-        filteredData = sorted;
-        dialog.setVisibility(View.VISIBLE);
-        Animation animation   =    AnimationUtils.loadAnimation(context, R.anim.decompress);
-        animation.setDuration(1000);
-        dialog.setAnimation(animation);
-        dialog.animate();
     }
 
     public int getHighestPriceProdcuct(){
@@ -554,11 +518,11 @@ public class cpuSearchActivity extends AppCompatActivity {
     }
 
     private void loadingDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.GONE);
+       loadingWheel.setVisibility(View.GONE);
     }
 
     private void loadingNotDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
+        loadingWheel.setVisibility(View.VISIBLE);
     }
 
     private Double stringToValue(String val){

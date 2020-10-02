@@ -22,8 +22,7 @@ public class GetSearchLists{
         this.context = context;
     }
 
-    public ArrayList<CpuSearchProduct> getCPUsearchList() {
-        String sql  = new SqlConstants().CPU_SEARCH_LIST;
+    public ArrayList<CpuSearchProduct> getCPUsearchList(String sql) {
         ArrayList<CpuSearchProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
@@ -34,8 +33,7 @@ public class GetSearchLists{
         return searchOptions;
     }
 
-    public ArrayList<CpuCoolerProduct> getCpuCoolerSearchList() {
-        String sql  = new SqlConstants().CPU_COOLER_SEARCH_LIST;
+    public ArrayList<CpuCoolerProduct> getCpuCoolerSearchList(String sql) {
         ArrayList<CpuCoolerProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
@@ -46,8 +44,7 @@ public class GetSearchLists{
         return searchOptions;
     }
 
-    public ArrayList<MotherboardProduct> getMotherboardSearchList() {
-        String sql  = new SqlConstants().MOTHERBOARD_SEARCH_LIST;
+    public ArrayList<MotherboardProduct> getMotherboardSearchList(String sql) {
         ArrayList<MotherboardProduct> searchOptions = new ArrayList<>();
         JSONArray data = new database(context).getData(sql);
         for (Object buff: data) {
