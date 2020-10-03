@@ -1,6 +1,10 @@
 package pcpp_data.products;
 
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import org.json.simple.JSONObject;
 
 
@@ -11,6 +15,7 @@ public class StorageProduct extends MainProduct {
     private String formFactor;
     private String type;
     private String nvme;
+
 
     public StorageProduct(JSONObject row) {
         super(row);
@@ -34,7 +39,7 @@ public class StorageProduct extends MainProduct {
     }
 
     public String getFormFactor(){
-        return formFactor;
+        return (formFactor  != null) ? formFactor : "";
     }
 
     public String getCapacity(){

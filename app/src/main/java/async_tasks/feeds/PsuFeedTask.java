@@ -28,24 +28,24 @@ import async_tasks.general.DownloadImageTask;
 import async_tasks.general.DownloadSellers;
 import async_tasks.general.DownloadSpecs;
 import pcpp_data.constants.Constants;
-import pcpp_data.products.CpuCoolerProduct;
+import pcpp_data.products.PsuProduct;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList<CpuCoolerProduct>> {
+public class PsuFeedTask extends AsyncTask<String, Void, ArrayList<PsuProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<CpuCoolerProduct> searchData;
+    static ArrayList<PsuProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
 
 
-    public RetrieveCpuCoolerFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public PsuFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -61,11 +61,14 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
 
 
     @Override
-    protected ArrayList<CpuCoolerProduct> doInBackground(String... strings) {
+    protected ArrayList<PsuProduct> doInBackground(String... strings) {
+
         try {
             String sql = strings[0];
+            System.out.println(sql);
             GetSearchLists obj = new GetSearchLists(context);
-            ArrayList<CpuCoolerProduct> data = obj.getCpuCoolerSearchList(sql);
+            ArrayList<PsuProduct> data = obj.getPsuSearchList(sql);
+            System.out.println("$$$$$$$$$$$$$$$$$" + data.size());
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -74,7 +77,7 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
     }
 
     @Override
-    protected void onPostExecute(ArrayList<CpuCoolerProduct> data){
+    protected void onPostExecute(ArrayList<PsuProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -96,7 +99,8 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
         return dataFetched;
     }
 
-    public void addProduct(final CpuCoolerProduct data) {
+    public void addProduct(final PsuProduct data) {
+        System.out.println(data.toString());
         // Product id
         final int productID = data.getProductID();
 
@@ -104,7 +108,7 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
         LinearLayout parentLayout = dialog;
 
         // Inflator
-        View productLayout = LayoutInflater.from(context).inflate(R.layout.cpu_cooler_selection_template,
+        View productLayout = LayoutInflater.from(context).inflate(R.layout.psu_selection_template,
                 parentLayout,
                 false);
 
@@ -127,15 +131,16 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
         double bestPrice = (buff > 0) ? buff : 0.0;
         price.setText(String.format("%.2f", bestPrice));
 
-        TextView rpm = productLayout.findViewById(R.id.rpm_value);
-        rpm.setText(data.getRpm()); // Keep only the first part
-        TextView noise = productLayout.findViewById(R.id.noise_value);
-        noise.setText(data.getNoise());
-        TextView waterCooled = productLayout.findViewById(R.id.water_cooled_value);
-        waterCooled.setText(data.getWaterCooled());
-        TextView height = productLayout.findViewById(R.id.height_value);
-        height.setText(data.getheight());
-
+        TextView socket = productLayout.findViewById(R.id.modular_value);
+        socket.setText(data.getModular()); // Keep only the first part
+        TextView tdp = productLayout.findViewById(R.id.form_factor_value);
+        tdp.setText(data.getFormFactor());
+        TextView cores = productLayout.findViewById(R.id.eff_rating_value);
+        cores.setText(data.getEfficiency());
+        TextView clock = productLayout.findViewById(R.id.wattage_value);
+        clock.setText(data.getWattage());
+        TextView model = productLayout.findViewById(R.id.model);
+        model.setText(data.getModel());
 
         // Image
         ImageView img = productLayout.findViewById(R.id.product_image);
@@ -187,7 +192,7 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("CPU_Cooler");
+        new DownloadSpecs(context, query, specGallery).execute("PSU");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {
@@ -256,7 +261,7 @@ public class RetrieveCpuCoolerFeedTask extends AsyncTask<String, Void, ArrayList
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<CpuCoolerProduct> getSearchData(){
+    public ArrayList<PsuProduct> getSearchData(){
         return searchData;
     }
 

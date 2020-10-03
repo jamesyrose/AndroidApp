@@ -49,11 +49,16 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".1"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
-
+                <TextView
+                    android:id="@+id/model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor = "#FFFFFF"
+                    android:textSize ="16sp"
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -135,73 +140,19 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/socket_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/capacity_label"
+                                android:text="@string/tower_u"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/form_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/form_factor"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/capacity_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="capacity"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/form_factor_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="form factor"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/memory_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/type_label"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/chipset_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/nvme_label"
+                                android:text="@string/psu_shroud_u"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
@@ -214,20 +165,70 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/type_value"
+                                android:id="@+id/tower_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="type"
+                                android:text=""
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 
                             <TextView
-                                android:id="@+id/nvme_value"
+                                android:id="@+id/shroud_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="nvme"
+                                android:text=""
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/side_panel_u"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/max_gpu_len_u"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/side_panel_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text=""
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/max_gpu_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text=""
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 

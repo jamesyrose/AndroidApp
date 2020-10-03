@@ -9,10 +9,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import pcpp_data.constants.SqlConstants;
+import pcpp_data.products.CaseProduct;
 import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.products.CpuSearchProduct;
+import pcpp_data.products.GpuSearchProduct;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.products.MotherboardProduct;
+import pcpp_data.products.PsuProduct;
 import pcpp_data.products.StorageProduct;
 import pcpp_data.sqllite.database;
 
@@ -74,6 +77,40 @@ public class GetSearchLists{
             JSONObject row = (JSONObject) buff;
             StorageProduct storageRow = new StorageProduct(row);
             searchOptions.add(storageRow);
+        }
+        return searchOptions;
+    }
+
+    public ArrayList<GpuSearchProduct> getGPUsearchList(String sql) {
+        ArrayList<GpuSearchProduct> searchOptions = new ArrayList<>();
+        JSONArray data = new database(context).getData(sql);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            GpuSearchProduct storageRow = new GpuSearchProduct(row);
+            searchOptions.add(storageRow);
+        }
+        return searchOptions;
+    }
+
+    public ArrayList<PsuProduct> getPsuSearchList(String sql) {
+        ArrayList<PsuProduct> searchOptions = new ArrayList<>();
+        JSONArray data = new database(context).getData(sql);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            PsuProduct storageRow = new PsuProduct(row);
+            searchOptions.add(storageRow);
+        }
+        return searchOptions;
+    }
+
+    public ArrayList<CaseProduct> getCaseSearchList(String sql) {
+        ArrayList<CaseProduct> searchOptions = new ArrayList<>();
+        JSONArray data = new database(context).getData(sql);
+        for (Object buff: data) {
+            JSONObject row = (JSONObject) buff;
+            CaseProduct storageRow = new CaseProduct(row);
+            searchOptions.add(storageRow);
+
         }
         return searchOptions;
     }

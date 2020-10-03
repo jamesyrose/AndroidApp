@@ -109,7 +109,16 @@
                         android:layout_height="wrap_content"
                         android:layout_weight=".5"
                         android:padding="10dp"
-                        android:orientation="vertical"></LinearLayout>
+                        android:orientation="vertical">
+
+                        <CheckBox
+                            android:id="@+id/deselect_all_brands"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="#FFFFFF"
+                            android:textColor="#FFFFFF"
+                            android:text="De/Select All" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/brand_options_2"
@@ -385,9 +394,13 @@
                     </LinearLayout>
 
                 </LinearLayout>
-
             </LinearLayout>
-
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:padding="10dp"
+            android:orientation="vertical">
 
         </LinearLayout>
     </ScrollView>

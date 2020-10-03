@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import pcpp_data.conn.Conn;
 import pcpp_data.sqllite.database;
-import pcpp_data.sqllite.updateDatabase;
 import preferences.Preferences;
 
 public class updateSQL  extends AsyncTask<String, Integer, String>{

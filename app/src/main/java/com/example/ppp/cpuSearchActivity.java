@@ -3,7 +3,6 @@ package com.example.ppp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -30,13 +29,13 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
 
-import async_tasks.feeds.RetrieveCpuFeedTask;
+import async_tasks.feeds.CpuFeedTask;
 import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.CpuSearchProduct;
 import preferences.Preferences;
 
 public class cpuSearchActivity extends AppCompatActivity {
-    static RetrieveCpuFeedTask cpuFeed;
+    static CpuFeedTask cpuFeed;
     Preferences prefs;
     ScrollView dialogScroll;
     LinearLayout dialog;
@@ -85,7 +84,7 @@ public class cpuSearchActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         loadingNotDone();
-        cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+        cpuFeed = new CpuFeedTask(context, dialog, prefs);
         cpuFeed.execute( sqlConst.CPU_SEARCH_LIST);
 
         // Set filter
@@ -304,7 +303,7 @@ public class cpuSearchActivity extends AppCompatActivity {
                 // tdp
                 tdpBar.setSelectedMinValue(0);
                 tdpBar.setSelectedMaxValue(500);
-                cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+                cpuFeed = new CpuFeedTask(context, dialog, prefs);
                 dialog.removeAllViews();
                 cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
                 filterWindow.dismiss();
@@ -408,7 +407,7 @@ public class cpuSearchActivity extends AppCompatActivity {
             sortFilter = "Popularity (Descending)";
             filteredData = cpuFeed.getSearchData();
             dialog.removeAllViews();
-            cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+            cpuFeed = new CpuFeedTask(context, dialog, prefs);
             dialog.removeAllViews();
             cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
             sortWindow.dismiss();
@@ -497,7 +496,7 @@ public class cpuSearchActivity extends AppCompatActivity {
         dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
         loadingNotDone();
-        cpuFeed = new RetrieveCpuFeedTask(context, dialog, prefs);
+        cpuFeed = new CpuFeedTask(context, dialog, prefs);
         cpuFeed.execute(sqlStringBuilt);
         loadingDone();
     }

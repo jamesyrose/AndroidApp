@@ -14,7 +14,8 @@ public class SqlConstants {
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID " +
             "LEFT JOIN CPU on CPU.ProductID=ProductMain.ProductID " +
-            "WHERE  ProductMain.ProductType = 'CPU' ;";
+            "WHERE  ProductMain.ProductType = 'CPU' " +
+            "ORDER BY Rating.Count DESC;";
 
     public final String CPU_SEARCH_LIST_FILTERED = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, CPU.Manufacturer, \n" +
@@ -47,7 +48,8 @@ public class SqlConstants {
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID " +
             "LEFT JOIN CPU_Cooler on CPU_Cooler.ProductID=ProductMain.ProductID " +
-            "WHERE  ProductMain.ProductType = 'CPU_Cooler';";
+            "WHERE  ProductMain.ProductType = 'CPU_Cooler' " +
+            "ORDER BY Rating.Count DESC;";
 
     public final String CPU_COOLER_SEARCH_LIST_FILTERED = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, " +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, " +
@@ -75,7 +77,8 @@ public class SqlConstants {
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Motherboard on Motherboard.ProductID=ProductMain.ProductID " +
-            "WHERE  ProductMain.ProductType = 'Motherboard';";
+            "WHERE  ProductMain.ProductType = 'Motherboard' " +
+            "ORDER BY Rating.Count DESC;";
 
     public final String MOTHERBOARD_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, Motherboard.Manufacturer, \n" +
@@ -107,7 +110,8 @@ public class SqlConstants {
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Memory on Memory.ProductID=ProductMain.ProductID " +
-            "WHERE  ProductMain.ProductType = 'Memory';";
+            "WHERE  ProductMain.ProductType = 'Memory' " +
+            "ORDER BY Rating.Count DESC;";
 
     public final String MEMORY_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, \n" +
@@ -140,7 +144,8 @@ public class SqlConstants {
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
             "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
             "LEFT JOIN Storage on Storage.ProductID=ProductMain.ProductID \n" +
-            "WHERE  ProductMain.ProductType = 'Storage';";
+            "WHERE  ProductMain.ProductType = 'Storage' " +
+            "ORDER BY Rating.Count DESC;";
 
     public final String STORAGE_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
@@ -154,13 +159,104 @@ public class SqlConstants {
             "AND Storage.Manufacturer IN (%s)\n" +
             "AND Storage.`Form Factor` IN (%s)\n" +
             "AND Storage.Type IN (%s)\n" +
-            "AND Storage.NVME = '%s'\n" +
+            "AND (Storage.NVME = '%s' OR Storage.NVME = '%s' ) \n" +
             "AND ProductMain.BestPrice > %d\n" +
             "AND ProductMain.BestPrice < %d\n" +
             "AND CAST(Storage.Capacity AS INT) > %d\n" +
             "AND CAST(Storage.Capacity AS INT) < %d\n" +
             "ORDER BY %s";
 
+    public final String GPU_SEARCH_LIST = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "GPU.Manufacturer, GPU.`Core Clock`, GPU.Memory, GPU.Length, GPU.TDP, GPU.Chipset \n" +
+            "FROM ProductMain \n" +
+            "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN GPU on GPU.ProductID=ProductMain.ProductID \n" +
+            "WHERE  ProductMain.ProductType = 'GPU' " +
+            "ORDER BY Rating.Count DESC;\n";
+
+    public final String GPU_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "GPU.Manufacturer, GPU.`Core Clock`, GPU.Memory, GPU.Length, GPU.TDP, GPU.Chipset\n" +
+            "FROM ProductMain \n" +
+            "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "LEFT JOIN GPU on GPU.ProductID=ProductMain.ProductID \n" +
+            "WHERE  ProductMain.ProductType = 'GPU'\n" +
+            "AND GPU.Manufacturer  IN (%s)\n" +
+            "AND ProductMain.BestPrice > %d\n" +
+            "AND ProductMain.BestPrice < %d\n" +
+            "AND CAST(GPU.Memory AS INT) > %d\n" +
+            "AND CAST(GPU.Memory AS INT) < %d\n" +
+            "AND CAST(GPU.TDP AS INT) > %d\n" +
+            "AND CAST(GPU.TDP AS INT) < %d\n" +
+            "ORDER BY %s;\n" +
+            "\n";
+
+    public final String PSU_SEARCH_LIST = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "    ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "    PSU.Manufacturer, PSU.Model, PSU.Wattage, PSU.Modular, PSU.`Efficiency Rating`, PSU.`Form Factor`\n" +
+            "    FROM ProductMain \n" +
+            "    LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN PSU on PSU.ProductID=ProductMain.ProductID \n" +
+            "    WHERE  ProductMain.ProductType = 'PSU' " +
+            "ORDER BY Rating.Count DESC;";
+
+    public final String PSU_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "    ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "    PSU.Manufacturer, PSU.Model, PSU.Wattage, PSU.Modular, PSU.`Efficiency Rating`, PSU.`Form Factor`\n" +
+            "    FROM ProductMain \n" +
+            "    LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN PSU on PSU.ProductID=ProductMain.ProductID \n" +
+            "    WHERE  ProductMain.ProductType = 'PSU'\n" +
+            "    AND PSU.Manufacturer IN (%s)\n" +
+            "    AND PSU.`Efficiency Rating` IN (%s)\n" +
+            "    AND PSU.`Form Factor` IN (%s) \n" +
+            "    AND PSU.Modular IN (%s) \n" +
+            "    AND ProductMain.BestPrice > %d \n" +
+            "    AND ProductMain.BestPrice < %d \n" +
+            "    AND CAST(PSU.Wattage AS INT) >  %d\n" +
+            "    AND CAST(PSU.Wattage AS INT) < %d\n" +
+            "    ORDER BY %s ;\n" +
+            "    ";
+
+    public final String CASE_SEARCH_LIST = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "        ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "        Cases.Manufacturer, Cases.Type, Cases.`Power Supply Shroud`, Cases.`Side Panel Window`, \n" +
+            "        CAST(SUBSTR(Cases.`Maximum Video Card Length`, 1, 4) AS INT) GPU_Length\n" +
+            "        FROM ProductMain \n" +
+            "        LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Cases on Cases.ProductID=ProductMain.ProductID \n" +
+            "        WHERE  ProductMain.ProductType = 'Cases'  " +
+            "ORDER BY Rating.Count  DESC;";
+
+    public final String CASE_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "        ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images,\n" +
+            "        Cases.Manufacturer, Cases.Type, Cases.`Power Supply Shroud`, Cases.`Side Panel Window`, \n" +
+            "        CAST(SUBSTR(Cases.`Maximum Video Card Length`, 1, 4) AS INT) GPU_Length\n" +
+            "        FROM ProductMain \n" +
+            "        LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "        LEFT JOIN Cases on Cases.ProductID=ProductMain.ProductID \n" +
+            "        WHERE  ProductMain.ProductType = 'Cases';\n" +
+            "        AND Cases.Manufacturer IN (%s)\n" +
+            "        AND Cases.`Power Supply Shroud` IN (%s)\n" +
+            "        AND Cases.`Type` IN (%s)\n" +
+            "        AND Cases.`Side Panel Window` IN (%s) \n" +
+            "        AND ProductMain.BestPrice > %d \n" +
+            "        AND ProductMain.BestPrice < %d \n" +
+            "        ORDER BY %s ;\n" +
+            "\n";
 
     public final String SINGLE_PRODUCT  = "SELECT * FROM %s WHERE ProductID = %d";
 }

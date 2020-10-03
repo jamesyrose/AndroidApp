@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -29,55 +28,65 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
 
-import async_tasks.feeds.MotherboardFeedTask;
+import async_tasks.feeds.PsuFeedTask;
 import pcpp_data.constants.SqlConstants;
-import pcpp_data.products.MotherboardProduct;
+import pcpp_data.products.PsuProduct;
 import preferences.Preferences;
 
-public class motherboardSearchActivity extends AppCompatActivity {
-    static MotherboardFeedTask motherboardFeed;
+public class psuSearchActivity extends AppCompatActivity {
+    static PsuFeedTask psuFeed;
     Preferences prefs;
-    LinearLayout dialog;
     ScrollView dialogScroll;
+    LinearLayout dialog;
     PopupWindow filterWindow;
     PopupWindow sortWindow;
     Context context;
-    SqlConstants sqlConst;
+    View loadingWheel;
 
     // Data filters
     int priceMin = 0;
     int priceMax = 1000000;
-    int memoryMin = 0;
-    int memoryMax = 2000;
-    int memorySlotMin = 0;
-    int memorySlotMax = 16;
-    ArrayList<CheckBox> brandList = new ArrayList<>();
-    ArrayList<CheckBox> socketList = new ArrayList<>();
-    ArrayList<CheckBox> formFactorList = new ArrayList<>();
-    ArrayList<String> brandSelected = new ArrayList<String>();
-    ArrayList<String> socketSelected = new ArrayList<String>();
-    ArrayList<String> formFactorSelected = new ArrayList<String>();
-
+    int wattageMin = 0;
+    int wattageMax = 10000;
+    boolean yesModular = true;
+    boolean noModular = true;
     String sortFilter = "Popularity (Ascending)";
+    ArrayList<CheckBox> brandList = new ArrayList<>();
+    ArrayList<String> brandSelected = new ArrayList<>();
+    ArrayList<CheckBox> effRatingList = new ArrayList<>();
+    ArrayList<String> effRatingSelected = new ArrayList<>();
+    ArrayList<CheckBox> formFactorList = new ArrayList<>();
+    ArrayList<String> formFactorSelected = new ArrayList<>();
+    ArrayList<CheckBox> modularList = new ArrayList<>();
+    ArrayList<String> modularSelected = new ArrayList<>();
 
     // data
-    ArrayList<MotherboardProduct> filteredData;
+    ArrayList<PsuProduct> filteredData;
 
+    // Constants
+    SqlConstants sqlConst = new SqlConstants();
+
+    Bundle savedInstanceState;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.savedInstanceState = savedInstanceState;
         setContentView(R.layout.scroll_search);
-        context = motherboardSearchActivity.this;
-        loadingNotDone();
+        context = psuSearchActivity.this;
         dialog = (LinearLayout) findViewById(R.id.searchID);
-        dialogScroll = findViewById(R.id.scroll_window);
-        sqlConst = new SqlConstants();
-
+        loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
 
-        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadingNotDone();
+        psuFeed = new PsuFeedTask(context, dialog, prefs);
+        psuFeed.execute( sqlConst.PSU_SEARCH_LIST);
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -100,22 +109,19 @@ public class motherboardSearchActivity extends AppCompatActivity {
             }
         });
 
-//        // Set Scroll listener
-        final ScrollView dialogScroll = findViewById(R.id.scroll_window);
-        dialogScroll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                dialogScroll.getY();
-                int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
-                View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                if (lastView != null){
-                    float lastViewY = lastView.getY();
-                    System.out.println(dialog.getChildCount());
-                    if (scrollY > lastViewY){
-                        loadingNotDone();
-                        onLoadMore();
-                        loadingDone();
-                    }
+        // Set Scroll listener
+        dialogScroll = findViewById(R.id.scroll_window);
+        dialogScroll.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            dialogScroll.getY();
+            int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
+            View lastView = dialog.getChildAt(dialog.getChildCount() - 1);
+            if (lastView != null) {
+                float lastViewY = lastView.getY();
+                System.out.println(dialog.getChildCount());
+                if (scrollY > lastViewY) {
+                    loadingNotDone();
+                    onLoadMore();
+                    loadingDone();
                 }
             }
         });
@@ -149,20 +155,20 @@ public class motherboardSearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     public void onLoadMore(){
         int currentChildCount = dialog.getChildCount();
-        ArrayList<MotherboardProduct> data = motherboardFeed.getSearchData();
+        ArrayList<PsuProduct> data = psuFeed.getSearchData();
         if (filteredData != null) {
             data = filteredData;
         }
         int end = currentChildCount + 30;
         end = (data.size() > end) ? end : data.size();
         for (int i=currentChildCount; i<end; i++){
-            motherboardFeed.addProduct(data.get(i));
+            psuFeed.addProduct(data.get(i));
         }
 
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("ClickableViewAccessibility")
@@ -170,7 +176,7 @@ public class motherboardSearchActivity extends AppCompatActivity {
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.motherboard_filter_window, null);
+        View popupView = inflater.inflate(R.layout.psu_filter_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -183,16 +189,31 @@ public class motherboardSearchActivity extends AppCompatActivity {
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
         filterWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
-        // Set the Branch Choices
+
+        // Set the Brand Choices
         if (brandList.isEmpty()){
             RelativeLayout brand_selection = popupView.findViewById(R.id.brand_selection);
             final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
             final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
             final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_brands); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    brandList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    brandList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+            for (PsuProduct prod: psuFeed.getSearchData()){
                 System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$" + brandList.isEmpty());
 
                 String brand = prod.getManufacturer();
@@ -237,6 +258,198 @@ public class motherboardSearchActivity extends AppCompatActivity {
         }
 
 
+        // Set the Efficency  Choices
+        if (effRatingList.isEmpty()){
+            RelativeLayout eff_rating_selection = popupView.findViewById(R.id.eff_rating_selection);
+            final LinearLayout eff_ratingOptions = popupView.findViewById(R.id.eff_rating_options);
+            final LinearLayout eff_rating_choice1 = popupView.findViewById(R.id.eff_rating_options_1);
+            final LinearLayout eff_rating_choice2 = popupView.findViewById(R.id.eff_rating_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_eff_ratings); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    effRatingList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    effRatingList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
+            eff_ratingOptions.setVisibility(View.GONE);
+            ArrayList<String> eff_ratings = new ArrayList<>();
+            for (PsuProduct prod: psuFeed.getSearchData()){
+                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$" + effRatingList.isEmpty());
+
+                String eff_rating = prod.getEfficiency();
+                if (!eff_ratings.contains(eff_rating) && eff_rating != null){
+                    eff_ratings.add(eff_rating);
+                    effRatingSelected.add(eff_rating); // initialize as true
+                }
+            }
+            int eff_ratingCount = eff_ratings.size();
+            int midPoint = Math.floorDiv(eff_ratingCount, 2);
+            for (int i=0; i<midPoint; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        eff_rating_choice1,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(eff_ratings.get(i));
+                eff_rating_choice1.addView(checkBoxLayout);
+                effRatingList.add(box);
+            }
+            for (int i=midPoint; i<eff_ratingCount; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        eff_rating_choice2,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(eff_ratings.get(i));
+                eff_rating_choice2.addView(checkBoxLayout);
+                effRatingList.add(box);
+            }
+            eff_rating_selection.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    if (eff_ratingOptions.isShown()){
+                        eff_ratingOptions.setVisibility(View.GONE);
+                    }else{
+                        eff_ratingOptions.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+
+
+        // Set the Form Factors Choices
+        if (formFactorList.isEmpty()){
+            RelativeLayout form_factor_selection = popupView.findViewById(R.id.form_factor_selection);
+            final LinearLayout form_factorOptions = popupView.findViewById(R.id.form_factor_options);
+            final LinearLayout form_factor_choice1 = popupView.findViewById(R.id.form_factor_options_1);
+            final LinearLayout form_factor_choice2 = popupView.findViewById(R.id.form_factor_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_form_factors); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    formFactorList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    formFactorList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
+            form_factorOptions.setVisibility(View.GONE);
+            ArrayList<String> form_factors = new ArrayList<>();
+            for (PsuProduct prod: psuFeed.getSearchData()){
+                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$" + formFactorList.isEmpty());
+
+                String form_factor = prod.getFormFactor();
+                if (!form_factors.contains(form_factor) && form_factor != null){
+                    form_factors.add(form_factor);
+                    formFactorSelected.add(form_factor); // initialize as true
+                }
+            }
+            int form_factorCount = form_factors.size();
+            int midPoint = Math.floorDiv(form_factorCount, 2);
+            for (int i=0; i<midPoint; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        form_factor_choice1,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(form_factors.get(i));
+                form_factor_choice1.addView(checkBoxLayout);
+                formFactorList.add(box);
+            }
+            for (int i=midPoint; i<form_factorCount; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        form_factor_choice2,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(form_factors.get(i));
+                form_factor_choice2.addView(checkBoxLayout);
+                formFactorList.add(box);
+            }
+            form_factor_selection.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    if (form_factorOptions.isShown()){
+                        form_factorOptions.setVisibility(View.GONE);
+                    }else{
+                        form_factorOptions.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+
+        // modular
+        if (modularList.isEmpty()){
+            RelativeLayout modular_selection = popupView.findViewById(R.id.modular_selection);
+            final LinearLayout modularOptions = popupView.findViewById(R.id.modular_options);
+            final LinearLayout modular_choice1 = popupView.findViewById(R.id.modular_options_1);
+            final LinearLayout modular_choice2 = popupView.findViewById(R.id.modular_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_modular); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    modularList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    modularList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
+            modularOptions.setVisibility(View.GONE);
+            ArrayList<String> modulars = new ArrayList<>();
+            for (PsuProduct prod: psuFeed.getSearchData()){
+                String modular = prod.getModular();
+                if (!modulars.contains(modular) && modular != null){
+                    modulars.add(modular);
+                    modularSelected.add(modular); // initialize as true
+                }
+            }
+            int modularCount = modulars.size();
+            int midPoint = Math.floorDiv(modularCount, 2);
+            for (int i=0; i<midPoint; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        modular_choice1,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(modulars.get(i));
+                modular_choice1.addView(checkBoxLayout);
+                modularList.add(box);
+            }
+            for (int i=midPoint; i<modularCount; i++){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        modular_choice2,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(modulars.get(i));
+                modular_choice2.addView(checkBoxLayout);
+                modularList.add(box);
+            }
+            modular_selection.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    if (modularOptions.isShown()){
+                        modularOptions.setVisibility(View.GONE);
+                    }else{
+                        modularOptions.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+
+
         // Set price choices
         final RangeSeekBar<Integer> priceBar = popupView.findViewById(R.id.price_seek_bar);
         final int maxPrice = getHighestPriceProdcuct() + 10;
@@ -254,148 +467,47 @@ public class motherboardSearchActivity extends AppCompatActivity {
             }
         });
 
-
-        // Set memory range
-        final RangeSeekBar<Integer> memoryBar = popupView.findViewById(R.id.memory_seek_bar);
-        memoryBar.setRangeValues(0, 2000);
-        final RelativeLayout memoryChoice = popupView.findViewById(R.id.max_memory_selection);
-        memoryBar.setVisibility(View.GONE);
-        memoryChoice.setOnClickListener(new View.OnClickListener() {
+        // Set wattage choices
+        final RangeSeekBar<Integer> wattageBar = popupView.findViewById(R.id.wattage_seek_bar);
+        final int maxWattage = getHighestWattageProdcuct() + 10;
+        wattageBar.setRangeValues(0, maxWattage);
+        final RelativeLayout wattageChoice = popupView.findViewById(R.id.wattage_selection);
+        wattageBar.setVisibility(View.GONE);
+        wattageChoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (memoryBar.isShown()){
-                    memoryBar.setVisibility(View.GONE);
+                if (wattageBar.isShown()){
+                    wattageBar.setVisibility(View.GONE);
                 }else{
-                    memoryBar.setVisibility(View.VISIBLE);
+                    wattageBar.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-        // Set memory slot range
-        final RangeSeekBar<Integer> memorySlotBar = popupView.findViewById(R.id.memory_slot_seek_bar);
-        memorySlotBar.setRangeValues(0, 16);
-        final RelativeLayout memorySlotChoice = popupView.findViewById(R.id.memory_slot_selection);
-        memorySlotBar.setVisibility(View.GONE);
-        memorySlotChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (memorySlotBar.isShown()){
-                    memorySlotBar.setVisibility(View.GONE);
-                }else{
-                    memorySlotBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        if (socketList.isEmpty()){
-            // Socket Types
-            RelativeLayout socket_selection = popupView.findViewById(R.id.socket_selection);
-            final LinearLayout socketOptions = popupView.findViewById(R.id.socket_options);
-            socketOptions.setVisibility(View.GONE);
-            ArrayList<String> sockets = new ArrayList<>();
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
-                String socket = prod.getSocketType();
-                if (!sockets.contains(socket) && socket != null){
-                    sockets.add(socket);
-                    socketSelected.add(socket); // initialize as true
-
-                }
-            }
-            for(String socket: sockets){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        socketOptions,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(socket);
-                socketList.add(box);
-                socketOptions.addView(checkBoxLayout);
-
-            }
-
-            socket_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (socketOptions.isShown()){
-                        socketOptions.setVisibility(View.GONE);
-                    }else{
-                        socketOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-
-        }
-
-
-        if (formFactorList.isEmpty()){
-            // Form factor Types
-            RelativeLayout form_factor_selection = popupView.findViewById(R.id.form_factor_selection);
-            final LinearLayout form_factorOptions = popupView.findViewById(R.id.form_factor_options);
-            form_factorOptions.setVisibility(View.GONE);
-            ArrayList<String> form_factors = new ArrayList<>();
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
-                String form_factor = prod.getFormFactor();
-                if (!form_factors.contains(form_factor) && form_factor != null){
-                    form_factors.add(form_factor);
-                    formFactorSelected.add(form_factor); // initialize as true
-
-                }
-            }
-            for(String form_factor: form_factors){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        form_factorOptions,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(form_factor);
-                System.out.println(box.getText());
-                formFactorList.add(box);
-                form_factorOptions.addView(checkBoxLayout);
-            }
-
-            form_factor_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (form_factorOptions.isShown()){
-                        form_factorOptions.setVisibility(View.GONE);
-                    }else{
-                        form_factorOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-
 
         // Reset Button
         Button resetButton = popupView.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(new View.OnClickListener(){
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
+               // Set both brands selected
                 // price options
                 priceBar.setSelectedMinValue(0);
                 priceBar.setSelectedMaxValue(maxPrice);
-                memoryBar.setSelectedMinValue(0);
-                memoryBar.setSelectedMaxValue(2000);
-                memorySlotBar.setSelectedMinValue(0);
-                memorySlotBar.setSelectedMaxValue(16);
-                brandList.stream().forEach(cb -> cb.setChecked(true));
-                socketList.stream().forEach(cb -> cb.setChecked(true));
-                formFactorList.stream().forEach(cb -> cb.setChecked(true));
 
-                filteredData = motherboardFeed.getSearchData();
-                loadingNotDone();
+                brandList.stream().forEach(cb -> cb.setChecked(true));
+                formFactorList.stream().forEach(cb -> cb.setChecked(true));
+                effRatingList.stream().forEach(cb -> cb.setChecked(true));
+
+                psuFeed = new PsuFeedTask(context, dialog, prefs);
                 dialog.removeAllViews();
-                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
-                loadingDone();
+                psuFeed.execute(sqlConst.PSU_SEARCH_LIST);
                 filterWindow.dismiss();
             }
         });
 
+        // Apply button
         Button filterButton = popupView.findViewById(R.id.apply_button);
         filterButton.setOnClickListener(new View.OnClickListener(){
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -404,13 +516,14 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 // setting filters as parameters
                 priceMin = priceBar.getSelectedMinValue();
                 priceMax = priceBar.getSelectedMaxValue();
-                memoryMin = memoryBar.getSelectedMinValue();
-                memoryMax = memoryBar.getSelectedMaxValue();
-                memorySlotMin = memorySlotBar.getSelectedMinValue();
-                memorySlotMax = memorySlotBar.getSelectedMaxValue();
+                wattageMin = wattageBar.getSelectedMinValue();
+                wattageMax = wattageBar.getSelectedMaxValue();
+
+
                 brandSelected.clear();
-                socketSelected.clear();
                 formFactorSelected.clear();
+                effRatingSelected.clear();
+                modularSelected.clear();
 
                 brandList.stream().forEach(cb -> {
                     if (cb.isChecked()){
@@ -418,20 +531,29 @@ public class motherboardSearchActivity extends AppCompatActivity {
                         brandSelected.add((String) cb.getText());
                     };
                 });
-                socketList.stream().forEach(cb -> {
+
+                effRatingList.stream().forEach(cb -> {
                     if (cb.isChecked()){
-                        socketSelected.add((String) cb.getText());
+                        System.out.println(cb.getText());
+                        effRatingSelected.add((String) cb.getText());
                     };
                 });
+
                 formFactorList.stream().forEach(cb -> {
                     if (cb.isChecked()){
+                        System.out.println(cb.getText());
                         formFactorSelected.add((String) cb.getText());
                     };
                 });
 
-                loadingNotDone();
+                modularList.stream().forEach(cb -> {
+                    if (cb.isChecked()){
+                        System.out.println(cb.getText());
+                        modularSelected.add((String) cb.getText());
+                    };
+                });
+
                 filterData();
-                loadingDone();
                 filterWindow.dismiss();
             }
         });
@@ -444,10 +566,6 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 // reverting selections
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -459,22 +577,20 @@ public class motherboardSearchActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
         });
     }
 
+
+
     @SuppressLint("ClickableViewAccessibility")
     public void sortPopup(View view){
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.motherboard_sort_window, null);
+        View popupView = inflater.inflate(R.layout.psu_sort_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -494,25 +610,21 @@ public class motherboardSearchActivity extends AppCompatActivity {
 
         //Reset button
         Button resetButton = popupView.findViewById(R.id.reset_button);
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sortFilter = "Popularity (Descending)";
-                filteredData = motherboardFeed.getSearchData();
-                dialog.removeAllViews();
-                loadingNotDone();
-                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
-                sortWindow.dismiss();
-                loadingDone();
-            }
+        resetButton.setOnClickListener(v -> {
+            sortFilter = "Popularity (Descending)";
+            filteredData = psuFeed.getSearchData();
+
+
+            dialog.removeAllViews();
+            psuFeed = new PsuFeedTask(context, dialog, prefs);
+            psuFeed.execute(sqlConst.PSU_SEARCH_LIST);
+            sortWindow.dismiss();
         });
 
         // Apply Button
         Button applyButton = popupView.findViewById(R.id.apply_button);
         applyButton.setOnClickListener(new View.OnClickListener(){
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 int selectedId = sortOptions.getCheckedRadioButtonId();
@@ -522,9 +634,9 @@ public class motherboardSearchActivity extends AppCompatActivity {
                     selectedText = radioButton.getText().toString();
                 }
                 sortFilter = selectedText;
+                sortWindow.dismiss();
                 loadingNotDone();
                 filterData();
-                sortWindow.dismiss();
                 loadingDone();
             }
         });
@@ -550,29 +662,37 @@ public class motherboardSearchActivity extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void filterData(){
         if (brandSelected.isEmpty()){
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+            for (PsuProduct prod: psuFeed.getSearchData()){
                 String prodBrand = prod.getManufacturer();
                 if (!brandSelected.contains(prodBrand)){
                     brandSelected.add(prodBrand);
                 }
             }
         }
-        if (socketSelected.isEmpty()){
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
-                String prodBrand = prod.getSocketType();
-                if (!socketSelected.contains(prodBrand)){
-                    socketSelected.add(prodBrand);
+        if (effRatingSelected.isEmpty()){
+            for (PsuProduct prod: psuFeed.getSearchData()){
+                String prodBrand = prod.getEfficiency();
+                if (!effRatingSelected.contains(prodBrand)){
+                    effRatingSelected.add(prodBrand);
                 }
             }
         }
         if (formFactorSelected.isEmpty()){
-            for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+            for (PsuProduct prod: psuFeed.getSearchData()){
                 String prodBrand = prod.getFormFactor();
                 if (!formFactorSelected.contains(prodBrand)){
                     formFactorSelected.add(prodBrand);
+                }
+            }
+        }
+
+        if (modularSelected.isEmpty()){
+            for (PsuProduct prod: psuFeed.getSearchData()){
+                String prodBrand = prod.getModular();
+                if (!modularSelected.contains(prodBrand)){
+                    modularSelected.add(prodBrand);
                 }
             }
         }
@@ -583,47 +703,75 @@ public class motherboardSearchActivity extends AppCompatActivity {
         }
         brands = brands.replaceAll(",$", "");
 
-        String sockets = "";
-        for (String socket: socketSelected){
-            sockets += String.format("'%s',", socket);
+        String effRatings = "";
+        for (String buff: effRatingSelected){
+            effRatings += String.format("'%s',", buff);
         }
-        sockets = sockets.replaceAll(",$", "");
+        effRatings = effRatings.replaceAll(",$", "");
 
-        String formFactor = "";
-        for (String form: formFactorSelected){
-            formFactor += String.format("'%s',", form);
+        String formFactors = "";
+        for (String buff: formFactorSelected){
+            formFactors += String.format("'%s',", buff);
         }
-        formFactor = formFactor.replaceAll(",$", "");
+        formFactors = formFactors.replaceAll(",$", "");
+
+        String modulars = "";
+        for (String buff: modularSelected){
+            modulars += String.format("'%s',", buff);
+        }
+        modulars = modulars.replaceAll(",$", "");
+
+        String modYes = (yesModular) ? "Yes" : "";
+        String modNo = (noModular) ? "No": "";
+
 
         String sortBy = "";
         String desc = "";
         if (sortFilter.toLowerCase().contains("descending")){
             desc = "DESC";
         }
+
         if (sortFilter.toLowerCase().contains("popularity")) {
             sortBy = String.format("Rating.Count %s, Rating.Average %s", desc, desc);
         }else if (sortFilter.toLowerCase().contains("name")){
             sortBy = "ProductMain.ProductName " + desc;
         }else if (sortFilter.toLowerCase().contains("price")){
             sortBy = "ProductMain.BestPrice " + desc;
-        }else if (sortFilter.toLowerCase().contains("rating")) {
+        }else if (sortFilter.toLowerCase().contains("rating")){
             sortBy = "Rating.Average " + desc;
+        }else if (sortFilter.toLowerCase().contains("wattage")){
+            sortBy = "CAST(PSU.`Wattage` AS INT) " + desc;
         }
 
-        String sqlStringBuilt = String.format(sqlConst.MOTHERBOARD_SEARCH_FILTER, brands, sockets,
-                formFactor, priceMin, priceMax, memoryMin, memoryMax, memorySlotMin, memorySlotMax,
-                sortBy);
+        String sqlStringBuilt = String.format(sqlConst.PSU_SEARCH_FILTER, brands,
+                 effRatings, formFactors, modulars, priceMin, priceMax,
+                 wattageMin, wattageMax ,sortBy);
         System.out.println(sqlStringBuilt);
-        loadingNotDone();
+        dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
-        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute(sqlStringBuilt);
+        loadingNotDone();
+        psuFeed = new PsuFeedTask(context, dialog, prefs);
+        psuFeed.execute(sqlStringBuilt);
         loadingDone();
+    }
+
+    private int getHighestWattageProdcuct() {
+        int max = 0;
+        for (PsuProduct prof: psuFeed.getSearchData()){
+            String buff = prof.getWattage();
+            if (buff != null){
+                int wattage = stringToInteger(buff);
+                if (wattage > max){
+                    max = wattage;
+                }
+            }
+        }
+        return max + 10;
     }
 
     public int getHighestPriceProdcuct(){
         double maxPrice = 0.0;
-        for (MotherboardProduct prod: motherboardFeed.getSearchData()){
+        for (PsuProduct prod: psuFeed.getSearchData()){
             double bestPrice = prod.getBestPrice();
             if (bestPrice > maxPrice)
                 maxPrice = bestPrice;
@@ -644,14 +792,14 @@ public class motherboardSearchActivity extends AppCompatActivity {
     }
 
     private void loadingDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.GONE);
+       loadingWheel.setVisibility(View.GONE);
     }
 
     private void loadingNotDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
+        loadingWheel.setVisibility(View.VISIBLE);
     }
 
-    private Double stringToInteger(String val){
+    private Double stringToDouble(String val){
         if (val != null){
             String value = val.replaceAll("[^0-9.]", "");
             if (value == ""){
@@ -662,4 +810,17 @@ public class motherboardSearchActivity extends AppCompatActivity {
         return 0.0;
     }
 
+    private Integer stringToInteger(String val){
+        if (val != null){
+            String value = val.replaceAll("[^0-9]", "");
+            if (value == ""){
+                return 0;
+            }
+            return Integer.valueOf(value);
+        }
+        return 0;
+    }
+
+
 }
+

@@ -80,6 +80,44 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".gpuSearchActivity"
+            android:label="Search GPU" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.gpuSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".psuSearchActivity"
+            android:label="Search PSU" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.psuSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".caseSearchActivity"
+            android:label="Search Case" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.caseSearch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
+        <activity
+            android:name=".buildPcActivity"
+            android:label="Build PC" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.buildPc" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

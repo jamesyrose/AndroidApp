@@ -49,11 +49,16 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".1"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
-
+                <TextView
+                    android:id="@+id/model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor = "#FFFFFF"
+                    android:textSize ="16sp"
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -135,17 +140,65 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/socket_label"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="@string/capacity_label"
+                                android:text="@string/wattage_u"
                                 android:textColor="#CCFFFFFF"
                                 android:textSize="16dp"
                                 android:textStyle="bold" />
 
                             <TextView
-                                android:id="@+id/form_label"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/eff_ratio_u"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/wattage_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text=""
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/eff_rating_value"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text=""
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight=".25"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight=".5"
+                                android:text="@string/modular_u"
+                                android:textColor="#CCFFFFFF"
+                                android:textSize="16dp"
+                                android:textStyle="bold" />
+
+                            <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
@@ -162,11 +215,11 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/capacity_value"
+                                android:id="@+id/modular_value"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="capacity"
+                                android:text=""
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 
@@ -175,59 +228,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight=".5"
-                                android:text="form factor"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/memory_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/type_label"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/chipset_label"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="@string/nvme_label"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="16dp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight=".25"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/type_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="type"
-                                android:textColor="#FFFFFF"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/nvme_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight=".5"
-                                android:text="nvme"
+                                android:text=""
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp" />
 

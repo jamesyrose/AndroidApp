@@ -13,7 +13,7 @@ import preferences.Preferences;
 
 public class database extends SQLiteOpenHelper {
     public Preferences prefs;
-    public static final String DB_NAME = "test.db";
+    public static final String DB_NAME = "productData.db";
     public static final String[] tables = new String[] {"Cases", "CPU", "CPU_Cooler", "ExchangeRates", "GPU",
             "Images", "Memory", "Motherboard", "Price", "ProductMain", "PSU",
             "Rating", "Storage"};
@@ -46,18 +46,6 @@ public class database extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String[] splitData = sql.split("!@#");
         for (String buff: splitData){
-//            if (buff.contains("CREATE TABLE")){
-//                for (String table: tables){
-//                    // Checks if its creates table so it may delete the old one
-//                    deleteSqlString = String.format("DROP TABLE IF EXISTS `%s`; ", table);
-//                    String checkString = String.format("CREATE TABLE `%s`", table);
-//                    if (buff.contains(checkString)){
-//                        db.execSQL(deleteSqlString);
-//                    }
-//                }
-//            }
-            // System.out.println(buff);
-            //onCreate(db);
             db.execSQL(buff);
 
         }
@@ -79,6 +67,18 @@ public class database extends SQLiteOpenHelper {
         db.close();
         System.out.println(":########DONE ");
     }
+
+
+    public void createSavedBuilds(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String sqlString = "CREATE TABLE IF NOT EXISTS `SavedBuilds` ( " +
+                "  `name` VARCHAR(90) NULL,\n" +
+                "  `saved` INT UNSIGNED NOT NULL DEFAULT 0,\n" +
+                "  `productID` INT UNSIGNED NOT NULL,\n" +
+                "  PRIMARY KEY (`id`));\n";
+        db.execSQL(sqlString);
+    }
+
 
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();

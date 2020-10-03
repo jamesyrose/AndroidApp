@@ -88,4 +88,22 @@ public class searchComponents extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
+
+    public void goToGpuSearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.gpuSearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    public void goToPsuSearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.psuSearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    public void goToCaseSearch(View view) {
+        Intent intent = new Intent("com.iphonik.chameleon.caseSearch");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
 }

@@ -28,24 +28,24 @@ import async_tasks.general.DownloadImageTask;
 import async_tasks.general.DownloadSellers;
 import async_tasks.general.DownloadSpecs;
 import pcpp_data.constants.Constants;
+import pcpp_data.products.GpuSearchProduct;
 import pcpp_data.queries.GetSearchLists;
-import pcpp_data.products.MotherboardProduct;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayList<MotherboardProduct>> {
+public class GpuFeedTask extends AsyncTask<String, Void, ArrayList<GpuSearchProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<MotherboardProduct> searchData;
+    static ArrayList<GpuSearchProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
 
 
-    public RetrieveMotherboardFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public GpuFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -61,21 +61,15 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
 
 
     @Override
-    protected ArrayList<MotherboardProduct> doInBackground(String... strings) {
-
-        try {
-            String sql = strings[0];
-            GetSearchLists obj = new GetSearchLists(context);
-            ArrayList<MotherboardProduct> data = obj.getMotherboardSearchList(sql);
-            return data;
-        } catch (Exception e){
-            System.out.println("failed to load");
-        }
-        return null;
+    protected ArrayList<GpuSearchProduct> doInBackground(String... strings) {
+        String sql = strings[0];
+        GetSearchLists obj = new GetSearchLists(context);
+        ArrayList<GpuSearchProduct> data = obj.getGPUsearchList(sql);
+        return data;
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MotherboardProduct> data){
+    protected void onPostExecute(ArrayList<GpuSearchProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -93,11 +87,12 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         loadingDone();
     }
 
+
     public boolean isDataFetched(){
         return dataFetched;
     }
 
-    public void addProduct(final MotherboardProduct data) {
+    public void addProduct(final GpuSearchProduct data) {
         // Product id
         final int productID = data.getProductID();
 
@@ -105,7 +100,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         LinearLayout parentLayout = dialog;
 
         // Inflator
-        View productLayout = LayoutInflater.from(context).inflate(R.layout.motherboard_selection_template,
+        View productLayout = LayoutInflater.from(context).inflate(R.layout.gpu_selection_template,
                 parentLayout,
                 false);
 
@@ -128,14 +123,18 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         double bestPrice = (buff > 0) ? buff : 0.0;
         price.setText(String.format("%.2f", bestPrice));
 
-        TextView socket = productLayout.findViewById(R.id.socket_value);
-        socket.setText(data.getSocketType()); // Keep only the first part
-        TextView tdp = productLayout.findViewById(R.id.form_value);
-        tdp.setText(data.getFormFactor());
-        TextView cores = productLayout.findViewById(R.id.memory_value);
-        cores.setText(data.getMaxMemory());
-        TextView clock = productLayout.findViewById(R.id.chipset_value);
-        clock.setText(data.getChipSet());
+        TextView socket = productLayout.findViewById(R.id.memory_value);
+        socket.setText(data.getMemory()); // Keep only the first part
+        TextView tdp = productLayout.findViewById(R.id.tdp_value);
+        System.out.println("################# " + data.getTdp() );
+        tdp.setText(data.getTdp());
+        TextView cores = productLayout.findViewById(R.id.length_value);
+        cores.setText(data.getLength());
+        TextView clock = productLayout.findViewById(R.id.clock_value);
+        clock.setText(data.getCoreClock());
+        TextView addOn = productLayout.findViewById(R.id.model);
+        addOn.setText(data.getChipset());
+        addOn.setVisibility(View.VISIBLE);
 
 
         // Image
@@ -188,7 +187,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("Motherboard");
+        new DownloadSpecs(context, query, specGallery).execute("GPU");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {
@@ -257,7 +256,7 @@ public class RetrieveMotherboardFeedTask extends AsyncTask<String, Void, ArrayLi
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MotherboardProduct> getSearchData(){
+    public ArrayList<GpuSearchProduct> getSearchData(){
         return searchData;
     }
 

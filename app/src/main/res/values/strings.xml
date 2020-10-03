@@ -60,6 +60,7 @@
     <string name="max_memory_label"><u>Max Memory</u></string>
     <string name="chipset_label"><u>Chipset</u></string>
     <string name="memory_label">Memory</string>
+    <string name="memory_u_label"><u>Memory</u></string>
     <string name="socket_selection_label">Socket</string>
     <string name="memory_slot_label">Memory Slots</string>
     <string name="memory_speed_label">Memory Speed</string>
@@ -89,6 +90,23 @@
     <string name="capacity">Capacity</string>
     <string name="nvme">NVME</string>
     <string name="type">Type</string>
+    <string name="non_nvme">Non-NVME</string>
+    <string name="length_label"><u>Length</u></string>
+    <string name="wattage_u"><u>Wattage</u></string>
+    <string name="eff_ratio_u"><u>Efficiency Rating</u></string>
+    <string name="modular_u"><u>Modular</u></string>
+    <string name="wattage_label">Wattage</string>
+    <string name="eff_rating_selection">Efficiency Rating</string>
+    <string name="tower_u"><u>Tower</u></string>
+    <string name="psu_shroud_u"><u>PSU Shroud</u></string>
+    <string name="side_panel_u"><u>Side Panel</u></string>
+    <string name="max_gpu_len_u"><u>Max GPU Size</u></string>
+    <string name="shroud_selection">PSU Shroud</string>
+    <string name="side_panel_label">Side Panel</string>
+    <string name="tower_label">Tower</string>
+    <string name="choose_cpu"><u>CPU </u></string>
+    <string name="price_total">Total Price</string>
+    <string name="compatibility">Compatibility</string>
 
 
 </resources>

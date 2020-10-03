@@ -23,7 +23,6 @@
             android:layout_height="match_parent"
             android:background="@color/primaryBackground"
             android:orientation="vertical"
-            android:paddingBottom="100dp"
             tools:layout_editor_absoluteX="90dp"
             tools:layout_editor_absoluteY="25dp">
 
@@ -111,7 +110,6 @@
                         android:layout_weight=".5"
                         android:padding="10dp"
                         android:orientation="vertical">
-
                         <CheckBox
                             android:id="@+id/deselect_all_brands"
                             android:layout_width="wrap_content"
@@ -119,6 +117,7 @@
                             android:buttonTint="#FFFFFF"
                             android:textColor="#FFFFFF"
                             android:text="De/Select All" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -180,176 +179,232 @@
                     android:layout_marginRight="15dp"/>
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/capacity_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="@string/capacity"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-
-            </RelativeLayout>
-
-            <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
-                android:id="@+id/capacity_bar"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp" />
+                android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/form_factor_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
+                <RelativeLayout
+                    android:id="@+id/psu_shroud_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="40dp"
+                    android:layout_margin="1dp"
+                    android:background="#B34C4D7E"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="@string/form_factor_label"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:padding="5dp">
 
-                <ImageView
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/shroud_selection"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:scaleType="fitEnd"
+                        app:srcCompat="@drawable/drop_down_arrow" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/psu_shroud_options"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
+                    android:orientation="horizontal"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="5dp">
+
+
+                    <LinearLayout
+                        android:id="@+id/psu_shroud_options_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+                        <CheckBox
+                            android:id="@+id/deselect_all_psu_shrouds"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="#FFFFFF"
+                            android:textColor="#FFFFFF"
+                            android:text="De/Select All" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/psu_shroud_options_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
 
             <LinearLayout
-                android:id="@+id/form_factor_options"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/type_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
+                <RelativeLayout
+                    android:id="@+id/side_panel_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="40dp"
+                    android:layout_margin="1dp"
+                    android:background="#B34C4D7E"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="@string/type"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:padding="5dp">
 
-                <ImageView
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/side_panel_label"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:scaleType="fitEnd"
+                        app:srcCompat="@drawable/drop_down_arrow" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/side_panel_options"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
+                    android:orientation="horizontal"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="5dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="5dp">
 
+
+                    <LinearLayout
+                        android:id="@+id/side_panel_options_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+                        <CheckBox
+                            android:id="@+id/deselect_all_side_panels"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="#FFFFFF"
+                            android:textColor="#FFFFFF"
+                            android:text="De/Select All" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/side_panel_options_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
             <LinearLayout
-                android:id="@+id/type_options"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:padding="10dp"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
 
-
-            <RelativeLayout
-                android:id="@+id/nvme_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
+                <RelativeLayout
+                    android:id="@+id/tower_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="40dp"
+                    android:layout_margin="1dp"
+                    android:background="#B34C4D7E"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="@string/nvme"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:padding="5dp">
 
-                <ImageView
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/tower_label"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:scaleType="fitEnd"
+                        app:srcCompat="@drawable/drop_down_arrow" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/tower_options"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/nvme_options"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/nvme_option"
-                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".5"
-                    android:buttonTint="#FFFFFF"
-                    android:text="@string/nvme"
-                    android:textColor="#FFFFFF" />
+                    android:padding="10dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:id="@+id/tower_options_1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+                        <CheckBox
+                            android:id="@+id/deselect_all_towers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:buttonTint="#FFFFFF"
+                            android:textColor="#FFFFFF"
+                            android:text="De/Select All" />
 
-                <CheckBox
-                    android:id="@+id/non_nvme_option"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".5"
-                    android:buttonTint="#FFFFFF"
-                    android:text="@string/non_nvme"
-                    android:textColor="#FFFFFF" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/tower_options_2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:padding="10dp"
+                        android:orientation="vertical">
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
@@ -388,4 +443,5 @@
                 android:text="@string/apply" />
         </LinearLayout>
     </RelativeLayout>
+
 </RelativeLayout>

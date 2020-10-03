@@ -23,7 +23,6 @@
             android:layout_height="match_parent"
             android:background="@color/primaryBackground"
             android:orientation="vertical"
-            android:paddingBottom="100dp"
             tools:layout_editor_absoluteX="90dp"
             tools:layout_editor_absoluteY="25dp">
 
@@ -111,7 +110,6 @@
                         android:layout_weight=".5"
                         android:padding="10dp"
                         android:orientation="vertical">
-
                         <CheckBox
                             android:id="@+id/deselect_all_brands"
                             android:layout_width="wrap_content"
@@ -119,6 +117,7 @@
                             android:buttonTint="#FFFFFF"
                             android:textColor="#FFFFFF"
                             android:text="De/Select All" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -181,7 +180,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/capacity_selection"
+                android:id="@+id/memory_selection"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_margin="1dp"
@@ -196,7 +195,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/capacity"
+                    android:text="@string/memory_label"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -211,146 +210,108 @@
             </RelativeLayout>
 
             <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
-                android:id="@+id/capacity_bar"
+                android:id="@+id/memory_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp" />
 
-            <RelativeLayout
-                android:id="@+id/form_factor_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/form_factor_label"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
-
             <LinearLayout
-                android:id="@+id/form_factor_options"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/type_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
+                <RelativeLayout
+                    android:id="@+id/clock_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="40dp"
+                    android:layout_margin="1dp"
+                    android:background="#B34C4D7E"
+                    android:clickable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="center"
-                    android:text="@string/type"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:padding="5dp">
 
-                <ImageView
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/clock_label"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:scaleType="fitEnd"
+                        app:srcCompat="@drawable/drop_down_arrow" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/clock_option_section"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
+                    android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/type_options"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".5"
-                android:padding="10dp"
-                android:orientation="vertical"></LinearLayout>
+                    <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+                        android:id="@+id/clock_seek_bar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
 
+                </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/nvme_selection"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="1dp"
-                android:background="#B34C4D7E"
-                android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:padding="5dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/nvme"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="left"
-                    android:scaleType="fitEnd"
-                    app:srcCompat="@drawable/drop_down_arrow" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/nvme_options"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/nvme_option"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".5"
-                    android:buttonTint="#FFFFFF"
-                    android:text="@string/nvme"
-                    android:textColor="#FFFFFF" />
-
-                <CheckBox
-                    android:id="@+id/non_nvme_option"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".5"
-                    android:buttonTint="#FFFFFF"
-                    android:text="@string/non_nvme"
-                    android:textColor="#FFFFFF" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp"
+                android:background="#B34C4D7E"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:id="@+id/tdp_selection"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/tdp_label"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center|left"
+                        app:srcCompat="@drawable/drop_down_arrow" />
+                </LinearLayout>
+
+            </LinearLayout>
+            <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
+                android:id="@+id/tdp_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp" />
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -388,4 +349,5 @@
                 android:text="@string/apply" />
         </LinearLayout>
     </RelativeLayout>
+
 </RelativeLayout>

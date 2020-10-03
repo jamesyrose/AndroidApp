@@ -29,13 +29,13 @@ import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
 
-import async_tasks.feeds.RetrieveStorageFeedTask;
+import async_tasks.feeds.StorageFeedTask;
 import pcpp_data.constants.SqlConstants;
 import pcpp_data.products.StorageProduct;
 import preferences.Preferences;
 
 public class storageSearchActivity extends AppCompatActivity {
-    static RetrieveStorageFeedTask storageFeed;
+    static StorageFeedTask storageFeed;
     Preferences prefs;
     LinearLayout dialog;
     ScrollView dialogScroll;
@@ -47,16 +47,18 @@ public class storageSearchActivity extends AppCompatActivity {
     // Data filters
     int priceMin = 0;
     int priceMax = 1000000;
-    int memoryMin = 0;
-    int memoryMax = 2000;
-    int memorySlotMin = 0;
-    int memorySlotMax = 16;
+    int capcaityMin = 0;
+    int capacityMax = 25000;
+    String nvme = "Yes";
+    String nonNvme = "No";
+
     ArrayList<CheckBox> brandList = new ArrayList<>();
-    ArrayList<CheckBox> form_factorList = new ArrayList<>();
     ArrayList<CheckBox> formFactorList = new ArrayList<>();
+    ArrayList<CheckBox> typeList = new ArrayList<>();
+
     ArrayList<String> brandSelected = new ArrayList<String>();
-    ArrayList<String> form_factorSelected = new ArrayList<String>();
     ArrayList<String> formFactorSelected = new ArrayList<String>();
+    ArrayList<String> typeSelected = new ArrayList<String>();
 
     String sortFilter = "Popularity (Ascending)";
 
@@ -76,7 +78,7 @@ public class storageSearchActivity extends AppCompatActivity {
 
         prefs = new Preferences(context);
 
-        storageFeed = new RetrieveStorageFeedTask(context, dialog, prefs);
+        storageFeed = new StorageFeedTask(context, dialog, prefs);
         storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
 
         // Set filter
@@ -190,6 +192,19 @@ public class storageSearchActivity extends AppCompatActivity {
             final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
             final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
             final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_brands); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    brandList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    brandList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
+
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
             for (StorageProduct prod: storageFeed.getSearchData()){
@@ -254,86 +269,10 @@ public class storageSearchActivity extends AppCompatActivity {
             }
         });
 
-
-        // Set memory range
-        final RangeSeekBar<Integer> memoryBar = popupView.findViewById(R.id.memory_seek_bar);
-        memoryBar.setRangeValues(0, 2000);
-        final RelativeLayout memoryChoice = popupView.findViewById(R.id.max_memory_selection);
-        memoryBar.setVisibility(View.GONE);
-        memoryChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (memoryBar.isShown()){
-                    memoryBar.setVisibility(View.GONE);
-                }else{
-                    memoryBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        // Set memory slot range
-        final RangeSeekBar<Integer> memorySlotBar = popupView.findViewById(R.id.memory_slot_seek_bar);
-        memorySlotBar.setRangeValues(0, 16);
-        final RelativeLayout memorySlotChoice = popupView.findViewById(R.id.memory_slot_selection);
-        memorySlotBar.setVisibility(View.GONE);
-        memorySlotChoice.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (memorySlotBar.isShown()){
-                    memorySlotBar.setVisibility(View.GONE);
-                }else{
-                    memorySlotBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        if (form_factorList.isEmpty()){
+        if (formFactorList.isEmpty()){
             // Socket Types
             RelativeLayout form_factor_selection = popupView.findViewById(R.id.form_factor_selection);
             final LinearLayout form_factorOptions = popupView.findViewById(R.id.form_factor_options);
-            form_factorOptions.setVisibility(View.GONE);
-            ArrayList<String> form_factors = new ArrayList<>();
-            for (StorageProduct prod: storageFeed.getSearchData()){
-                String form_factor = prod.getFormFactor();
-                if (!form_factors.contains(form_factor) && form_factor != null){
-                    form_factors.add(form_factor);
-                    form_factorSelected.add(form_factor); // initialize as true
-
-                }
-            }
-            for(String form_factor: form_factors){
-                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
-                        form_factorOptions,
-                        false);
-                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
-                box.setChecked(true);
-                box.setText(form_factor);
-                form_factorList.add(box);
-                form_factorOptions.addView(checkBoxLayout);
-
-            }
-
-            form_factor_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (form_factorOptions.isShown()){
-                        form_factorOptions.setVisibility(View.GONE);
-                    }else{
-                        form_factorOptions.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-
-        }
-
-
-        if (formFactorList.isEmpty()){
-            // Form factor Types
-            RelativeLayout form_factor_selection = popupView.findViewById(R.id.form_factor_selection);
-            final LinearLayout form_factorOptions = popupView.findViewById(R.id.form_factor_options);
-            form_factorOptions.setVisibility(View.GONE);
             ArrayList<String> form_factors = new ArrayList<>();
             for (StorageProduct prod: storageFeed.getSearchData()){
                 String form_factor = prod.getFormFactor();
@@ -350,23 +289,88 @@ public class storageSearchActivity extends AppCompatActivity {
                 CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
                 box.setChecked(true);
                 box.setText(form_factor);
-                System.out.println(box.getText());
                 formFactorList.add(box);
                 form_factorOptions.addView(checkBoxLayout);
+
             }
-
-            form_factor_selection.setOnClickListener(new View.OnClickListener(){
-
-                @Override
-                public void onClick(View v) {
-                    if (form_factorOptions.isShown()){
-                        form_factorOptions.setVisibility(View.GONE);
-                    }else{
-                        form_factorOptions.setVisibility(View.VISIBLE);
-                    }
+            form_factorOptions.setVisibility(View.GONE);
+            form_factor_selection.setOnClickListener(v -> {
+                if (form_factorOptions.isShown()){
+                    form_factorOptions.setVisibility(View.GONE);
+                }else{
+                    form_factorOptions.setVisibility(View.VISIBLE);
                 }
             });
+
         }
+
+        // Select storage types 2.5in 5400rpm... etc
+        if (typeList.isEmpty()){
+            // Socket Types
+            RelativeLayout type_selection = popupView.findViewById(R.id.type_selection);
+            final LinearLayout typeOptions = popupView.findViewById(R.id.type_options);
+            ArrayList<String> types = new ArrayList<>();
+            for (StorageProduct prod: storageFeed.getSearchData()){
+                String type = prod.getType();
+                if (!types.contains(type) && type != null){
+                    types.add(type);
+                    typeSelected.add(type); // initialize as true
+
+                }
+            }
+            for(String type: types){
+                View checkBoxLayout = LayoutInflater.from(context).inflate(R.layout.checkbox_template,
+                        typeOptions,
+                        false);
+                CheckBox box = checkBoxLayout.findViewById(R.id.checkBox);
+                box.setChecked(true);
+                box.setText(type);
+                typeList.add(box);
+                typeOptions.addView(checkBoxLayout);
+
+            }
+            typeOptions.setVisibility(View.GONE);
+            type_selection.setOnClickListener(v -> {
+                if (typeOptions.isShown()){
+                    typeOptions.setVisibility(View.GONE);
+                }else{
+                    typeOptions.setVisibility(View.VISIBLE);
+                }
+            });
+
+        }
+
+        // nvme
+        CheckBox nvmeBox = popupView.findViewById(R.id.nvme_option);
+        CheckBox nonNvmeBox = popupView.findViewById(R.id.non_nvme_option);
+        RelativeLayout nvmeSelection = popupView.findViewById(R.id.nvme_selection);
+        LinearLayout nvmeOptions = popupView.findViewById(R.id.nvme_options);
+        nonNvmeBox.setChecked(true);
+        nvmeBox.setChecked(true);
+
+        nvmeOptions.setVisibility(View.GONE);
+        nvmeSelection.setOnClickListener(v -> {
+            if ((nvmeOptions.isShown())) {
+                nvmeOptions.setVisibility(View.GONE);
+            } else {
+                nvmeOptions.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
+        // Capacity
+        RelativeLayout capacitySelection = popupView.findViewById(R.id.capacity_selection);
+        RangeSeekBar<Integer> capacityBar = popupView.findViewById(R.id.capacity_bar);
+        capacityBar.setRangeValues(0, 25000);
+        capacityBar.setVisibility(View.GONE);
+        capacitySelection.setOnClickListener(v -> {
+            if ((capacityBar.isShown())) {
+                capacityBar.setVisibility(View.GONE);
+            } else {
+                capacityBar.setVisibility(View.VISIBLE);
+            }
+        });
 
 
         // Reset Button
@@ -378,19 +382,15 @@ public class storageSearchActivity extends AppCompatActivity {
                 // price options
                 priceBar.setSelectedMinValue(0);
                 priceBar.setSelectedMaxValue(maxPrice);
-                memoryBar.setSelectedMinValue(0);
-                memoryBar.setSelectedMaxValue(2000);
-                memorySlotBar.setSelectedMinValue(0);
-                memorySlotBar.setSelectedMaxValue(16);
                 brandList.stream().forEach(cb -> cb.setChecked(true));
-                form_factorList.stream().forEach(cb -> cb.setChecked(true));
-                formFactorList.stream().forEach(cb -> cb.setChecked(true));
+                typeList.stream().forEach(cb -> cb.setChecked(true));
+                typeList.stream().forEach(cb -> cb.setChecked(true));
 
                 filteredData = storageFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                storageFeed = new RetrieveStorageFeedTask(context, dialog, prefs);
-                storageFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+                storageFeed = new StorageFeedTask(context, dialog, prefs);
+                storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
                 loadingDone();
                 filterWindow.dismiss();
             }
@@ -404,13 +404,13 @@ public class storageSearchActivity extends AppCompatActivity {
                 // setting filters as parameters
                 priceMin = priceBar.getSelectedMinValue();
                 priceMax = priceBar.getSelectedMaxValue();
-                memoryMin = memoryBar.getSelectedMinValue();
-                memoryMax = memoryBar.getSelectedMaxValue();
-                memorySlotMin = memorySlotBar.getSelectedMinValue();
-                memorySlotMax = memorySlotBar.getSelectedMaxValue();
                 brandSelected.clear();
-                form_factorSelected.clear();
                 formFactorSelected.clear();
+                formFactorSelected.clear();
+                capcaityMin = capacityBar.getSelectedMinValue();
+                capacityMax = capacityBar.getSelectedMaxValue();
+                nvme = (nvmeBox.isChecked()) ? "Yes" : "";
+                nonNvme =  (nonNvmeBox.isChecked()) ? "No": "";
 
                 brandList.stream().forEach(cb -> {
                     if (cb.isChecked()){
@@ -418,9 +418,9 @@ public class storageSearchActivity extends AppCompatActivity {
                         brandSelected.add((String) cb.getText());
                     };
                 });
-                form_factorList.stream().forEach(cb -> {
+                formFactorList.stream().forEach(cb -> {
                     if (cb.isChecked()){
-                        form_factorSelected.add((String) cb.getText());
+                        formFactorSelected.add((String) cb.getText());
                     };
                 });
                 formFactorList.stream().forEach(cb -> {
@@ -444,10 +444,6 @@ public class storageSearchActivity extends AppCompatActivity {
                 // reverting selections
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -459,10 +455,6 @@ public class storageSearchActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 priceBar.setSelectedMinValue(priceBar.getSelectedMinValue());
                 priceBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memoryBar.setSelectedMinValue(priceBar.getSelectedMinValue());
-                memoryBar.setSelectedMaxValue(priceBar.getSelectedMaxValue());
-                memorySlotBar.setSelectedMinValue(memorySlotBar.getSelectedMinValue());
-                memorySlotBar.setSelectedMaxValue(memorySlotBar.getSelectedMaxValue());
                 filterWindow.dismiss();
                 return true;
             }
@@ -501,8 +493,8 @@ public class storageSearchActivity extends AppCompatActivity {
                 filteredData = storageFeed.getSearchData();
                 dialog.removeAllViews();
                 loadingNotDone();
-                storageFeed = new RetrieveStorageFeedTask(context, dialog, prefs);
-                storageFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+                storageFeed = new StorageFeedTask(context, dialog, prefs);
+                storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
                 sortWindow.dismiss();
                 loadingDone();
             }
@@ -560,11 +552,19 @@ public class storageSearchActivity extends AppCompatActivity {
                 }
             }
         }
-        if (form_factorSelected.isEmpty()){
+        if (formFactorSelected.isEmpty()){
             for (StorageProduct prod: storageFeed.getSearchData()){
-                String prodBrand = prod.getFormFactor();
-                if (!form_factorSelected.contains(prodBrand)){
-                    form_factorSelected.add(prodBrand);
+                String formFactor = prod.getFormFactor();
+                if (!formFactorSelected.contains(formFactor)){
+                    formFactorSelected.add(formFactor);
+                }
+            }
+        }
+        if (typeSelected.isEmpty()){
+            for (StorageProduct prod: storageFeed.getSearchData()){
+                String type = prod.getType();
+                if (!typeSelected.contains(type)){
+                    typeSelected.add(type);
                 }
             }
         }
@@ -576,19 +576,20 @@ public class storageSearchActivity extends AppCompatActivity {
         }
         brands = brands.replaceAll(",$", "");
 
-        String form_factors = "";
-        for (String form_factor: form_factorSelected){
-            form_factors += String.format("'%s',", form_factor);
+        String formFactors = "";
+        for (String formFactor: formFactorSelected){
+            formFactors += String.format("'%s',", formFactor);
         }
-        form_factors = form_factors.replaceAll(",$", "");
+        formFactors = formFactors.replaceAll(",$", "");
 
-        String formFactor = "";
-        for (String form: formFactorSelected){
-            formFactor += String.format("'%s',", form);
+
+        String type = "";
+        for (String prod: typeSelected){
+            type += String.format("'%s',", prod);
         }
-        formFactor = formFactor.replaceAll(",$", "");
+        type = type.replaceAll(",$", "");
 
-        String sortBy = "";
+        String sortBy = "ProductMain.ProductName";
         String desc = "";
         if (sortFilter.toLowerCase().contains("descending")){
             desc = "DESC";
@@ -601,15 +602,17 @@ public class storageSearchActivity extends AppCompatActivity {
             sortBy = "ProductMain.BestPrice " + desc;
         }else if (sortFilter.toLowerCase().contains("rating")) {
             sortBy = "Rating.Average " + desc;
+        }else if (sortFilter.toLowerCase().contains("capacity")){
+            sortBy = "CAST(Storage.Capacity AS INT) " + desc;
         }
 
-        String sqlStringBuilt = String.format(sqlConst.MOTHERBOARD_SEARCH_FILTER, brands, form_factors,
-                formFactor, priceMin, priceMax, memoryMin, memoryMax, memorySlotMin, memorySlotMax,
-                sortBy);
+        String sqlStringBuilt = String.format(sqlConst.STORAGE_SEARCH_FILTER, brands, formFactors,
+                type, nvme, nonNvme, priceMin, priceMax, capcaityMin, capacityMax, sortBy);
+
         System.out.println(sqlStringBuilt);
         loadingNotDone();
         dialog.removeAllViews();
-        storageFeed = new RetrieveStorageFeedTask(context, dialog, prefs);
+        storageFeed = new StorageFeedTask(context, dialog, prefs);
         storageFeed.execute(sqlStringBuilt);
         loadingDone();
     }
@@ -656,3 +659,4 @@ public class storageSearchActivity extends AppCompatActivity {
     }
 
 }
+

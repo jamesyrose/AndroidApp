@@ -35,7 +35,7 @@ import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<StorageProduct>> {
+public class StorageFeedTask extends AsyncTask<String, Void, ArrayList<StorageProduct>> {
     Context context;
     LinearLayout dialog;
     static ArrayList<StorageProduct> searchData;
@@ -45,7 +45,7 @@ public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<S
     boolean dataFetched;
 
 
-    public RetrieveStorageFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public StorageFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -68,6 +68,7 @@ public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<S
             System.out.println(sql);
             GetSearchLists obj = new GetSearchLists(context);
             ArrayList<StorageProduct> data = obj.getStorageSearchList(sql);
+            System.out.println("$$$$$$$$$$$$$$$$$" + data.size());
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -99,6 +100,7 @@ public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<S
     }
 
     public void addProduct(final StorageProduct data) {
+        System.out.println(data.toString());
         // Product id
         final int productID = data.getProductID();
 
@@ -131,7 +133,7 @@ public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<S
 
         TextView socket = productLayout.findViewById(R.id.capacity_value);
         socket.setText(data.getCapacity()); // Keep only the first part
-        TextView tdp = productLayout.findViewById(R.id.form_value);
+        TextView tdp = productLayout.findViewById(R.id.form_factor_value);
         tdp.setText(data.getFormFactor());
         TextView cores = productLayout.findViewById(R.id.type_value);
         cores.setText(data.getType());
@@ -189,7 +191,7 @@ public class RetrieveStorageFeedTask extends AsyncTask<String, Void, ArrayList<S
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("Motherboard");
+        new DownloadSpecs(context, query, specGallery).execute("Storage");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {

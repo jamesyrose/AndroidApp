@@ -28,24 +28,24 @@ import async_tasks.general.DownloadImageTask;
 import async_tasks.general.DownloadSellers;
 import async_tasks.general.DownloadSpecs;
 import pcpp_data.constants.Constants;
+import pcpp_data.products.CaseProduct;
 import pcpp_data.queries.GetSearchLists;
-import pcpp_data.products.MemoryProduct;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<MemoryProduct>> {
+public class CaseFeedTask extends AsyncTask<String, Void, ArrayList<CaseProduct>> {
     Context context;
     LinearLayout dialog;
-    static ArrayList<MemoryProduct> searchData;
+    static ArrayList<CaseProduct> searchData;
     static ArrayList<View> productLayoutView;
     Preferences prefs;
     View root;
     boolean dataFetched;
 
 
-    public RetrieveMemoryFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public CaseFeedTask(Context context, LinearLayout dialog, Preferences prefs){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
@@ -61,11 +61,13 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
 
 
     @Override
-    protected ArrayList<MemoryProduct> doInBackground(String... strings) {
+    protected ArrayList<CaseProduct> doInBackground(String... strings) {
+
         try {
             String sql = strings[0];
+            System.out.println(sql);
             GetSearchLists obj = new GetSearchLists(context);
-            ArrayList<MemoryProduct> data = obj.getMemorySearchList(sql);
+            ArrayList<CaseProduct> data = obj.getCaseSearchList(sql);
             return data;
         } catch (Exception e){
             System.out.println("failed to load");
@@ -74,7 +76,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MemoryProduct> data){
+    protected void onPostExecute(ArrayList<CaseProduct> data){
         searchData = data;
         dataFetched = true;
         System.out.println("Query Complete");
@@ -96,7 +98,8 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         return dataFetched;
     }
 
-    public void addProduct(final MemoryProduct data) {
+    public void addProduct(final CaseProduct data) {
+        System.out.println(data.toString());
         // Product id
         final int productID = data.getProductID();
 
@@ -104,7 +107,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         LinearLayout parentLayout = dialog;
 
         // Inflator
-        View productLayout = LayoutInflater.from(context).inflate(R.layout.memory_selection_template,
+        View productLayout = LayoutInflater.from(context).inflate(R.layout.case_selection_template,
                 parentLayout,
                 false);
 
@@ -127,14 +130,14 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         double bestPrice = (buff > 0) ? buff : 0.0;
         price.setText(String.format("%.2f", bestPrice));
 
-        TextView pricePerGb = productLayout.findViewById(R.id.price_gb_value);
-        pricePerGb.setText(data.getPricePerGB()); // Keep only the first part
-        TextView modules = productLayout.findViewById(R.id.modules_value);
-        modules.setText(data.getModules());
-        TextView memSpeed = productLayout.findViewById(R.id.memory_speed_value);
-        memSpeed.setText(data.getMemorySpeed());
-        TextView ecc = productLayout.findViewById(R.id.ecc_value);
-        ecc.setText(data.getEcc().split("/")[0]);
+        TextView socket = productLayout.findViewById(R.id.tower_value);
+        socket.setText(data.getTower()); // Keep only the first part
+        TextView tdp = productLayout.findViewById(R.id.shroud_value);
+        tdp.setText(data.getPsuShroud());
+        TextView cores = productLayout.findViewById(R.id.side_panel_value);
+        cores.setText(data.getSidePanel());
+        TextView clock = productLayout.findViewById(R.id.max_gpu_value);
+        clock.setText(data.getGpuLength() + " mm") ;
 
         // Image
         ImageView img = productLayout.findViewById(R.id.product_image);
@@ -186,7 +189,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         //Spec Values
         final LinearLayout specButton = popupView.findViewById(R.id.specs);
         final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("Memory");
+        new DownloadSpecs(context, query, specGallery).execute("PSU");
 
         specGallery.setVisibility(View.GONE);
         specButton.setOnClickListener(new View.OnClickListener() {
@@ -255,7 +258,7 @@ public class RetrieveMemoryFeedTask extends AsyncTask<String, Void, ArrayList<Me
         root.findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MemoryProduct> getSearchData(){
+    public ArrayList<CaseProduct> getSearchData(){
         return searchData;
     }
 

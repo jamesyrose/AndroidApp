@@ -30,12 +30,14 @@ public class Preferences {
     public boolean dbNeedUpdate(){
         long currentTime = System.currentTimeMillis() / 1000;
         long lastUpdate = settings.getLong("LastDatabaseUpdate", 999999999);
-        long oneDay = 0;
+        long oneDay = 24*60*60;
         if (currentTime - lastUpdate > oneDay){
             return true;
         }
         return false;
     }
+
+
 
     public void updateTaxRate(double taxPercentage){
         double value = checkTaxRate(taxPercentage);

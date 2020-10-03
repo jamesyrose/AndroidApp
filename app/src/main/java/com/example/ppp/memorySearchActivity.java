@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
@@ -30,17 +28,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-import async_tasks.feeds.RetrieveMemoryFeedTask;
+import async_tasks.feeds.MemoryFeedTask;
 import pcpp_data.constants.SqlConstants;
-import pcpp_data.products.CpuCoolerProduct;
 import pcpp_data.products.MemoryProduct;
-import pcpp_data.sorters.MemoryProductSort;
 import preferences.Preferences;
 
 public class memorySearchActivity extends AppCompatActivity {
-    static RetrieveMemoryFeedTask memoryFeed;
+    static MemoryFeedTask memoryFeed;
     Preferences prefs;
     LinearLayout dialog;
     ScrollView dialogScroll;
@@ -83,7 +78,7 @@ public class memorySearchActivity extends AppCompatActivity {
         dialogScroll  = findViewById(R.id.scroll_window);
         prefs = new Preferences(context);
 
-        memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+        memoryFeed = new MemoryFeedTask(context, dialog, prefs);
         memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
 
         // Set filter
@@ -198,6 +193,19 @@ public class memorySearchActivity extends AppCompatActivity {
             final LinearLayout brandOptions = popupView.findViewById(R.id.brand_options);
             final LinearLayout brand_choice1 = popupView.findViewById(R.id.brand_options_1);
             final LinearLayout brand_choice2 = popupView.findViewById(R.id.brand_options_2);
+            final CheckBox deselect = popupView.findViewById(R.id.deselect_all_brands); //Deselect all
+            deselect.setChecked(true);
+            deselect.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked){
+                    brandList.stream().forEach(ch -> ch.setChecked(true));
+                }else{
+                    brandList.stream().forEach(ch -> ch.setChecked(false));
+
+                }
+
+            });
+
+
             brandOptions.setVisibility(View.GONE);
             ArrayList<String> brands = new ArrayList<>();
             for (MemoryProduct prod: memoryFeed.getSearchData()){
@@ -370,7 +378,7 @@ public class memorySearchActivity extends AppCompatActivity {
                 filteredData = memoryFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+                memoryFeed = new MemoryFeedTask(context, dialog, prefs);
                 memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
                 loadingDone();
 
@@ -484,7 +492,7 @@ public class memorySearchActivity extends AppCompatActivity {
                 filteredData = memoryFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+                memoryFeed = new MemoryFeedTask(context, dialog, prefs);
                 memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
                 sortWindow.dismiss();
                 loadingDone();
@@ -590,7 +598,7 @@ public class memorySearchActivity extends AppCompatActivity {
         loadingNotDone();
         dialog.removeAllViews();
         dialogScroll.smoothScrollTo(0,0);
-        memoryFeed = new RetrieveMemoryFeedTask(context, dialog, prefs);
+        memoryFeed = new MemoryFeedTask(context, dialog, prefs);
         memoryFeed.execute(sqlStringBuild);
         loadingDone();
     }
