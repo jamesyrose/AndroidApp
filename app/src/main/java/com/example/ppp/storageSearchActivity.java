@@ -35,6 +35,8 @@ import pcpp_data.products.StorageProduct;
 import preferences.Preferences;
 
 public class storageSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+
     static StorageFeedTask storageFeed;
     Preferences prefs;
     LinearLayout dialog;
@@ -75,10 +77,11 @@ public class storageSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         dialogScroll = findViewById(R.id.scroll_window);
         sqlConst = new SqlConstants();
-
         prefs = new Preferences(context);
+        BUILD_ID = getIntent().getStringExtra("buildID");
 
-        storageFeed = new StorageFeedTask(context, dialog, prefs);
+
+        storageFeed = new StorageFeedTask(context, dialog, prefs, BUILD_ID);
         storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
 
         // Set filter
@@ -389,7 +392,7 @@ public class storageSearchActivity extends AppCompatActivity {
                 filteredData = storageFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                storageFeed = new StorageFeedTask(context, dialog, prefs);
+                storageFeed = new StorageFeedTask(context, dialog, prefs, BUILD_ID);
                 storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
                 loadingDone();
                 filterWindow.dismiss();
@@ -493,7 +496,7 @@ public class storageSearchActivity extends AppCompatActivity {
                 filteredData = storageFeed.getSearchData();
                 dialog.removeAllViews();
                 loadingNotDone();
-                storageFeed = new StorageFeedTask(context, dialog, prefs);
+                storageFeed = new StorageFeedTask(context, dialog, prefs, BUILD_ID);
                 storageFeed.execute(sqlConst.STORAGE_SEARCH_LIST);
                 sortWindow.dismiss();
                 loadingDone();
@@ -612,7 +615,7 @@ public class storageSearchActivity extends AppCompatActivity {
         System.out.println(sqlStringBuilt);
         loadingNotDone();
         dialog.removeAllViews();
-        storageFeed = new StorageFeedTask(context, dialog, prefs);
+        storageFeed = new StorageFeedTask(context, dialog, prefs, BUILD_ID);
         storageFeed.execute(sqlStringBuilt);
         loadingDone();
     }

@@ -29,7 +29,7 @@
                 <LinearLayout
                     android:id="@+id/cpu_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -43,9 +43,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/cpuLabel"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -57,17 +57,52 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/cpu_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_cpu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_cpu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <!--  CPU COOLER  -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/cpu_cooler_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -81,9 +116,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_cpu_cooler"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -95,17 +130,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/cpu_cooler_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_cpu_cooler"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_cpu_cooler"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!--  MOBO -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/motherboard_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -119,9 +188,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_motherboard"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -133,17 +202,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/motherboard_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_motherboard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_motherboard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!--  CPU -->
+                <!--  Memory -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/memory_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -157,9 +260,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_memory"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -171,17 +274,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/memory_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_memory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_memory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!--  CPU -->
+                <!--  Storage -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/storage_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -195,9 +332,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_storage"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -209,17 +346,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/storage_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_storage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_storage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!--  CPU -->
+                <!--  GPU -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/gpu_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -233,9 +404,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_gpu"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -247,17 +418,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/gpu_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_gpu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_gpu"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!--  CPU -->
+                <!--  PSU -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/power_supply_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -271,9 +476,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_psu"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -285,17 +490,51 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/power_supply_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_power_supply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_power_supply"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <!--  CPU -->
+                <!--  CASE -->
                 <LinearLayout
-                    android:id="@+id/cpu_selection"
+                    android:id="@+id/case_selection"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:layout_margin="1dp"
                     android:background="#B34C4D7E"
                     android:clickable="true"
@@ -309,9 +548,9 @@
                         android:layout_height="match_parent"
                         android:layout_weight=".85"
                         android:gravity="center"
-                        android:text="@string/choose_cpu"
+                        android:text="@string/choose_case"
                         android:textColor="#FFFFFF"
-                        android:textSize="28sp"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -323,10 +562,44 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/cpu"
+                    android:id="@+id/case_option"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/add_case"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:background="@drawable/build_part_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_weight=".2"
+                            android:paddingRight="20dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="22dp"
+                            android:text="\uff0b" />
+
+                        <TextView
+                            android:id="@+id/add_product_case"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".8"
+                            android:textColor="#FFFFFF"
+                            android:layout_marginRight="40dp"
+                            android:textSize="18dp"
+                            android:text="" />
+                    </LinearLayout>
                 </LinearLayout>
 
 
@@ -372,9 +645,9 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight=".25"
+                        android:layout_weight=".3"
                         android:gravity = "center_vertical"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="15dp"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF"
@@ -383,7 +656,7 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight=".45"
+                        android:layout_weight=".4"
                         android:gravity = "center_vertical"
                         android:layout_marginLeft="20dp"
                         android:textSize="18sp"
@@ -402,6 +675,50 @@
                     android:orientation="horizontal"
                     android:background="#0EB673">
 
+                    <TextView
+                        android:id="@+id/price"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".3"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="center"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeMaxTextSize="20sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/wattage"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".3"
+                        android:layout_marginLeft="15dp"
+                        android:gravity="center"
+                        android:textColor="#FFFFFF"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeMaxTextSize="20sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:textStyle="bold"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/compatibility"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight=".4"
+                        android:layout_marginLeft="20dp"
+                        android:gravity="center"
+                        android:textColor="#FFFFFF"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="10sp"
+                        android:autoSizeMaxTextSize="20sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:textStyle="bold"
+                        android:text="" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -418,9 +735,20 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:layout_margin="5dp"
+                        android:background="#8F0000"
+                        android:textColor="#FFFFFF"
+                        android:text="@string/delete_build" />
+
+                    <Button
+                        android:id="@+id/new_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
                         android:background="#2c85c5"
                         android:textColor="#FFFFFF"
-                        android:text="@string/sort" />
+                        android:text="@string/new_build" />
 
                     <Button
                         android:id="@+id/save_button"
@@ -431,7 +759,7 @@
                         android:layout_margin="5dp"
                         android:background="#2c85c5"
                         android:textColor="#FFFFFF"
-                        android:text="@string/filters" />
+                        android:text="@string/save" />
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>

@@ -35,6 +35,12 @@ import pcpp_data.products.CpuSearchProduct;
 import preferences.Preferences;
 
 public class cpuSearchActivity extends AppCompatActivity {
+    // Passed from prior activity
+    String BUILD_ID = "";
+    String SQL_FILTER= "WHERE ";
+
+
+    // core info
     static CpuFeedTask cpuFeed;
     Preferences prefs;
     ScrollView dialogScroll;
@@ -77,15 +83,19 @@ public class cpuSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
-
+        BUILD_ID = getIntent().getStringExtra("buildID");
+        String buff = getIntent().getStringExtra("sqlFilter");
+        if (buff != null){
+            SQL_FILTER = buff;
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
         loadingNotDone();
-        cpuFeed = new CpuFeedTask(context, dialog, prefs);
-        cpuFeed.execute( sqlConst.CPU_SEARCH_LIST);
+        cpuFeed = new CpuFeedTask(context, dialog, prefs, BUILD_ID);
+        cpuFeed.execute(sqlConst.CPU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -189,9 +199,8 @@ public class cpuSearchActivity extends AppCompatActivity {
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
         filterWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-
         LinearLayout mainLayout  = popupView.findViewById(R.id.main_vert_layout);
+
         // Set the Branch Choices
         final RelativeLayout brandChoice = mainLayout.findViewById(R.id.brand_selection);
         final LinearLayout brandOptions = mainLayout.findViewById(R.id.brand_options);
@@ -303,9 +312,9 @@ public class cpuSearchActivity extends AppCompatActivity {
                 // tdp
                 tdpBar.setSelectedMinValue(0);
                 tdpBar.setSelectedMaxValue(500);
-                cpuFeed = new CpuFeedTask(context, dialog, prefs);
+                cpuFeed = new CpuFeedTask(context, dialog, prefs, BUILD_ID);
                 dialog.removeAllViews();
-                cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
+                cpuFeed.execute(sqlConst.CPU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 filterWindow.dismiss();
             }
         });
@@ -407,9 +416,9 @@ public class cpuSearchActivity extends AppCompatActivity {
             sortFilter = "Popularity (Descending)";
             filteredData = cpuFeed.getSearchData();
             dialog.removeAllViews();
-            cpuFeed = new CpuFeedTask(context, dialog, prefs);
+            cpuFeed = new CpuFeedTask(context, dialog, prefs, BUILD_ID);
             dialog.removeAllViews();
-            cpuFeed.execute(sqlConst.CPU_SEARCH_LIST);
+            cpuFeed.execute(sqlConst.CPU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
             sortWindow.dismiss();
         });
 
@@ -484,7 +493,7 @@ public class cpuSearchActivity extends AppCompatActivity {
         }else if (sortFilter.toLowerCase().contains("base")){
             sortBy = "CAST(CPU.`Core Clock` AS FLOAT) " + desc;
         }else if (sortFilter.toLowerCase().contains("boost")){
-            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT" + desc;
+            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT) " + desc;
         }else if (sortFilter.toLowerCase().contains("tdp")){
             sortBy = "CAST(CPU.`TDP` AS INT) " + desc;
         }
@@ -496,8 +505,8 @@ public class cpuSearchActivity extends AppCompatActivity {
         dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
         loadingNotDone();
-        cpuFeed = new CpuFeedTask(context, dialog, prefs);
-        cpuFeed.execute(sqlStringBuilt);
+        cpuFeed = new CpuFeedTask(context, dialog, prefs, BUILD_ID);
+        cpuFeed.execute(sqlStringBuilt.replace("WHERE", SQL_FILTER));
         loadingDone();
     }
 

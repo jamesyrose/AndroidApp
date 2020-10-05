@@ -35,6 +35,9 @@ import pcpp_data.products.MotherboardProduct;
 import preferences.Preferences;
 
 public class motherboardSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+    String SQL_FILTER = "WHERE";
+
     static MotherboardFeedTask motherboardFeed;
     Preferences prefs;
     LinearLayout dialog;
@@ -73,11 +76,16 @@ public class motherboardSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         dialogScroll = findViewById(R.id.scroll_window);
         sqlConst = new SqlConstants();
-
         prefs = new Preferences(context);
+        BUILD_ID = getIntent().getStringExtra("buildID");
+        String buff = getIntent().getStringExtra("sqlFilter");
+        if (buff!= null){
+            SQL_FILTER = buff;
+        }
 
-        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+
+        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs, BUILD_ID);
+        motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST.replace("WHERE", SQL_FILTER));
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -389,8 +397,8 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 filteredData = motherboardFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs, BUILD_ID);
+                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 loadingDone();
                 filterWindow.dismiss();
             }
@@ -501,8 +509,8 @@ public class motherboardSearchActivity extends AppCompatActivity {
                 filteredData = motherboardFeed.getSearchData();
                 dialog.removeAllViews();
                 loadingNotDone();
-                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST);
+                motherboardFeed = new MotherboardFeedTask(context, dialog, prefs, BUILD_ID);
+                motherboardFeed.execute(sqlConst.MOTHERBOARD_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 sortWindow.dismiss();
                 loadingDone();
             }
@@ -616,8 +624,8 @@ public class motherboardSearchActivity extends AppCompatActivity {
         System.out.println(sqlStringBuilt);
         loadingNotDone();
         dialog.removeAllViews();
-        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs);
-        motherboardFeed.execute(sqlStringBuilt);
+        motherboardFeed = new MotherboardFeedTask(context, dialog, prefs, BUILD_ID);
+        motherboardFeed.execute(sqlStringBuilt.replace("WHERE", SQL_FILTER));
         loadingDone();
     }
 

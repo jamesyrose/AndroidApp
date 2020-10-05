@@ -43,6 +43,10 @@ public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>
     protected void onPostExecute(ArrayList<PriceObj> sellers){
         for (PriceObj price: sellers){
             if (price != null){
+                // Removing the n/a label
+                TextView naLabel = gallery.findViewById(R.id.buy_default);
+                naLabel.setVisibility(View.GONE);
+                //inflatings
                 View layout = LayoutInflater.from(context).inflate(R.layout.buy_option_template,
                         gallery,
                         false);

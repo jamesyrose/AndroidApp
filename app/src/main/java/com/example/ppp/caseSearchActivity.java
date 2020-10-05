@@ -34,6 +34,8 @@ import pcpp_data.products.CaseProduct;
 import preferences.Preferences;
 
 public class caseSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+
     static CaseFeedTask caseFeed;
     Preferences prefs;
     ScrollView dialogScroll;
@@ -46,8 +48,6 @@ public class caseSearchActivity extends AppCompatActivity {
     // Data filters
     int priceMin = 0;
     int priceMax = 1000000;
-    int wattageMin = 0;
-    int wattageMax = 10000;
     boolean yesModular = true;
     boolean noModular = true;
     String sortFilter = "Popularity (Ascending)";
@@ -77,7 +77,7 @@ public class caseSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
-
+        BUILD_ID = getIntent().getStringExtra("buildID");
 
     }
 
@@ -85,7 +85,7 @@ public class caseSearchActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         loadingNotDone();
-        caseFeed = new CaseFeedTask(context, dialog, prefs);
+        caseFeed = new CaseFeedTask(context, dialog, prefs, BUILD_ID);
         caseFeed.execute( sqlConst.CASE_SEARCH_LIST);
 
         // Set filter
@@ -483,7 +483,7 @@ public class caseSearchActivity extends AppCompatActivity {
                 sidePanelList.stream().forEach(cb -> cb.setChecked(true));
                 psuShroudList.stream().forEach(cb -> cb.setChecked(true));
 
-                caseFeed = new CaseFeedTask(context, dialog, prefs);
+                caseFeed = new CaseFeedTask(context, dialog, prefs, BUILD_ID);
                 dialog.removeAllViews();
                 caseFeed.execute(sqlConst.CASE_SEARCH_LIST);
                 filterWindow.dismiss();
@@ -596,7 +596,7 @@ public class caseSearchActivity extends AppCompatActivity {
 
 
             dialog.removeAllViews();
-            caseFeed = new CaseFeedTask(context, dialog, prefs);
+            caseFeed = new CaseFeedTask(context, dialog, prefs, BUILD_ID);
             caseFeed.execute(sqlConst.CASE_SEARCH_LIST);
             sortWindow.dismiss();
         });
@@ -728,7 +728,7 @@ public class caseSearchActivity extends AppCompatActivity {
         dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
         loadingNotDone();
-        caseFeed = new CaseFeedTask(context, dialog, prefs);
+        caseFeed = new CaseFeedTask(context, dialog, prefs, BUILD_ID);
         caseFeed.execute(sqlStringBuilt);
         loadingDone();
     }

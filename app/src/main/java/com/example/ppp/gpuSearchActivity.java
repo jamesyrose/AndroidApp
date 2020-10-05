@@ -34,6 +34,8 @@ import pcpp_data.products.GpuSearchProduct;
 import preferences.Preferences;
 
 public class gpuSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+
     static GpuFeedTask gpuFeed;
     Preferences prefs;
     ScrollView dialogScroll;
@@ -74,14 +76,14 @@ public class gpuSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
-
+        BUILD_ID = getIntent().getStringExtra("buildID");
     }
 
     @Override
     public void onStart() {
         super.onStart();
         loadingNotDone();
-        gpuFeed = new GpuFeedTask(context, dialog, prefs);
+        gpuFeed = new GpuFeedTask(context, dialog, prefs, BUILD_ID);
         gpuFeed.execute( sqlConst.GPU_SEARCH_LIST);
 
         // Set filter
@@ -336,7 +338,7 @@ public class gpuSearchActivity extends AppCompatActivity {
                 tdpBar.setSelectedMaxValue(500);
                 brandList.stream().forEach(cb -> cb.setChecked(true));
 
-                gpuFeed = new GpuFeedTask(context, dialog, prefs);
+                gpuFeed = new GpuFeedTask(context, dialog, prefs, BUILD_ID);
                 dialog.removeAllViews();
                 gpuFeed.execute(sqlConst.GPU_SEARCH_LIST);
                 filterWindow.dismiss();
@@ -428,7 +430,7 @@ public class gpuSearchActivity extends AppCompatActivity {
 
 
             dialog.removeAllViews();
-            gpuFeed = new GpuFeedTask(context, dialog, prefs);
+            gpuFeed = new GpuFeedTask(context, dialog, prefs, BUILD_ID);
             gpuFeed.execute(sqlConst.GPU_SEARCH_LIST);
             sortWindow.dismiss();
         });
@@ -522,7 +524,7 @@ public class gpuSearchActivity extends AppCompatActivity {
         dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
         loadingNotDone();
-        gpuFeed = new GpuFeedTask(context, dialog, prefs);
+        gpuFeed = new GpuFeedTask(context, dialog, prefs, BUILD_ID);
         gpuFeed.execute(sqlStringBuilt);
         loadingDone();
     }

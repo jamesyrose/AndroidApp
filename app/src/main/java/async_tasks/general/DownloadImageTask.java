@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import java.io.InputStream;
 import java.net.URL;
 
+import pcpp_data.constants.Constants;
+
 public class DownloadImageTask extends AsyncTask<String,Void, Bitmap> {
     ImageView imageView;
     ImageButton btn;
@@ -29,6 +31,11 @@ public class DownloadImageTask extends AsyncTask<String,Void, Bitmap> {
      */
     protected Bitmap doInBackground(String...urls){
         String urlOfImage = urls[0];
+        if (urlOfImage != null) {
+            for (String key: Constants.IMAGE_BASE_MAP.keySet()) {
+                urlOfImage = urlOfImage.replace(key, Constants.IMAGE_BASE_MAP.get(key));
+            }
+        }
         Bitmap logo = null;
         try{
             InputStream is = new URL(urlOfImage).openStream();

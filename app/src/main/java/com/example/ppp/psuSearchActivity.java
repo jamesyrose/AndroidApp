@@ -34,6 +34,9 @@ import pcpp_data.products.PsuProduct;
 import preferences.Preferences;
 
 public class psuSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+    String SQL_FILTER = "WHERE ";
+
     static PsuFeedTask psuFeed;
     Preferences prefs;
     ScrollView dialogScroll;
@@ -77,16 +80,19 @@ public class psuSearchActivity extends AppCompatActivity {
         dialog = (LinearLayout) findViewById(R.id.searchID);
         loadingWheel = findViewById(R.id.loading_wheel);
         prefs = new Preferences(context);
-
-
+        BUILD_ID = getIntent().getStringExtra("buildID");
+        String buff = getIntent().getStringExtra("sqlFilter");
+        if (buff != null){
+            SQL_FILTER = buff;
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
         loadingNotDone();
-        psuFeed = new PsuFeedTask(context, dialog, prefs);
-        psuFeed.execute( sqlConst.PSU_SEARCH_LIST);
+        psuFeed = new PsuFeedTask(context, dialog, prefs, BUILD_ID);
+        psuFeed.execute( sqlConst.PSU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -500,9 +506,9 @@ public class psuSearchActivity extends AppCompatActivity {
                 formFactorList.stream().forEach(cb -> cb.setChecked(true));
                 effRatingList.stream().forEach(cb -> cb.setChecked(true));
 
-                psuFeed = new PsuFeedTask(context, dialog, prefs);
+                psuFeed = new PsuFeedTask(context, dialog, prefs, BUILD_ID);
                 dialog.removeAllViews();
-                psuFeed.execute(sqlConst.PSU_SEARCH_LIST);
+                psuFeed.execute(sqlConst.PSU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 filterWindow.dismiss();
             }
         });
@@ -616,8 +622,8 @@ public class psuSearchActivity extends AppCompatActivity {
 
 
             dialog.removeAllViews();
-            psuFeed = new PsuFeedTask(context, dialog, prefs);
-            psuFeed.execute(sqlConst.PSU_SEARCH_LIST);
+            psuFeed = new PsuFeedTask(context, dialog, prefs, BUILD_ID);
+            psuFeed.execute(sqlConst.PSU_SEARCH_LIST.replace("WHERE", SQL_FILTER));
             sortWindow.dismiss();
         });
 
@@ -750,8 +756,8 @@ public class psuSearchActivity extends AppCompatActivity {
         dialogScroll.smoothScrollTo(0,0);
         dialog.removeAllViews();
         loadingNotDone();
-        psuFeed = new PsuFeedTask(context, dialog, prefs);
-        psuFeed.execute(sqlStringBuilt);
+        psuFeed = new PsuFeedTask(context, dialog, prefs, BUILD_ID);
+        psuFeed.execute(sqlStringBuilt.replace("WHERE", SQL_FILTER));
         loadingDone();
     }
 

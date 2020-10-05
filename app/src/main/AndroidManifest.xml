@@ -118,6 +118,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".savedBuildsActivity"
+            android:label="Saved Builds" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.savedBuild" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

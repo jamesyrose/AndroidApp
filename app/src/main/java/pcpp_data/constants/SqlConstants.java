@@ -104,7 +104,8 @@ public class SqlConstants {
 
     public final String MEMORY_SEARCH_LIST =  "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, " +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, " +
-            "Memory.Manufacturer, Memory.Modules, Memory.`Price / GB`, Memory.`ECC / Registered`, Memory.Speed " +
+            "Memory.Manufacturer, Memory.Modules, Memory.`Price / GB`, Memory.`ECC / Registered`, " +
+            " (Memory.Speed|| ' '|| CASE WHEN Memory.Type IS NULL THEN '' ELSE Memory.Type END)  AS Speed " +
             "FROM ProductMain " +
             "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID " +
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID " +
@@ -115,7 +116,9 @@ public class SqlConstants {
 
     public final String MEMORY_SEARCH_FILTER = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
             "ProductMain.BestPrice, Rating.Count, Rating.Average, Images.Images, \n" +
-            "Memory.Manufacturer, Memory.Modules, Memory.`Price / GB`, Memory.`ECC / Registered`, Memory.Speed \n" +
+            "Memory.Manufacturer, Memory.Modules, Memory.`Price / GB`, Memory.`ECC / Registered`," +
+            " (Memory.Speed|| ' '||CASE WHEN Memory.Type IS NULL  THEN '' ELSE Memory.Type END)  AS Speed, " +
+            " CAST(Memory.Speed as INT) AS spd \n" +
             "FROM ProductMain \n" +
             "LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
             "LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
@@ -258,5 +261,47 @@ public class SqlConstants {
             "        ORDER BY %s ;\n" +
             "\n";
 
+    public final String CREATE_SAVED_BUILD_TABLES = "CREATE TABLE IF NOT EXISTS `SavedBuild` (\n" +
+            " `added`  DATETIME NOT NULL,\n" +
+            "  `ProductID` INT NOT NULL,\n" +
+            "  `name` VARCHAR(90) NULL,\n" +
+            "  `buildID` VARCHAR(20) NULL,\n" +
+            "  `productType` VARCHAR(20) NULL,\n" +
+            " `saved` INT UNSIGNED NOT NULL DEFAULT 0 );";
+
+
+    public final String SELECTED_PRODUCT_SEARCH = "SELECT DISTINCT ProductMain.ProductName, ProductMain.ProductID, \n" +
+            "        ProductMain.BestPrice, ProductMain.ProductType, Rating.Count, Rating.Average, \n" +
+            "          Price.PurchaseLink, buff.Images,\n" +
+            "        CASE " +
+            "               WHEN Price.Shipping IS NULL " +
+            "                   THEN -2 " +
+            "               ELSE Price.Shipping" +
+            "        END Shipping,  " +
+            "        CASE  \n" +
+            "                WHEN GPU.TDP IS NOT NULL \n" +
+            "                    THEN CAST(GPU.TDP AS INT)\n" +
+            "                WHEN CPU.TDP IS NOT NULL \n" +
+            "                    THEN CAST(CPU.TDP  AS INT)\n" +
+            "                ELSE 0 \n" +
+            "        END TDP\n" +
+            "    FROM ProductMain \n" +
+            "    LEFT JOIN Images on Images.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
+            "    LEFT JOIN CPU on CPU.ProductID=ProductMain.ProductID\n" +
+            "    LEFT JOIN GPU ON GPU.ProductID=ProductMain.ProductID\n" +
+            "    LEFT JOIN (SELECT ProductID,\n" +
+            "                CASE \n" +
+            "                    WHEN Images.Images IS NULL\n" +
+            "                        THEN \"ZZZZZZZZZZZZ\"\n" +
+            "                    ELSE Images.Images\n" +
+            "                END Images\n" +
+            "                FROM Images\n" +
+            "                ) AS buff ON  buff.ProductID= ProductMain.ProductID\n" +
+            "    WHERE ProductMain.ProductID = %d \n" +
+            "    ORDER BY buff.Images" +
+            "    LIMIT 1;\n";
+    
     public final String SINGLE_PRODUCT  = "SELECT * FROM %s WHERE ProductID = %d";
 }

@@ -10,12 +10,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ppp.R;
 
@@ -31,11 +33,13 @@ import pcpp_data.constants.Constants;
 import pcpp_data.products.GpuSearchProduct;
 import pcpp_data.queries.GetSearchLists;
 import pcpp_data.queries.SingleProductQuery;
+import pcpp_data.sqllite.saveBuilds;
 import preferences.Preferences;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class GpuFeedTask extends AsyncTask<String, Void, ArrayList<GpuSearchProduct>> {
+    String BUILD_ID = "";
     Context context;
     LinearLayout dialog;
     static ArrayList<GpuSearchProduct> searchData;
@@ -45,11 +49,12 @@ public class GpuFeedTask extends AsyncTask<String, Void, ArrayList<GpuSearchProd
     boolean dataFetched;
 
 
-    public GpuFeedTask(Context context, LinearLayout dialog, Preferences prefs){
+    public GpuFeedTask(Context context, LinearLayout dialog, Preferences prefs, String buildID){
         this.context = context;
         this.dialog = dialog;
         this.prefs = prefs;
         this.root = ((Activity) context).getWindow().getDecorView();
+        this.BUILD_ID = buildID;
         this.dataFetched = false;
         if (this.searchData == null){
             this.searchData = new ArrayList<>();
@@ -103,6 +108,18 @@ public class GpuFeedTask extends AsyncTask<String, Void, ArrayList<GpuSearchProd
         View productLayout = LayoutInflater.from(context).inflate(R.layout.gpu_selection_template,
                 parentLayout,
                 false);
+
+        // Add button (for creating build)
+        if (BUILD_ID != null){ // If there is a build id it wont be blank
+            Button addButton = productLayout.findViewById(R.id.add_to_build);
+            addButton.setVisibility(View.VISIBLE);
+            addButton.setOnClickListener(v -> {
+                new saveBuilds(context, BUILD_ID).addToBuild(productID);
+                Toast.makeText(context, String.format("%s Added", data.getProductName()), Toast.LENGTH_LONG).show();
+                ((Activity) context).finish();
+            });
+        }
+
 
         // Labels
         final TextView productName = productLayout.findViewById(R.id.product_name_label);

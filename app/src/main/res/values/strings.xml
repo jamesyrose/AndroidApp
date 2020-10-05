@@ -35,7 +35,7 @@
     <string name="aud">Australian Dollar $(AUD)</string>
     <string name="cad">Canadian Dollar $(CAD)</string>
     <string name="chf">Swiss Franc \u20A3(CHF)</string>
-    <string name="currency_disclaimer">Currencies are used for currency exchange. All prices are USA based</string>
+    <string name="currency_disclaimer">These settings dont do anything but change the currency symbol at the moment</string>
     <string name="currency_warning">Warning!</string>
     <string name="update_settings">Update Settings</string>
     <string name="filters">Filters</string>
@@ -107,6 +107,19 @@
     <string name="choose_cpu"><u>CPU </u></string>
     <string name="price_total">Total Price</string>
     <string name="compatibility">Compatibility</string>
+    <string name="choose_cpu_cooler">CPU Cooler</string>
+    <string name="choose_motherboard">Motherboard</string>
+    <string name="choose_memory">Memory</string>
+    <string name="choose_storage">Storage</string>
+    <string name="choose_gpu">GPU</string>
+    <string name="choose_psu">Power Supply</string>
+    <string name="choose_case">Case</string>
+    <string name="base_price">Price</string>
+    <string name="add_to_build">Add</string>
+    <string name="save">Save Build</string>
+    <string name="delete_build">Delete Build</string>
+    <string name="new_build">New Build</string>
+    <string name="parts"><u>Components</u></string>
 
 
 </resources>

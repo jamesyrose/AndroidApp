@@ -35,6 +35,9 @@ import pcpp_data.products.CpuCoolerProduct;
 import preferences.Preferences;
 
 public class cpuCoolerSearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+    String SQL_FILTER = "WHERE ";
+
     static CpuCoolerFeedTask cpuCoolerFeed;
     Preferences prefs;
     LinearLayout dialog;
@@ -68,8 +71,15 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         loadingNotDone();
         dialog = findViewById(R.id.searchID);
         dialogScroll = findViewById(R.id.scroll_window);
-        cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs);
-        cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
+        BUILD_ID = getIntent().getStringExtra("buildID");
+        String buff = getIntent().getStringExtra("sqlFilter");
+        if (buff != null){
+            SQL_FILTER = buff;
+        }
+
+        // Getting Data
+        cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs, BUILD_ID);
+        cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST.replace("WHERE", SQL_FILTER));
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
@@ -301,8 +311,8 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
                 filteredData = cpuCoolerFeed.getSearchData();
                 dialogScroll.smoothScrollTo(0,0);
                 dialog.removeAllViews();
-                cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs);
-                cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
+                cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs, BUILD_ID);
+                cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 filterWindow.dismiss();
             }
         });
@@ -387,8 +397,8 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
             filteredData = cpuCoolerFeed.getSearchData();
             dialog.removeAllViews();
             dialogScroll.smoothScrollTo(0, 0);
-            cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs);
-            cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST);
+            cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs, BUILD_ID);
+            cpuCoolerFeed.execute(sqlConst.CPU_COOLER_SEARCH_LIST.replace("WHERE", SQL_FILTER));
             sortWindow.dismiss();
         });
 
@@ -484,8 +494,8 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         System.out.println(sqlStringBuilt);
         dialog.removeAllViews();
         dialogScroll.smoothScrollTo(0, 0);
-        cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs);
-        cpuCoolerFeed.execute(sqlStringBuilt);
+        cpuCoolerFeed = new CpuCoolerFeedTask(context, dialog, prefs, BUILD_ID);
+        cpuCoolerFeed.execute(sqlStringBuilt.replace("WHERE", SQL_FILTER));
     }
 
     public int getHighestPriceProdcuct(){

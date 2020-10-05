@@ -35,6 +35,9 @@ import pcpp_data.products.MemoryProduct;
 import preferences.Preferences;
 
 public class memorySearchActivity extends AppCompatActivity {
+    String BUILD_ID = "";
+    String SQL_FILTER = "WHERE";
+
     static MemoryFeedTask memoryFeed;
     Preferences prefs;
     LinearLayout dialog;
@@ -75,17 +78,27 @@ public class memorySearchActivity extends AppCompatActivity {
         sqlConst = new SqlConstants();
         loadingNotDone();
         dialog = (LinearLayout) findViewById(R.id.searchID);
-        dialogScroll  = findViewById(R.id.scroll_window);
         prefs = new Preferences(context);
 
-        memoryFeed = new MemoryFeedTask(context, dialog, prefs);
-        memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
+        BUILD_ID = getIntent().getStringExtra("buildID");
+        String buff = getIntent().getStringExtra("sqlFilter");
+        if (buff != null){
+            SQL_FILTER = buff;
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStart(){
+        super.onStart();
+        memoryFeed = new MemoryFeedTask(context, dialog, prefs, BUILD_ID);
+        memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST.replace("WHERE", SQL_FILTER));
 
         // Set filter
         Button filter = findViewById(R.id.filter_button);
         filter.setOnClickListener(new View.OnClickListener() {
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
                 filterPopup(v);
@@ -102,18 +115,18 @@ public class memorySearchActivity extends AppCompatActivity {
             }
         });
 
-//        // Set Scroll listener
-        final ScrollView dialogScroll = findViewById(R.id.scroll_window);
+        // Set Scroll listener
+        dialogScroll = findViewById(R.id.scroll_window);
         dialogScroll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 dialogScroll.getY();
                 int scrollY = dialogScroll.getScrollY() + dialogScroll.getHeight(); // For ScrollView
-                View lastView = dialog.getChildAt(dialog.getChildCount() - 1 );
-                if (lastView != null){
+                View lastView = dialog.getChildAt(dialog.getChildCount() - 1);
+                if (lastView != null) {
                     float lastViewY = lastView.getY();
                     System.out.println(dialog.getChildCount());
-                    if (scrollY > lastViewY){
+                    if (scrollY > lastViewY) {
                         loadingNotDone();
                         onLoadMore();
                         loadingDone();
@@ -171,8 +184,9 @@ public class memorySearchActivity extends AppCompatActivity {
     public void filterPopup(View view){
         // inflate the layout of the popup window
         LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
+                 getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.memory_filter_window, null);
+
 
         // create the popup window
         int width = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -378,8 +392,8 @@ public class memorySearchActivity extends AppCompatActivity {
                 filteredData = memoryFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                memoryFeed = new MemoryFeedTask(context, dialog, prefs);
-                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
+                memoryFeed = new MemoryFeedTask(context, dialog, prefs, BUILD_ID);
+                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 loadingDone();
 
             }
@@ -492,8 +506,8 @@ public class memorySearchActivity extends AppCompatActivity {
                 filteredData = memoryFeed.getSearchData();
                 loadingNotDone();
                 dialog.removeAllViews();
-                memoryFeed = new MemoryFeedTask(context, dialog, prefs);
-                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST);
+                memoryFeed = new MemoryFeedTask(context, dialog, prefs, BUILD_ID);
+                memoryFeed.execute(sqlConst.MEMORY_SEARCH_LIST.replace("WHERE", SQL_FILTER));
                 sortWindow.dismiss();
                 loadingDone();
             }
@@ -578,14 +592,8 @@ public class memorySearchActivity extends AppCompatActivity {
             sortBy = "ProductMain.BestPrice " + desc;
         }else if (sortFilter.toLowerCase().contains("rating")){
             sortBy = "Rating.Average " + desc;
-        }else if (sortFilter.toLowerCase().contains("cores")){
-            sortBy = "CAST(CPU.`Core Count` AS INT) " + desc;
-        }else if (sortFilter.toLowerCase().contains("base")){
-            sortBy = "CAST(CPU.`Core Clock` AS FLOAT) " + desc;
-        }else if (sortFilter.toLowerCase().contains("boost")){
-            sortBy = "CAST(CPU.`Boost Clock` AS FLOAT" + desc;
-        }else if (sortFilter.toLowerCase().contains("tdp")){
-            sortBy = "CAST(CPU.`TDP` AS INT) " + desc;
+        }else if (sortFilter.toLowerCase().contains("speed")){
+            sortBy = "CAST(Memory.`Speed` AS INT) " + desc;
         }
 
         System.out.println(" #$########" + sortBy);
@@ -598,8 +606,8 @@ public class memorySearchActivity extends AppCompatActivity {
         loadingNotDone();
         dialog.removeAllViews();
         dialogScroll.smoothScrollTo(0,0);
-        memoryFeed = new MemoryFeedTask(context, dialog, prefs);
-        memoryFeed.execute(sqlStringBuild);
+        memoryFeed = new MemoryFeedTask(context, dialog, prefs, BUILD_ID);
+        memoryFeed.execute(sqlStringBuild.replace("WHERE", SQL_FILTER));
         loadingDone();
     }
 
