@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import pcpp_data.backflow.BuyLinkFetch;
 import pcpp_data.conn.Conn;
 import pcpp_data.constants.Constants;
 import pcpp_data.constants.SqlConstants;
@@ -25,9 +26,11 @@ public class SingleProductQuery {
     private int productID;
     private String urlBase;
     private database db;
+    private Context context;
 
     public SingleProductQuery(int productID, Context context){
         this.productID = productID;
+        this.context = context;
         this.db = new database(context);
         this.urlBase = new SqlConstants().SINGLE_PRODUCT;
     }
@@ -89,7 +92,7 @@ public class SingleProductQuery {
             JSONArray data = db.getData(url);
             for (Object buff: data) {
                 JSONObject row = (JSONObject) buff;
-                String image = (String) row.get("Images");
+                int productID = Integer.valueOf((String) row.get("ProductID"));
                 PriceObj price = new PriceObj();
                 price.setBasePrice(stringToDouble((String) row.get("BasePrice")));
                 price.setShipping(stringToDouble((String) row.get("Shipping")));
@@ -97,8 +100,10 @@ public class SingleProductQuery {
                 int avail = stringToInteger((String) row.get("Availability"));
                 boolean availability = (avail == 1) ? true : false;
                 price.setAvail(availability);
-                String purchaseLink =  Constants.PCPP_MAIN_URL +
-                        (String) row.get("PurchaseLink");
+                String purchaseLink =  (String) row.get("PurchaseLink");
+                // Check for existance if not query it and send it
+                new BuyLinkFetch(context, productID, (String) row.get("Merchant")).execute();
+
                 price.setPurchaseLink(purchaseLink);
                 priceData.add(price);
 

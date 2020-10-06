@@ -21,15 +21,14 @@ public class Preferences {
         editor = settings.edit();
     }
 
-    public void updateDbUpdateData(){
-        editor.putLong("LastDatabaseUpdate", System.currentTimeMillis() / 1000);
+    public void updateDbUpdateData(String table){
+        editor.putLong(String.format("LastDatabaseUpdate%s", table), System.currentTimeMillis() / 1000);
         editor.commit();
-        System.out.println("Database Updated");
     }
 
-    public boolean dbNeedUpdate(){
+    public boolean dbNeedUpdate(String table){
         long currentTime = System.currentTimeMillis() / 1000;
-        long lastUpdate = settings.getLong("LastDatabaseUpdate", 999999999);
+        long lastUpdate = settings.getLong(String.format("LastDatabaseUpdate%s", table), 999999999);
         long oneDay = 24*60*60;
         if (currentTime - lastUpdate > oneDay){
             return true;
@@ -57,15 +56,6 @@ public class Preferences {
 
     public String getDbName(){
         return settings.getString("DB_NAME", "");
-    }
-
-    public String getUpdateDbName(){
-        String currDb = this.getDbName();
-        if (currDb.equals("DB_2.db")){
-            return "DB_1.db";
-        }else {
-            return "DB_2.db";
-        }
     }
 
     public void updateTaxRate(String taxPercentage){

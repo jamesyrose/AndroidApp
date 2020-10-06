@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import async_tasks.feeds.ProductPopup;
 import async_tasks.general.DownloadImageGallery;
 import async_tasks.general.DownloadSellers;
 import async_tasks.general.DownloadSpecs;
@@ -54,6 +55,7 @@ import async_tasks.general.DownloadImageTask;
 public class buildPcActivity extends AppCompatActivity {
     Context context;
     Preferences prefs;
+    LinearLayout dialog;
     ScrollView dialogScroll;
     private double total = 0.0;
     private int wattage = 0;
@@ -69,6 +71,7 @@ public class buildPcActivity extends AppCompatActivity {
         //
         context = buildPcActivity.this;
         prefs = new Preferences(context);
+        dialog = findViewById(R.id.main_vert_layout);
         dialogScroll = findViewById(R.id.scroll_window);
         //
         BUILD_ID = getIntent().getStringExtra("BUILD_ID");
@@ -85,6 +88,7 @@ public class buildPcActivity extends AppCompatActivity {
             int height = LinearLayout.LayoutParams.MATCH_PARENT;
             boolean focusable = true; // lets taps outside the popup also dismiss it
             final PopupWindow popupWindow = new PopupWindow(delWindow, width, height, focusable);
+            popupWindow.setAnimationStyle(R.style.popup_animation);
             popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
 
             Button delBtn = delWindow.findViewById(R.id.delete_button);
@@ -134,6 +138,7 @@ public class buildPcActivity extends AppCompatActivity {
             int height = LinearLayout.LayoutParams.MATCH_PARENT;
             boolean focusable = true; // lets taps outside the popup also dismiss it
             final PopupWindow popupWindow = new PopupWindow(saveWindow, width, height, focusable);
+            popupWindow.setAnimationStyle(R.style.popup_animation);
             popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
             // dismiss the popup window when touched
             saveWindow.setOnTouchListener((v1, event) -> {
@@ -369,8 +374,12 @@ public class buildPcActivity extends AppCompatActivity {
 
         // Buy Button
         Button buyButton = newView.findViewById(R.id.buy_button);
-        buyButton.setOnClickListener(v -> productPopup(v, productID, product.getProductType(), productName));
-        newView.setOnClickListener(v -> productPopup(v, productID, product.getProductType(), productName));
+        buyButton.setOnClickListener(v -> {
+            new ProductPopup().productPopup(context, prefs, v, productID, productName, product.getProductType());;
+        });
+        newView.setOnClickListener(v -> {
+            new ProductPopup().productPopup(context, prefs, v, productID, productName, product.getProductType());;
+        });
 
         // remove item
         TextView removeButton = newView.findViewById(R.id.delete_button);
@@ -414,6 +423,7 @@ public class buildPcActivity extends AppCompatActivity {
                     int height = LinearLayout.LayoutParams.MATCH_PARENT;
                     boolean focusable = true; // lets taps outside the popup also dismiss it
                     final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+                    popupWindow.setAnimationStyle(R.style.popup_animation);
 
                     // show the popup window
                     // which view you pass in doesn't matter, it is only used for the window tolken
@@ -450,91 +460,6 @@ public class buildPcActivity extends AppCompatActivity {
         priceView.setText(String.format("%s %.2f", prefs.getCurrencySymbol(), total));
         wattageView.setText(String.format("%d watts", wattage));
         compatView.setText(compatible);
-    }
-
-    public void productPopup(View view, int productID, String productType, String productName){
-        if (productType.toLowerCase().replace(" ", "")
-                .replace("_", "")
-                .equals("powersupply")){
-            productType = "PSU";
-        }
-        // inflate the layout of the popup window
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.product_detail_window, null);
-
-        // Set product Name
-        TextView name = popupView.findViewById(R.id.product_name);
-        name.setText(productName);
-
-        // Initiate Spec object
-        SingleProductQuery query = new SingleProductQuery(productID, context);
-
-        //Image Gallery
-        LinearLayout gallery = popupView.findViewById(R.id.image_gallery);
-        new DownloadImageGallery(context, query, gallery).execute();
-
-        //Spec Values
-        final LinearLayout specButton = popupView.findViewById(R.id.specs);
-        final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute(productType);
-
-        specGallery.setVisibility(View.GONE);
-        specButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (specGallery.isShown()){
-                    specGallery.setVisibility(View.GONE);
-                }else{
-                    specGallery.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        // Buy links
-        final LinearLayout buyButton = popupView.findViewById(R.id.buy);
-        final LinearLayout buyGallery = popupView.findViewById(R.id.buy_options);
-        new DownloadSellers(context, query, buyGallery, prefs).execute();
-
-        buyGallery.setVisibility(View.VISIBLE);
-        buyButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if (buyGallery.isShown()){
-                    buyGallery.setVisibility(View.GONE);
-                }else{
-                    buyGallery.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        // create the popup window
-        int width = LinearLayout.LayoutParams.MATCH_PARENT;
-        int height = LinearLayout.LayoutParams.MATCH_PARENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        // close window by button
-        ImageButton closeButton = popupView.findViewById(R.id.close_button);
-        closeButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
     }
 
     public String checkCompat(){
@@ -581,7 +506,7 @@ public class buildPcActivity extends AppCompatActivity {
                             buff = new database(context).getData(sql);
                             obj = (JSONObject) buff.get(0);
                             String moboSocket = (String) obj.get("Socket / CPU");
-                            if (!cpuCoolerSocket.equals(moboSocket)){
+                            if (!Arrays.asList(cpuCoolerSocket.split(";")).contains(moboSocket)){
                                 results.append("Motherboard and CPU Cooler may not Be Compatible\n");
                             }
                         } catch (Exception e) {
@@ -595,7 +520,7 @@ public class buildPcActivity extends AppCompatActivity {
                             buff = new database(context).getData(sql);
                             obj = (JSONObject) buff.get(0);
                             String cpuSocket = (String) obj.get("Socket");
-                            if (!cpuCoolerSocket.equals(cpuSocket)){
+                            if (!Arrays.asList(cpuCoolerSocket.split(";")).contains(cpuSocket)){
                                 results.append("CPU and CPU Cooler may not Be Compatible\n");
                             }
                         } catch (Exception e) {
@@ -637,20 +562,24 @@ public class buildPcActivity extends AppCompatActivity {
                                     "THEN REPLACE(`Modules`, 'GB', '') " +
                                     "ELSE '0x0' " +
                                     "END AS Modules " +
-                                    "FROM Motherboard WHERE ProductID = %d", prodIDComp);
+                                    "FROM Memory WHERE ProductID = %d", prodIDComp);
                             buff = new database(context).getData(sql);
                             obj = (JSONObject) buff.get(0);
                             String memType = (String) obj.get("Type");
                             String modules = (String) obj.get("Modules");
-                            int memory = Integer.parseInt(modules.split("x")[0]) *
-                                    Integer.parseInt(modules.split("x")[1]);
-                            if (!memoryType.equals(memType)){
-                                results.append("Memory Type may not be Compatible\n");
-                            }
+                            String[] splitBuff = modules.split("x");
+
+                            int memory = Integer.valueOf(splitBuff[0].trim()) * Integer.valueOf(splitBuff[1].trim());
+
+                            System.out.println(memory + "dfgsdfgsdfgsdfg" + maxMemory);
                             if (memory > maxMemory){
                                 results.append("Motherboard may not support that much memory\n");
                             }
+                            if (!memoryType.equals(memType)){
+                                results.append("Memory Type may not be Compatible\n");
+                            }
                         } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     if (build.getProductType(prodIDComp).equals("Cases")){
@@ -683,7 +612,7 @@ public class buildPcActivity extends AppCompatActivity {
                 String wattageBuff = (String) obj.get("Wattage");
                 System.out.println( wattage + "##############" + wattageBuff);
                 int psuWatts = Integer.valueOf(wattageBuff);
-                if ((psuWatts * 3 / 4) < wattage){
+                if ((psuWatts * 1.1) < wattage){
                     System.out.println("$jkofdsgkjsdhf ugyisdhfg");
                     results.append("Power Supply may need higher wattage\n");
 
@@ -742,7 +671,7 @@ public class buildPcActivity extends AppCompatActivity {
                 try{
                     JSONObject obj = (JSONObject) buff.get(0);
                     String socket = (String) obj.get("Socket / CPU");
-                    sqlFilter = String.format("%s CPU_Cooler.`CPU Socket` = '%s' AND", sqlFilter, socket);
+                    sqlFilter += " CPU_Cooler.`CPU Socket` LIKE '%" +  socket + ";%' AND ";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -753,7 +682,7 @@ public class buildPcActivity extends AppCompatActivity {
                 try{
                     JSONObject obj = (JSONObject) buff.get(0);
                     String socket = (String) obj.get("Socket");
-                    sqlFilter = String.format("%s CPU_Cooler.`CPU Socket` = '%s' AND", sqlFilter, socket);
+                    sqlFilter += " CPU_Cooler.`CPU Socket` LIKE '%" + socket + ";%' AND ";
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

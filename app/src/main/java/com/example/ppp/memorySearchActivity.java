@@ -195,6 +195,7 @@ public class memorySearchActivity extends AppCompatActivity {
         if (filterWindow == null){
             filterWindow = new PopupWindow(popupView, width, height, focusable);
         }
+        filterWindow.setAnimationStyle(R.style.popup_animation);
 
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
@@ -488,6 +489,7 @@ public class memorySearchActivity extends AppCompatActivity {
         if (sortWindow == null){
             sortWindow = new PopupWindow(popupView, width, height, focusable);
         }
+        sortWindow.setAnimationStyle(R.style.popup_animation);
 
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken

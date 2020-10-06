@@ -171,7 +171,7 @@ public class MotherboardFeedTask extends AsyncTask<String, Void, ArrayList<Mothe
 
             @Override
             public void onClick(View v) {
-                productPopup(v, productID, data.getProductName());
+                new ProductPopup().productPopup(context, prefs, v, productID, data.getProductName(), "Motherboard");
             }
         });
 

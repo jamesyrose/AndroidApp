@@ -172,7 +172,7 @@ public class MemoryFeedTask extends AsyncTask<String, Void, ArrayList<MemoryProd
 
             @Override
             public void onClick(View v) {
-                productPopup(v, productID, data.getProductName());
+                new ProductPopup().productPopup(context, prefs, v, productID, data.getProductName(), "Memory");
             }
         });
 
@@ -184,86 +184,6 @@ public class MemoryFeedTask extends AsyncTask<String, Void, ArrayList<MemoryProd
         // Add to layout
         parentLayout.addView(productLayout);
 
-    }
-
-    public void productPopup(View view, int productID, String productName){
-        // inflate the layout of the popup window
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.product_detail_window, null);
-
-        // Set product Name
-        TextView name = popupView.findViewById(R.id.product_name);
-        name.setText(productName);
-
-        // Initiate Spec object
-        SingleProductQuery query = new SingleProductQuery(productID, context);
-
-        //Image Gallery
-        LinearLayout gallery = popupView.findViewById(R.id.image_gallery);
-        new DownloadImageGallery(context, query, gallery).execute();
-
-        //Spec Values
-        final LinearLayout specButton = popupView.findViewById(R.id.specs);
-        final LinearLayout specGallery = popupView.findViewById(R.id.spec_values);
-        new DownloadSpecs(context, query, specGallery).execute("Memory");
-
-        specGallery.setVisibility(View.GONE);
-        specButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (specGallery.isShown()){
-                    specGallery.setVisibility(View.GONE);
-                }else{
-                    specGallery.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        // Buy links
-        final LinearLayout buyButton = popupView.findViewById(R.id.buy);
-        final LinearLayout buyGallery = popupView.findViewById(R.id.buy_options);
-        new DownloadSellers(context, query, buyGallery, prefs).execute();
-
-        buyGallery.setVisibility(View.GONE);
-        buyButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                if (buyGallery.isShown()){
-                    buyGallery.setVisibility(View.GONE);
-                }else{
-                    buyGallery.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-
-        // create the popup window
-        int width = LinearLayout.LayoutParams.MATCH_PARENT;
-        int height = LinearLayout.LayoutParams.MATCH_PARENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        // close window by button
-        ImageButton closeButton = popupView.findViewById(R.id.close_button);
-        closeButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
-        // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                popupWindow.dismiss();
-                return true;
-            }
-        });
     }
 
     private void loadingDone(){

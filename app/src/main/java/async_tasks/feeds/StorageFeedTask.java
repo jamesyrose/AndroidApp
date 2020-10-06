@@ -174,7 +174,7 @@ public class StorageFeedTask extends AsyncTask<String, Void, ArrayList<StoragePr
 
             @Override
             public void onClick(View v) {
-                productPopup(v, productID, data.getProductName());
+                new ProductPopup().productPopup(context, prefs, v, productID, data.getProductName(), "Storage");
             }
         });
 

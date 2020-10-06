@@ -3,19 +3,33 @@ package com.example.ppp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
+import async_tasks.db.checkDataBaseStruct;
 import async_tasks.db.updateSQL;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.sqllite.database;
@@ -27,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     database db;
     Preferences prefs;
     Context context;
+    LinearLayout dialog;
+    static RelativeLayout loadingWheel;
+
 
 
     @Override
@@ -35,16 +52,22 @@ public class MainActivity extends AppCompatActivity {
         prefs = new Preferences(MainActivity.this);
         context = MainActivity.this;
         setContentView(R.layout.activity_main);
+        dialog = findViewById(R.id.main_vert_layout);
+
+        loadingWheel = findViewById(R.id.loading_data);
+
         db = new database(MainActivity.this);
         // db.dropTable("SavedBuild");
         db.createSavedBuilds();
-        if (prefs.dbNeedUpdate()){
+        String [] tables = new String[] {"ProductMain","Images","Rating","Price", "CPU", "CPU_Cooler",
+                "Memory", "Motherboard",  "PSU", "Cases", "ExchangeRates", "GPU",
+                "Storage"};
+        for (String table : tables){
             System.out.println("# UPDATING DATA");
             updateSQL sqlTask = new updateSQL(MainActivity.this);
-            sqlTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "" );
-        } else{
-            System.out.println("DOEST NEED UPDATE");
+            sqlTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table );
         }
+        new checkDataBaseStruct(context, loadingWheel).execute();
     }
 
     @Override
@@ -67,6 +90,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+    private void loadingDone(){
+        loadingWheel.setVisibility(View.GONE);
+    }
+
+    private void loadingNotDone(){
+        loadingWheel.setVisibility(View.VISIBLE);
     }
 
     public void goToSettings() {

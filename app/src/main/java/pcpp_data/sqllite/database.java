@@ -30,7 +30,7 @@ public class database extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db){
-        createSavedBuilds();
+        // createSavedBuilds();
     }
 
     @Override
@@ -44,15 +44,21 @@ public class database extends SQLiteOpenHelper {
     }
 
     public void buildDatabase(String sql){
-        showTables();
         SQLiteDatabase db = this.getWritableDatabase();
+        db.enableWriteAheadLogging();
+        while (db.isDbLockedByCurrentThread()){
+            try{
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         String[] splitData = sql.split("!@#");
         for (String buff: splitData){
             db.execSQL(buff);
-
         }
         db.close();
-        prefs.updateDbUpdateData();
     }
 
     public void showTables(){
@@ -87,7 +93,7 @@ public class database extends SQLiteOpenHelper {
 
     public JSONArray getData(String sqlString){
         SQLiteDatabase db  = this.getWritableDatabase();
-        // System.out.println(sqlString);
+//        System.out.println(sqlString);
         Cursor res = db.rawQuery(sqlString, null);
         JSONArray resultSet = new JSONArray();
         res.moveToFirst();

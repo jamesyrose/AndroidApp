@@ -175,7 +175,7 @@ public class PsuFeedTask extends AsyncTask<String, Void, ArrayList<PsuProduct>> 
 
             @Override
             public void onClick(View v) {
-                productPopup(v, productID, data.getProductName());
+                new ProductPopup().productPopup(context, prefs, v, productID, data.getProductName(), "PSU");
             }
         });
 

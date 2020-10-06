@@ -11,7 +11,7 @@
     <string name="main_title">PC Builder</string>
     <string name="build_system">Build System</string>
     <string name="saved_builds">Saved Builds</string>
-    <string name="components">Search Components</string>
+    <string name="components">Search Parts</string>
     <string name="build_guide">Build Guide</string>
     <string name="select_product">Choose Part</string>
     <string name="back_button_description">BackButton</string>

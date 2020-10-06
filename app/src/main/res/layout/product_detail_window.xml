@@ -74,45 +74,88 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/buy"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:background="#B34C4D7E"
-                    android:clickable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:id="@+id/specs"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight=".5"
+                        android:layout_margin="1dp"
+                        android:background="#B34C4D7E"
+                        android:clickable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:gravity="center"
-                        android:text="@string/buy_label"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:padding="5dp">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|left"
-                        app:srcCompat="@drawable/drop_down_arrow" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/spec_label"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:gravity="center|left"-->
+<!--                            app:srcCompat="@drawable/drop_down_arrow" />-->
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/buy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:layout_margin="1dp"
+                        android:background="#B34C4D7E"
+                        android:clickable="true"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/buy_label"
+                            android:textColor="#FFFFFF"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:gravity="center|left"-->
+<!--                            app:srcCompat="@drawable/drop_down_arrow" />-->
+
+                    </LinearLayout>
+
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/buy_options"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="#191b2b"
                     android:orientation="vertical">
                     <TextView
                         android:id="@+id/buy_default"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="#191b2b"
                         android:gravity="center"
                         android:padding="10dp"
                         android:text="N/A"
@@ -120,36 +163,6 @@
                         android:textSize="32sp"
                         android:textStyle="bold" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/specs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    android:background="#B34C4D7E"
-                    android:clickable="true"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="5dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/spec_label"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|left"
-                        app:srcCompat="@drawable/drop_down_arrow" />
                 </LinearLayout>
 
                 <LinearLayout

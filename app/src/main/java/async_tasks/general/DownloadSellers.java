@@ -15,6 +15,7 @@ import com.example.ppp.R;
 
 import java.util.ArrayList;
 
+import pcpp_data.backflow.BuyLinkFetch;
 import pcpp_data.products.PriceObj;
 import pcpp_data.queries.SingleProductQuery;
 import preferences.Preferences;
