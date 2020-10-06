@@ -54,9 +54,13 @@ public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>
                 TextView available_value = layout.findViewById(R.id.available_value);
                 TextView shipping_value = layout.findViewById(R.id.shipping_value);
                 TextView price_value = layout.findViewById(R.id.price_value);
-                @SuppressLint("DefaultLocale") String sellingPrice = String.format("%s %.2f" ,
-                        prefs.getCurrencySymbol(),
-                        price.getBasePrice());
+                String sellingPrice = "Search Google";
+                if (price.getBasePrice() > 0){
+                    sellingPrice = String.format("%s %.2f" ,
+                            prefs.getCurrencySymbol(),
+                            price.getBasePrice());
+                }
+
                 double shipPrice = price.getShipping();
                 String shippingPrice = "Unknown";
                 if  (shipPrice != -2){

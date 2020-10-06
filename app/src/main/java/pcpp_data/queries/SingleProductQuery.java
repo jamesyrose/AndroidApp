@@ -1,7 +1,14 @@
 package pcpp_data.queries;
 
 import android.content.Context;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -100,18 +107,92 @@ public class SingleProductQuery {
                 int avail = stringToInteger((String) row.get("Availability"));
                 boolean availability = (avail == 1) ? true : false;
                 price.setAvail(availability);
-                String purchaseLink =  (String) row.get("PurchaseLink");
+                String purchaseLink =  getURL((String) row.get("Merchant"));
                 // Check for existance if not query it and send it
-                new BuyLinkFetch(context, productID, (String) row.get("Merchant")).execute();
+                try{
+                    new URL(purchaseLink);
+                    price.setPurchaseLink(purchaseLink);
+                    priceData.add(price);
+                }catch (Exception e){
 
-                price.setPurchaseLink(purchaseLink);
+                }
+            }
+            if (priceData.isEmpty()){
+                PriceObj price = new PriceObj();
+                price.setBasePrice(-1);
+                price.setShipping(-2);
+                price.setMerchant("Google");
+                price.setAvail(false);
+                price.setPurchaseLink(getURL("Google"));
                 priceData.add(price);
-
             }
         }catch (Exception e) {
 
         }
         return priceData;
+    }
+
+    private String getURL(String merchant){
+        String firstSql = String.format("SELECT ProductName, ProductType FROM ProductMain WHERE ProductID = %d", productID);
+        JSONArray firstBuff = new database(context).getData(firstSql);
+        String productName = (String) ((JSONObject) firstBuff.get(0)).get("ProductName");
+        String productType = (String) ((JSONObject) firstBuff.get(0)).get("ProductType");
+        String secondSql = String.format("SELECT `Part #` FROM %s WHERE ProductID = %d", productType, productID);
+        JSONArray secondBuff = new database(context).getData(secondSql);
+        String productNum = (String) ((JSONObject) secondBuff.get(0)).get("Part #");
+        // 100-100000025BOX
+        if (merchant.equals("Amazon")){
+            String base = "https://www.amazon.com/s?k=%s&i=electronics" ;
+            String url = String.format(base, encodeValue(productNum));
+            return url;
+        }else if (merchant.equals("Best Buy")){
+            String base = "https://www.bestbuy.com/site/searchpage.jsp?st=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Newegg")){
+            String base = "https://www.newegg.com/p/pl?d=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("MemoryC")){
+            String base = "https://www.memoryc.com/search.html?q=%s&Submit=Submit";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Walmart")){
+            String base = "https://www.walmart.com/search/?query=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("B&H")){
+            String base = "https://www.bhphotovideo.com/c/search?Ntt=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Adorama")){
+            String base = "https://www.adorama.com/l/?searchinfo=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Corsair")){
+            String base = "https://www.corsair.com/us/en/search/?text=%s&type=all";
+            return String.format(base, encodeValue(productNum));
+        } else if (merchant.equals("Staples")){
+            String base = "https://www.staples.com/%s/directory_%s";
+            return String.format(base, encodeValue(productNum), encodeValue(productNum));
+        }else if (merchant.equals("Office Depot")){
+            String base = "https://www.officedepot.com/catalog/search.do?Ntt=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Monoprice")){
+            String base = "https://www.monoprice.com/search/index?keyword=%s";
+            return String.format(base, encodeValue(productNum));
+        }else if (merchant.equals("Microcenter")){
+            String base = "https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=%s&searchButton=search";
+            return String.format(base, encodeValue(productName));
+        }else if (merchant.equals("Google")){
+            String base = "https://www.google.com/search?biw=1072&bih=1146&tbm=shop&ei=N9R8X8WMCtTn-wSw47ioCA&q=%s&oq=%s";
+            return String.format(base, encodeValue(productNum), encodeValue(productNum));
+        }
+        return "";
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private static String encodeValue(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex.getCause());
+        }
     }
 
     protected double stringToDouble(String x) {

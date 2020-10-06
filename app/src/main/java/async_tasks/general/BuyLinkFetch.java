@@ -33,7 +33,6 @@ public class BuyLinkFetch extends AsyncTask<String, Void, ArrayList<String>> {
         this.productID = productID;
         this.merchant = merchant;
         this.context = context;
-        System.out.println("##############################HELLOOO####");
     }
 
     @Override
@@ -51,8 +50,10 @@ public class BuyLinkFetch extends AsyncTask<String, Void, ArrayList<String>> {
         try {
             System.out.println(url);
             Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                    .userAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36")
+                    .maxBodySize(0)
                     .referrer("http://www.google.com")
+                    .followRedirects(false)
                     .get();
             String productLink = "";
             String price = "";
@@ -62,10 +63,8 @@ public class BuyLinkFetch extends AsyncTask<String, Void, ArrayList<String>> {
                         for (Element ele: element.getAllElements()) {
                             for (Attribute subAtter: ele.attributes()) {
                                 if (subAtter.getKey().equals("href")) {
-                                    if (productLink.equals("")) {
-                                        productLink += "https://www.amazon.com" + subAtter.getValue();
-                                        System.out.println(productLink);
-                                    }
+                                    productLink += "https://www.amazon.com" + subAtter.getValue();
+                                    System.out.println(productLink);
                                 }
 //                                if (subAtter.getKey().equals("class") && subAtter.getValue().equals("a-price")){
 //                                    if (price.equals("")){
