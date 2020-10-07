@@ -21,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -117,9 +118,13 @@ public class storageSearchActivity extends AppCompatActivity {
                     float lastViewY = lastView.getY();
                     System.out.println(dialog.getChildCount());
                     if (scrollY > lastViewY){
-                        loadingNotDone();
+                        Toast.makeText(context, "Loading More", Toast.LENGTH_SHORT).show();
+                        try{
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         onLoadMore();
-                        loadingDone();
                     }
                 }
             }

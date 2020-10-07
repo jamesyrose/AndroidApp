@@ -29,7 +29,7 @@ public class Preferences {
     public boolean dbNeedUpdate(String table){
         long currentTime = System.currentTimeMillis() / 1000;
         long lastUpdate = settings.getLong(String.format("LastDatabaseUpdate%s", table), 999999999);
-        long oneDay = 0;
+        long oneDay = 24*60*60;
         if (currentTime - lastUpdate > oneDay){
             return true;
         }

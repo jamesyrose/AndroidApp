@@ -332,10 +332,9 @@ public class buildPcActivity extends AppCompatActivity {
         productType = productType.replace("Cases", "Case");
         String productName = product.getProductName();
         // finding the view to place it in
-        int id_option = getResources().getIdentifier(
-                String.format("%s_option", productType.toLowerCase().replace(" ", "_")),
-                "id",
-                context.getPackageName());
+        String idBuff = String.format("%s_option", productType.toLowerCase().replace(" ", "_"));
+        System.out.println(idBuff);
+        int id_option = getResources().getIdentifier(idBuff, "id", context.getPackageName());
         LinearLayout option = findViewById(id_option);
 
         // Layout Template

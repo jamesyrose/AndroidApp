@@ -54,7 +54,7 @@ public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>
                 TextView available_value = layout.findViewById(R.id.available_value);
                 TextView shipping_value = layout.findViewById(R.id.shipping_value);
                 TextView price_value = layout.findViewById(R.id.price_value);
-                String sellingPrice = "Search Google";
+                String sellingPrice = "Search On Google";
                 if (price.getBasePrice() > 0){
                     sellingPrice = String.format("%s %.2f" ,
                             prefs.getCurrencySymbol(),
@@ -65,7 +65,7 @@ public class DownloadSellers extends AsyncTask<String, Void, ArrayList<PriceObj>
                 String shippingPrice = "Unknown";
                 if  (shipPrice != -2){
                     if (shipPrice == -1){
-                        shippingPrice = "Amazon Price";
+                        shippingPrice = "Amazon Prime";
                     } else if (shipPrice == 0 ) {
                         shippingPrice = "Free Shipping";
                     } else{

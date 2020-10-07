@@ -117,15 +117,13 @@ public class SingleProductQuery {
 
                 }
             }
-            if (priceData.isEmpty()){
-                PriceObj price = new PriceObj();
-                price.setBasePrice(-1);
-                price.setShipping(-2);
-                price.setMerchant("Google");
-                price.setAvail(false);
-                price.setPurchaseLink(getURL("Google"));
-                priceData.add(price);
-            }
+            PriceObj price = new PriceObj();
+            price.setBasePrice(-1);
+            price.setShipping(-2);
+            price.setMerchant("Google");
+            price.setAvail(false);
+            price.setPurchaseLink(getURL("Google"));
+            priceData.add(price);
         }catch (Exception e) {
 
         }

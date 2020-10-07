@@ -1,99 +1,68 @@
-package com.example.ppp;
+package async_tasks.feeds;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.example.ppp.R;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
-import async_tasks.db.updateSQL;
-import async_tasks.feeds.SavedBuildTask;
 import pcpp_data.products.GeneralProduct;
+import pcpp_data.products.PsuProduct;
 import pcpp_data.sqllite.database;
 import pcpp_data.sqllite.saveBuilds;
 import preferences.Preferences;
 
-
-public class savedBuildsActivity extends AppCompatActivity {
+public class SavedBuildTask extends AsyncTask<String, Void, ArrayList<View>> {
     Preferences prefs;
     Context context;
     LinearLayout dialog;
     View loadingWheel;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        prefs = new Preferences(savedBuildsActivity.this);
-        context = savedBuildsActivity.this;
-        setContentView(R.layout.scroll_search);
-        dialog = findViewById(R.id.searchID);
-        loadingWheel = findViewById(R.id.loading_wheel);
-        loadingWheel.setVisibility(View.VISIBLE);
-        // remove footer
-        RelativeLayout footer = findViewById(R.id.footer);
-        footer.setVisibility(View.GONE);
+
+    public SavedBuildTask(Context context, LinearLayout dialog, View loadingWheel, Preferences prefs){
+        this.context = context;
+        this.dialog = dialog;
+        this.loadingWheel = loadingWheel;
+        this.prefs = prefs;
     }
 
     @Override
-    protected void onResume(){
-        dialog.removeAllViews();
-        new SavedBuildTask(context, dialog, loadingWheel, prefs).execute();
-        // addSavedBuilds();
-        super.onResume();
+    protected ArrayList<View> doInBackground(String... strings) {
+        ArrayList<View> views= addSavedBuilds();
+        return views;
     }
 
     @Override
-    protected void onStart(){
-        super.onStart();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            goToSettings();
+    protected void onPostExecute(ArrayList<View> views){
+        for (View view: views){
+            dialog.addView(view);
         }
-
-        return super.onOptionsItemSelected(item);
+        loadingDone();
     }
 
-    private void addSavedBuilds(){
+
+    private ArrayList<View> addSavedBuilds(){
         // params
         String buildID = "";
         String buildName = "";
 
+        ArrayList<View> viewToAdd = new ArrayList<>();
 
         String sql = "SELECT DISTINCT buildID, name FROM `SavedBuild` WHERE saved = 1;";
         JSONArray buff = new database(context).getData(sql);
@@ -101,12 +70,12 @@ public class savedBuildsActivity extends AppCompatActivity {
             JSONObject obj = (JSONObject) o;
             buildID = (String) obj.get("buildID");
             buildName = (String) obj.get("name");
-            createBuildView(buildID, buildName);
+            viewToAdd.add(createBuildView(buildID, buildName));
         }
-        loadingDone();
+        return viewToAdd;
     }
 
-    private void createBuildView(String buildID, String buildName){
+    private View createBuildView(String buildID, String buildName){
         // Price and Products
         double totalPrice = 0.0;
         ArrayList<String> productStrings = new ArrayList<>();
@@ -146,7 +115,7 @@ public class savedBuildsActivity extends AppCompatActivity {
 
         deleteButton.setOnClickListener(v -> {
             // inflate
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
             View delWindow = inflater.inflate(R.layout.you_sure_window, null);
 
             // create the popup window
@@ -168,7 +137,7 @@ public class savedBuildsActivity extends AppCompatActivity {
             delBtn.setOnClickListener(v2 -> {
                 new saveBuilds(context, BUILD_ID).deleteBuild();
                 dialog.removeView(newView);
-                Toast.makeText(getApplicationContext(), "Build Has Been Deleted", Toast.LENGTH_LONG).show();
+                Toast.makeText(context.getApplicationContext(), "Build Has Been Deleted", Toast.LENGTH_LONG).show();
                 popupWindow.dismiss();
             });
 
@@ -183,34 +152,35 @@ public class savedBuildsActivity extends AppCompatActivity {
         });
 
         editButton.setOnClickListener(v -> {goToBuildPc(v, BUILD_ID);});
-        dialog.addView(newView);
+        return newView;
     }
+
+
 
     public void goToBuildPc(View view, String buildID){
         Intent intent = new Intent("com.iphonik.chameleon.buildPc");
         intent.putExtra("BUILD_ID", buildID);
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void goToSettings() {
         Intent intent = new Intent("com.iphonik.chameleon.Settings");
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void goToSettings(View view){
         Intent intent = new Intent("com.iphonik.chameleon.Settings");
-        startActivity(intent);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        context.startActivity(intent);
+        ((Activity) context).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void loadingDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.GONE);
+        loadingWheel.setVisibility(View.GONE);
     }
 
     private void loadingNotDone(){
-        findViewById(R.id.loading_wheel).setVisibility(View.VISIBLE);
+        loadingWheel.setVisibility(View.VISIBLE);
     }
-
 }

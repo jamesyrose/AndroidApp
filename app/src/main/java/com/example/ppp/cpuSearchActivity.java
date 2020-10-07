@@ -1,6 +1,7 @@
 package com.example.ppp;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -129,9 +131,13 @@ public class cpuSearchActivity extends AppCompatActivity {
                     float lastViewY = lastView.getY();
                     System.out.println(dialog.getChildCount());
                     if (scrollY > lastViewY) {
-                        loadingNotDone();
+                        Toast.makeText(context, "Loading More", Toast.LENGTH_SHORT).show();
+                        try{
+                            Thread.sleep(250);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         onLoadMore();
-                        loadingDone();
                     }
                 }
             }
@@ -539,6 +545,7 @@ public class cpuSearchActivity extends AppCompatActivity {
     }
 
     private void loadingNotDone(){
+        loadingWheel = findViewById(R.id.loading_wheel);
         loadingWheel.setVisibility(View.VISIBLE);
     }
 
