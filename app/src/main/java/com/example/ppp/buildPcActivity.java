@@ -1,14 +1,10 @@
 package com.example.ppp;
 
-import android.animation.Animator;
-import android.app.ActionBar;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -16,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,12 +23,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
@@ -42,11 +34,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import async_tasks.feeds.ProductPopup;
-import async_tasks.general.DownloadImageGallery;
-import async_tasks.general.DownloadSellers;
-import async_tasks.general.DownloadSpecs;
 import pcpp_data.products.GeneralProduct;
-import pcpp_data.queries.SingleProductQuery;
 import pcpp_data.sqllite.database;
 import pcpp_data.sqllite.saveBuilds;
 import preferences.Preferences;
@@ -57,6 +45,7 @@ public class buildPcActivity extends AppCompatActivity {
     Preferences prefs;
     LinearLayout dialog;
     ScrollView dialogScroll;
+    View loadingWheel;
     private double total = 0.0;
     private int wattage = 0;
     private String compatible = "";
@@ -68,6 +57,19 @@ public class buildPcActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.build_a_pc);
+        loadingWheel = findViewById(R.id.loading_wheel);
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadingWheel.setVisibility(View.VISIBLE);
         //
         context = buildPcActivity.this;
         prefs = new Preferences(context);
@@ -121,6 +123,8 @@ public class buildPcActivity extends AppCompatActivity {
 
         Button newButton = findViewById(R.id.new_button);
         newButton.setOnClickListener(v ->{
+            String sql = "DELETE FROM `SavedBuild` WHERE saved=0";
+            new database(context).execSQL(sql);
             BUILD_ID = randomBuildID();
             resetTitleNameToActionBar();
             removeAllOldViews();
@@ -166,21 +170,11 @@ public class buildPcActivity extends AppCompatActivity {
                 popupWindow.dismiss();
             });
         });
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
         // Initialize add buttons
         addTitleNameToActionBar();
         removeAllOldViews();
         changesMade();
+        loadingWheel.setVisibility(View.GONE);
     }
 
     @Override
@@ -587,7 +581,7 @@ public class buildPcActivity extends AppCompatActivity {
                                     "WHEN `Motherboard Form Factor` IS NOT NULL " +
                                     "THEN `Motherboard Form Factor` " +
                                     "ELSE '' " +
-                                    "END `Motherboard Form Factor FROM Cases WHERE ProductID = %d", prodIDComp);
+                                    "END `Motherboard Form Factor` FROM Cases WHERE ProductID = %d", prodIDComp);
                             buff = new database(context).getData(sql);
                             obj  = (JSONObject) buff.get(0);
                             String caseFormFactors = (String) obj.get("Motherboard Form Factor");

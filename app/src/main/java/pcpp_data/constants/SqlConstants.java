@@ -251,14 +251,14 @@ public class SqlConstants {
             "        LEFT JOIN Rating on Rating.ProductID=ProductMain.ProductID \n" +
             "        LEFT JOIN Price on Price.ProductID=ProductMain.ProductID \n" +
             "        LEFT JOIN Cases on Cases.ProductID=ProductMain.ProductID \n" +
-            "        WHERE  ProductMain.ProductType = 'Cases';\n" +
+            "        WHERE  ProductMain.ProductType = 'Cases' \n" +
             "        AND Cases.Manufacturer IN (%s)\n" +
             "        AND Cases.`Power Supply Shroud` IN (%s)\n" +
-            "        AND Cases.`Type` IN (%s)\n" +
             "        AND Cases.`Side Panel Window` IN (%s) \n" +
+            "        AND Cases.`Type` IN (%s)\n" +
             "        AND ProductMain.BestPrice > %d \n" +
             "        AND ProductMain.BestPrice < %d \n" +
-            "        ORDER BY %s ;\n" +
+            "        ORDER BY %s \n" +
             "\n";
 
     public final String CREATE_SAVED_BUILD_TABLES = "CREATE TABLE IF NOT EXISTS `SavedBuild` (\n" +

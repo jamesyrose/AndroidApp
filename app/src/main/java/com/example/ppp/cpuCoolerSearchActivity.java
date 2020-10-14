@@ -462,7 +462,7 @@ public class cpuCoolerSearchActivity extends AppCompatActivity {
         String ac = ""; // Air cooled
         String brands = "";
         if (waterCooled){
-            wc = "%Yes%";
+            wc = "%mm%";
         }
         if (airCooled){
             ac = "%No%";

@@ -30,6 +30,9 @@ public class Preferences {
         long currentTime = System.currentTimeMillis() / 1000;
         long lastUpdate = settings.getLong(String.format("LastDatabaseUpdate%s", table), 999999999);
         long oneDay = 24*60*60;
+        if (table.equals("Images")){
+            oneDay *= 31; // Images takes long time to load and doesnt really change.
+        }
         if (currentTime - lastUpdate > oneDay){
             return true;
         }
@@ -44,18 +47,6 @@ public class Preferences {
             editor.putString("TaxRate", String.valueOf(taxPercentage)).commit();
         }
         editor.commit();
-    }
-
-    public void updateDbName(){
-        if (settings.getString("DB_NAME", "").equals("DB_1.db")){
-            editor.putString("DB_NAME", "DB_2.db").commit();
-        }else{
-            editor.putString("DB_NAME", "DB_1.db").commit();
-        }
-    }
-
-    public String getDbName(){
-        return settings.getString("DB_NAME", "");
     }
 
     public void updateTaxRate(String taxPercentage){

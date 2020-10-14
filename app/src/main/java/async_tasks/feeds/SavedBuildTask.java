@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import pcpp_data.products.GeneralProduct;
-import pcpp_data.products.PsuProduct;
 import pcpp_data.sqllite.database;
 import pcpp_data.sqllite.saveBuilds;
 import preferences.Preferences;

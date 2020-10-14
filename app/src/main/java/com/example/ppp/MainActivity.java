@@ -34,6 +34,7 @@ import async_tasks.db.updateSQL;
 import pcpp_data.products.MemoryProduct;
 import pcpp_data.sqllite.database;
 import pcpp_data.sqllite.saveBuilds;
+import pcpp_data.sqllite.setDefaultDatabase;
 import preferences.Preferences;
 
 
@@ -56,18 +57,25 @@ public class MainActivity extends AppCompatActivity {
 
         loadingWheel = findViewById(R.id.loading_data);
 
-        db = new database(MainActivity.this);
-        // db.dropTable("SavedBuild");
-        db.createSavedBuilds();
-        String [] tables = new String[] {"ProductMain","Images","Rating","Price", "CPU", "CPU_Cooler",
-                "Memory", "Motherboard",  "PSU", "Cases", "ExchangeRates", "GPU",
-                "Storage"};
-        for (String table : tables){
-            System.out.println("# UPDATING DATA");
-            updateSQL sqlTask = new updateSQL(MainActivity.this);
-            sqlTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table );
+        boolean newDB = new setDefaultDatabase(context).copyDbIfNotExists();
+
+        if (!newDB){
+            db = new database(MainActivity.this);
+            // db.dropTable("SavedBuild");
+            db.createSavedBuilds();
+            String [] tables = new String[] {"BuildGuide", "ProductMain","Images","Rating","Price",
+                    "CPU", "CPU_Cooler", "Memory", "Motherboard",  "PSU", "Cases", "ExchangeRates",
+                    "GPU", "Storage"};
+            for (String table : tables){
+                System.out.println("# UPDATING DATA");
+                updateSQL sqlTask = new updateSQL(MainActivity.this);
+                sqlTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, table );
+            }
+            new checkDataBaseStruct(context, loadingWheel, prefs).execute();
+        }else{
+            loadingWheel.setVisibility(View.GONE);
         }
-        new checkDataBaseStruct(context, loadingWheel).execute();
+
     }
 
     @Override
@@ -125,6 +133,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
+
+    public void goToBuildGuide(View view){
+        Intent intent = new Intent("com.iphonik.chameleon.buildGuide");
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
 
 
     public void goToBuildPc(View view){

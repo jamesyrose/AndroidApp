@@ -127,6 +127,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".buildGuideActivity"
+            android:label="Build Guide" >
+            <intent-filter>
+                <action android:name="com.iphonik.chameleon.buildGuide" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

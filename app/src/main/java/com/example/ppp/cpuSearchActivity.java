@@ -283,7 +283,7 @@ public class cpuSearchActivity extends AppCompatActivity {
         // Set tdp Choices
         final RangeSeekBar<Integer> tdpBar = popupView.findViewById(R.id.tdp_seek_bar);
         tdpBar.setRangeValues(0, 500);
-        LinearLayout tdpChoice = popupView.findViewById(R.id.tdp_selection);
+        RelativeLayout tdpChoice = popupView.findViewById(R.id.tdp_selection);
         tdpBar.setVisibility(View.GONE);
         tdpChoice.setOnClickListener(new View.OnClickListener() {
             @Override

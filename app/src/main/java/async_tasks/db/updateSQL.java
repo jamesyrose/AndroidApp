@@ -66,9 +66,6 @@ public class updateSQL  extends AsyncTask<String, Integer, String>{
                 System.out.println(String.format("%s Rest Took %.2f", table,  (double)(end - start)  / 1000 ));
                 prefs.updateDbUpdateData(table);
             }
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {

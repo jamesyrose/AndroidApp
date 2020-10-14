@@ -284,9 +284,10 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/tdp_selection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_margin="1dp"
                 android:background="#B34C4D7E"
                 android:clickable="true"
@@ -295,31 +296,23 @@
                 android:orientation="horizontal"
                 android:padding="5dp">
 
-                <LinearLayout
-                    android:id="@+id/tdp_selection"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/tdp_label"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:scaleType="fitEnd"
+                    app:srcCompat="@drawable/drop_down_arrow" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/tdp_label"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|left"
-                        app:srcCompat="@drawable/drop_down_arrow" />
-                </LinearLayout>
-
-            </LinearLayout>
+            </RelativeLayout>
             <com.yahoo.mobile.client.android.util.rangeseekbar.RangeSeekBar
                 android:id="@+id/tdp_seek_bar"
                 android:layout_width="match_parent"
